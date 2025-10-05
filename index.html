@@ -111,7 +111,7 @@
                         </p>
                         <p class="signature">Beijos da Sarinha 💙</p>
                         <p class="post-cta">Quer dividir como essa história te inspirou? <a href="#comentarios">Deixa um comentário aqui</a>.</p>
-                    </article>
+</article>
                     <aside class="blog-sidebar">
                         <div class="sidebar-card">
                             <h4>Temas favoritos</h4>
@@ -130,36 +130,34 @@
             </div>
         </section>
 
-        <section class="comments" id="comentarios">
-            <div class="container">
-                <div class="section-intro">
-                    <h2>Comentários da comunidade</h2>
-                    <p>Deixe um recado, dica ou pergunta. Amo saber como está sendo acompanhar essa jornada do outro lado da tela.</p>
-                </div>
-                <div class="comments-grid">
-                    <form class="comment-form" action="https://formspree.io/f/your-form-id" method="post">
-                        <div class="form-field">
-                            <label for="nome">Nome</label>
-                            <input type="text" id="nome" name="nome" placeholder="Como você gostaria de ser chamado?" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="email">E-mail <span>(opcional)</span></label>
-                            <input type="email" id="email" name="email" placeholder="para eu poder responder com carinho">
-                        </div>
-                        <div class="form-field">
-                            <label for="mensagem">Mensagem</label>
-                            <textarea id="mensagem" name="mensagem" rows="6" placeholder="Compartilhe seu pensamento, incentivo ou dúvida" required></textarea>
-                        </div>
-                        <button type="submit" class="btn primary">Enviar comentário</button>
-                        <p class="form-note">Configure o serviço de destino (ex.: Formspree, Getform ou Netlify Forms) substituindo o endereço em <code>action</code>.</p>
-                    </form>
-                        <div class="comment-card placeholder">
-                            <p>Seu comentário pode ser o próximo a aparecer aqui. Deixe uma mensagem!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section class="comentarios">
+  <h2>Deixe seu comentário 💬</h2>
+  <form name="comentarios" method="POST" netlify netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="comentarios">
+
+    <p hidden>
+      <label>Não preencha: <input name="bot-field" /></label>
+    </p>
+
+    <div class="campo">
+      <label>Nome</label>
+      <input type="text" name="nome" placeholder="Digite seu nome" required>
+    </div>
+
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" name="email" placeholder="exemplo@email.com" required>
+    </div>
+
+    <div class="campo">
+      <label>Comentário</label>
+      <textarea name="mensagem" rows="5" placeholder="Escreva seu comentário..." required></textarea>
+    </div>
+
+    <button type="submit">Enviar</button>
+  </form>
+</section>
+
 
         <section class="daily" id="diario">
             <div class="container">

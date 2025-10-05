@@ -21,6 +21,7 @@
                 <a href="#student-life">Student Life</a>
                 <a href="#estudos">Estudos</a>
                 <a href="#modulo">Módulo</a>
+                <a href="#comentarios">Comentários</a>
                 <a href="#contato">Contato</a>
             </nav>
         </div>
@@ -69,7 +70,7 @@
                     <p>Textos maiores, listas e registros especiais sobre as fases da faculdade, sempre que quero aprofundar um assunto ou dividir uma grande novidade.</p>
                 </div>
                 <div class="blog-layout">
-                    <article class="blog-featured">
+                    <article class="blog-featured" id="post-inicio-sonho">
                         <span class="badge">Primeiro post</span>
                         <h3>Início de um sonho — Agosto de 2023</h3>
                         <div class="post-meta">
@@ -109,6 +110,7 @@
                             Espero, sinceramente, que gostem de acompanhar essa jornada comigo.
                         </p>
                         <p class="signature">Beijos da Sarinha 💙</p>
+                        <p class="post-cta">Quer dividir como essa história te inspirou? <a href="#comentarios">Deixa um comentário aqui</a>.</p>
                     </article>
                     <aside class="blog-sidebar">
                         <div class="sidebar-card">
@@ -124,6 +126,37 @@
                             </ul>
                         </div>
                     </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="comments" id="comentarios">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>Comentários da comunidade</h2>
+                    <p>Deixe um recado, dica ou pergunta. Amo saber como está sendo acompanhar essa jornada do outro lado da tela.</p>
+                </div>
+                <div class="comments-grid">
+                    <form class="comment-form" action="https://formspree.io/f/your-form-id" method="post">
+                        <div class="form-field">
+                            <label for="nome">Nome</label>
+                            <input type="text" id="nome" name="nome" placeholder="Como você gostaria de ser chamado?" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="email">E-mail <span>(opcional)</span></label>
+                            <input type="email" id="email" name="email" placeholder="para eu poder responder com carinho">
+                        </div>
+                        <div class="form-field">
+                            <label for="mensagem">Mensagem</label>
+                            <textarea id="mensagem" name="mensagem" rows="6" placeholder="Compartilhe seu pensamento, incentivo ou dúvida" required></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">Enviar comentário</button>
+                        <p class="form-note">Configure o serviço de destino (ex.: Formspree, Getform ou Netlify Forms) substituindo o endereço em <code>action</code>.</p>
+                    </form>
+                        <div class="comment-card placeholder">
+                            <p>Seu comentário pode ser o próximo a aparecer aqui. Deixe uma mensagem!</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -273,6 +306,3 @@
 </body>
 
 </html>
-
-
-

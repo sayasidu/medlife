@@ -1,0 +1,5 @@
+title: Medlife
+description: Blog pessoal de Medicina e vida acadêmica
+theme: minima
+plugins:
+  - jekyll-feed

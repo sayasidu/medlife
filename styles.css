@@ -317,63 +317,22 @@ main > section {
 .comments-grid {
   display: grid;
   gap: 32px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
 }
 
-.comment-form {
+.comment-embed {
   background: var(--surface-strong);
-  padding: 32px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  display: grid;
-  gap: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 36px -28px rgba(63, 94, 251, 0.4);
 }
 
-.form-field {
-  display: grid;
-  gap: 8px;
-}
-
-.form-field label {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.form-field label span {
-  font-weight: 400;
-  color: var(--text-light);
-}
-
-.form-field input,
-.form-field textarea {
+.comment-embed iframe {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(63, 94, 251, 0.2);
-  background: #fff;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-field input:focus,
-.form-field textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(63, 94, 251, 0.18);
-}
-
-.comment-form .form-note {
-  font-size: 0.85rem;
-  color: var(--text-light);
-  margin: 0;
-}
-
-.comment-form code {
-  font-family: 'Fira Code', 'Courier New', monospace;
-  background: rgba(31, 42, 55, 0.08);
-  padding: 2px 6px;
-  border-radius: 6px;
+  min-height: 640px;
+  border: 0;
 }
 
 .comment-list {
@@ -505,7 +464,7 @@ main > section {
     flex-direction: column;
     gap: 16px;
   }
-
+}
   .nav-links {
     justify-content: center;
   }
@@ -514,9 +473,55 @@ main > section {
     padding: 32px;
   }
 
-  .comment-form {
-    padding: 24px;
-  }
+  .comentarios {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #f9f9ff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-family: 'Poppins', sans-serif;
+}
+.comentarios h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+.campo {
+  margin-bottom: 20px;
+}
+.campo label {
+  display: block;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+}
+.campo input, .campo textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+.campo input:focus, .campo textarea:focus {
+  border-color: #6a5acd;
+  outline: none;
+}
+button {
+  display: block;
+  width: 100%;
+  background: #6a5acd;
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background #6a5acd ease;
+}
+button:hover {
+  background: #5948c7;
 }
 
 @media (prefers-color-scheme: dark) {

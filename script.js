@@ -53,11 +53,15 @@ function renderBlogPosts() {
     
     // Limpar posts antigos (manter apenas a sidebar)
     const existingPosts = blogLayout.querySelectorAll('.blog-featured');
+    const existingOldPosts = blogLayout.querySelectorAll('.old-posts-section');
     existingPosts.forEach(post => post.remove());
+    existingOldPosts.forEach(section => section.remove());
 
-    // Renderizar posts do mais novo para o mais antigo
-    blogPosts.forEach((post, index) => {
-        console.log('Renderizando post:', post.titulo);
+    // Renderizar POST MAIS RECENTE em destaque (primeiro do array)
+    if (blogPosts.length > 0) {
+        const post = blogPosts[0];
+        console.log('Renderizando post em destaque:', post.titulo);
+        
         const article = document.createElement('article');
         article.className = 'blog-featured';
         article.id = post.id;
@@ -83,11 +87,51 @@ function renderBlogPosts() {
         } else {
             blogLayout.appendChild(article);
         }
-    });
+    }
+
+    // Renderizar POSTS ANTIGOS (do segundo em diante)
+    if (blogPosts.length > 1) {
+        const oldPostsSection = document.createElement('div');
+        oldPostsSection.className = 'old-posts-section';
+        
+        let oldPostsHTML = '<h3 class="old-posts-title">Posts Anteriores</h3><div class="old-posts-grid">';
+        
+        blogPosts.slice(1).forEach((post, index) => {
+            console.log('Renderizando post antigo:', post.titulo);
+            
+            oldPostsHTML += `
+                <article class="old-post-card" id="${post.id}">
+                    <span class="badge-small">${post.categoria}</span>
+                    <h4>${post.titulo}</h4>
+                    <p class="old-post-date">${post.data}</p>
+                    <p class="old-post-preview">${post.conteudo[0].substring(0, 120)}...</p>
+                    <a href="#${post.id}" class="read-more" onclick="scrollToPost('${post.id}')">Ler post completo →</a>
+                </article>
+            `;
+        });
+        
+        oldPostsHTML += '</div>';
+        oldPostsSection.innerHTML = oldPostsHTML;
+        
+        // Inserir antes da sidebar
+        if (sidebar) {
+            blogLayout.insertBefore(oldPostsSection, sidebar);
+        } else {
+            blogLayout.appendChild(oldPostsSection);
+        }
+    }
 
     console.log('Posts renderizados com sucesso!');
     // Atualizar sidebar
     updateSidebar();
+}
+
+// Funcao para scroll suave ate o post
+function scrollToPost(postId) {
+    const post = document.getElementById(postId);
+    if (post) {
+        post.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Funcao para atualizar a sidebar com os posts

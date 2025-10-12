@@ -23,13 +23,13 @@ const blogPosts = [
     {
         id: "post-segundo-mes",
         badge: "Novidades",
-        titulo: "Segundo mes na faculdade",
+        titulo: "Semana Caótica",
         data: "11 de outubro de 2025",
-        categoria: "Rotina",
+        categoria: "Semana de Prova",
         conteudo: [
-            "Primeiro paragrafo do novo post...",
-            "Segundo paragrafo...",
-            "Terceiro paragrafo..."
+            "Poderia começar dizendo que a semana foi tranquila, que dormi minhas 7h30 programadas, que comi bem e que tudo correu dentro do esperado… mas não seria verdade. A segunda semana de outubro foi um caos completo. Segunda já começou com prova de Técnica Cirúrgica — antigos traumas revisitados, porém superados (com café e fé). Estudei o suficiente pra não chorar e, honestamente, fui melhor do que esperava. Terça veio com tutoria, e parece que esse semestre resolveu colocar a gente à prova todo santo dia. É abertura, fechamento e mil leituras “aprofundadas”. Estamos no módulo de Aparelho Digestório, e acredite, esse módulo está gerando dualidades. Em conversas com meus amigos, a grande maioria diz que não gostou; eu ainda enfrento a dúvida se gostei ou não, mas sim, concordo quando dizem que está sendo bem difícil — não pelo conteúdo em si, mas pela somatória dos acontecimentos.",
+            "A alta densidade de afazeres na semana de um estudante de Medicina, por vezes, faz com que ela passe entre a lerdeza e o voar. Aqui não foi diferente. Não sei se é porque adoro procrastinar com coisas fúteis ou se o tempo realmente tem esse viés. Mas quinta-feira chegou — e chegou com prova. Prova de Habilidades de Clínica Médica. Nessa, eu tinha apenas uma opção: ir bem. E acreditem, eu fui razoável. Confesso que fiquei triste; a falta de atenção custa caro… e no meu caso custou 0,5 (alguns mais que isso). Mas consegui, pessoal, consegui.",
+            "Finalizamos com PICTória de hanseníase e tutoria de síndrome dispéptica. E assim, entre prazos, café e planilhas mentais, a semana se encerrou — caótica, cansativa, mas com resultados bons (não muito bons), mas foram bons. Eu digo: sobrevivi."
         ],
         assinatura: "Beijos da Sarinha 💙",
         cta: "Gostou? Deixe seu comentario!",

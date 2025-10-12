@@ -247,13 +247,46 @@
             </div>
         </section>
 
-        <section class="contact" id="contato">
-            <div class="container">
-                <h2>Contato</h2>
-                <p>Quer conversar, mandar dicas ou só dizer oi? Vamos trocar ideias!</p>
-                <a class="btn primary" href="mailto:contato@estudantesara.com">sarayasmin@hotmail.com.br</a>
+        <section class="comments" id="comentarios">
+    <div class="container">
+        <div class="section-intro">
+            <h2>💬 Comentários</h2>
+            <p>Compartilhe sua opinião, deixe uma mensagem ou conte como essa jornada te inspirou!</p>
+        </div>
+
+        <!-- Formulário de Comentários -->
+        <div class="comment-form-wrapper">
+            <div id="successMessage" style="display: none;" class="success-message"></div>
+            <form id="commentForm" class="comment-form">
+                <div class="form-group">
+                    <label for="name">Nome *</label>
+                    <input type="text" id="name" name="name" required placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="comment">Comentário *</label>
+                    <textarea id="commentText" name="comment" required placeholder="Escreva seu comentário aqui..." maxlength="500"></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/500 caracteres
+                    </div>
+                </div>
+                <button type="submit" class="btn primary">Publicar Comentário</button>
+            </form>
+        </div>
+
+        <!-- Lista de Comentários -->
+        <div class="comments-display">
+            <div class="comments-header">
+                <h3>Todos os comentários</h3>
+                <span class="comment-count"><span id="commentCount">0</span> comentários</span>
             </div>
-        </section>
+            <div id="commentsList" class="comments-list"></div>
+        </div>
+    </div>
+</section>
     </main>
 
     <footer class="footer">
@@ -268,6 +301,7 @@
 </body>
 
 </html>
+
 
 
 

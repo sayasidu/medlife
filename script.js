@@ -1,3 +1,118 @@
+// ===== SISTEMA DE POSTS DO BLOG =====
+
+const blogPosts = [
+    {
+        id: "post-inicio-sonho",
+        badge: "Primeiro post",
+        titulo: "Início de um sonho – Agosto de 2023",
+        data: "5 de outubro de 2025",
+        categoria: "Jornada",
+        conteudo: [
+            "Em agosto de 2023, mais precisamente no dia 4, eu iniciava uma jornada completamente louca: eu havia passado em Medicina.",
+            "Foi um esforço danado pra chegar até aqui. Sempre tive a sensação de ser a mais "burra" da turma (família), sem intelecto ou QI suficiente pra Medicina. Mas eu consegui. Consegui por mim, com meu esforço, e com o apoio incondicional da minha família.",
+            "Sei que quem me conhece há mais tempo deve ter pensado que, por já ter uma primeira formação, talvez eu estivesse "desperdiçando tempo" ao começar uma segunda. Mas deixa eu te contar: eu queria muito fazer Medicina. Me esforcei de verdade pra conquistar essa vaga tão sonhada – e valeu cada segundo.",
+            "Descobri que tinha passado exatamente no aniversário do meu pai. Legal, né? Um presente pra mim, e um presentão pra ele.",
+            "Minha jornada começou oficialmente naquele 4 de agosto. Esses dois primeiros anos passaram rápido demais – foram intensos, desafiadores e completamente insanos.",
+            "No meio disso tudo, fiz um grupo de amigos incríveis. Nós nos apelidamos, com todo carinho (e um toque de drama), de "Grey's Anatomy." O nome começou meio aleatório, mas acabou ficando só o essencial: nós. Eles são uma parte importante do meu dia a dia e da minha história até aqui.",
+            "Esse é meu primeiro post, e estou me adaptando a essa nova forma de compartilhar a vida com vocês. Espero, sinceramente, que gostem de acompanhar essa jornada comigo."
+        ],
+        assinatura: "Beijos da Sarinha 💙",
+        cta: "Quer dividir como essa história te inspirou?",
+        ctaLink: "#comentarios"
+    },
+    // ADICIONE NOVOS POSTS AQUI
+    {
+        id: "post-segundo-mes",
+        badge: "Novidades",
+        titulo: "Segundo mês na faculdade",
+        data: "11 de outubro de 2025",
+        categoria: "Rotina",
+        conteudo: [
+            "Primeiro parágrafo do novo post...",
+            "Segundo parágrafo...",
+            "Terceiro parágrafo..."
+        ],
+        assinatura: "Beijos da Sarinha 💙",
+        cta: "Gostou? Deixe seu comentário!",
+        ctaLink: "#comentarios"
+    }
+];
+];
+
+// Função para renderizar os posts
+function renderBlogPosts() {
+    const blogLayout = document.querySelector('.blog-layout');
+    if (!blogLayout) return;
+
+    const blogFeaturedContainer = blogLayout.querySelector('.blog-featured') 
+        ? blogLayout.querySelector('.blog-featured').parentElement 
+        : null;
+
+    if (!blogFeaturedContainer) return;
+
+    // Limpar posts antigos (manter apenas o container)
+    const sidebar = blogLayout.querySelector('.blog-sidebar');
+    blogLayout.innerHTML = '';
+
+    // Renderizar posts
+    blogPosts.forEach(post => {
+        const article = document.createElement('article');
+        article.className = 'blog-featured';
+        article.id = post.id;
+
+        const paragrafos = post.conteudo.map(p => `<p>${p}</p>`).join('');
+
+        article.innerHTML = `
+            <span class="badge">${post.badge}</span>
+            <h3>${post.titulo}</h3>
+            <div class="post-meta">
+                <span>Publicado em ${post.data}</span>
+                <span class="divider">•</span>
+                <span class="tag">${post.categoria}</span>
+            </div>
+            ${paragrafos}
+            <p class="signature">${post.assinatura}</p>
+            <p class="post-cta">${post.cta} <a href="${post.ctaLink}">Deixa um comentário aqui</a>.</p>
+        `;
+
+        blogLayout.appendChild(article);
+    });
+
+    // Re-adicionar sidebar
+    if (sidebar) {
+        blogLayout.appendChild(sidebar);
+        updateSidebar();
+    }
+}
+
+// Função para atualizar a sidebar com os posts
+function updateSidebar() {
+    const sidebarFavoritos = document.querySelector('.sidebar-card ul');
+    if (!sidebarFavoritos) return;
+
+    sidebarFavoritos.innerHTML = blogPosts.map(post => 
+        `<li><a href="#${post.id}">${post.titulo}</a></li>`
+    ).join('');
+
+    // Atualizar arquivo mensal
+    const sidebarArquivo = document.querySelectorAll('.sidebar-card')[1];
+    if (sidebarArquivo) {
+        const meses = {};
+        blogPosts.forEach(post => {
+            const mes = post.data.split(' de ')[1] + ' ' + post.data.split(' de ')[2];
+            if (!meses[mes]) meses[mes] = [];
+            meses[mes].push(post);
+        });
+
+        const arquivoUl = sidebarArquivo.querySelector('ul');
+        if (arquivoUl) {
+            arquivoUl.innerHTML = Object.keys(meses).map(mes => 
+                `<li><a href="#blog">${mes} (${meses[mes].length})</a></li>`
+            ).join('');
+        }
+    }
+}
+
 // ===== ATUALIZAR ANO NO FOOTER =====
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -17,10 +132,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // ===== SISTEMA DE COMENTÁRIOS =====
 
-// Array para armazenar comentários na memória durante a sessão
 let comments = [];
 
-// Elementos do DOM
 const commentForm = document.getElementById('commentForm');
 const commentsList = document.getElementById('commentsList');
 const commentCount = document.getElementById('commentCount');
@@ -28,21 +141,18 @@ const charCount = document.getElementById('charCount');
 const commentTextarea = document.getElementById('commentText');
 const successMessage = document.getElementById('successMessage');
 
-// Contador de caracteres em tempo real
 if (commentTextarea) {
     commentTextarea.addEventListener('input', function() {
         charCount.textContent = this.value.length;
     });
 }
 
-// Função para escapar HTML e prevenir XSS
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// Função para formatar data de forma relativa
 function formatDate(date) {
     const now = new Date();
     const diff = now - date;
@@ -56,14 +166,12 @@ function formatDate(date) {
     if (days === 1) return 'Ontem';
     if (days < 7) return `${days} dias atrás`;
     
-    // Formato completo para datas antigas
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
 }
 
-// Função para renderizar todos os comentários
 function renderComments() {
     if (!commentsList) return;
 
@@ -98,7 +206,6 @@ function renderComments() {
     if (commentCount) commentCount.textContent = comments.length;
 }
 
-// Função para adicionar novo comentário
 if (commentForm) {
     commentForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -107,7 +214,6 @@ if (commentForm) {
         const email = document.getElementById('email').value.trim();
         const text = commentTextarea.value.trim();
 
-        // Validação
         if (!name || !email || !text) {
             alert('Por favor, preencha todos os campos!');
             return;
@@ -118,7 +224,6 @@ if (commentForm) {
             return;
         }
 
-        // Criar novo comentário
         const newComment = {
             name: name,
             email: email,
@@ -126,31 +231,24 @@ if (commentForm) {
             date: new Date()
         };
 
-        // Adicionar ao início do array (mais recente primeiro)
         comments.unshift(newComment);
-
-        // Limpar formulário
         commentForm.reset();
         charCount.textContent = '0';
 
-        // Mostrar mensagem de sucesso
         successMessage.textContent = '✅ Comentário publicado com sucesso!';
         successMessage.style.display = 'block';
         setTimeout(() => {
             successMessage.style.display = 'none';
         }, 3000);
 
-        // Renderizar comentários
         renderComments();
 
-        // Scroll suave até a lista de comentários
         if (commentsList) {
             commentsList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     });
 }
 
-// Função para excluir comentário
 function deleteComment(index) {
     if (confirm('Tem certeza que deseja excluir este comentário?')) {
         comments.splice(index, 1);
@@ -158,38 +256,17 @@ function deleteComment(index) {
     }
 }
 
-// Renderizar estado inicial dos comentários
 if (commentsList) {
     renderComments();
 }
 
-// Atualizar timestamps a cada minuto
 setInterval(() => {
     if (comments.length > 0) {
         renderComments();
     }
 }, 60000);
 
-// ===== ANIMAÇÃO DE SCROLL (opcional) =====
-// Adiciona classe quando elementos entram na viewport
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observar seções para animação de entrada
-document.querySelectorAll('section').forEach(section => {
-    section.style.opacity = '0';
-    section.style.transform = 'translateY(20px)';
-    section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(section);
+// ===== INICIALIZAR POSTS =====
+document.addEventListener('DOMContentLoaded', function() {
+    renderBlogPosts();
 });

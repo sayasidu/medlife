@@ -39,10 +39,17 @@ const blogPosts = [
 
 // Funcao para renderizar os posts
 function renderBlogPosts() {
+    console.log('Funcao renderBlogPosts chamada');
     const blogLayout = document.querySelector('.blog-layout');
-    if (!blogLayout) return;
+    console.log('blogLayout encontrado:', blogLayout);
+    
+    if (!blogLayout) {
+        console.error('blog-layout nao encontrado!');
+        return;
+    }
 
     const sidebar = blogLayout.querySelector('.blog-sidebar');
+    console.log('sidebar encontrada:', sidebar);
     
     // Limpar posts antigos (manter apenas a sidebar)
     const existingPosts = blogLayout.querySelectorAll('.blog-featured');
@@ -50,6 +57,7 @@ function renderBlogPosts() {
 
     // Renderizar posts do mais novo para o mais antigo
     blogPosts.forEach((post, index) => {
+        console.log('Renderizando post:', post.titulo);
         const article = document.createElement('article');
         article.className = 'blog-featured';
         article.id = post.id;
@@ -77,6 +85,7 @@ function renderBlogPosts() {
         }
     });
 
+    console.log('Posts renderizados com sucesso!');
     // Atualizar sidebar
     updateSidebar();
 }
@@ -135,4 +144,155 @@ let comments = [];
 
 const commentForm = document.getElementById('commentForm');
 const commentsList = document.getElementById('commentsList');
-const commentCount = document.g
+const commentCount = document.getElementById('commentCount');
+const charCount = document.getElementById('charCount');
+const commentTextarea = document.getElementById('commentText');
+const successMessage = document.getElementById('successMessage');
+
+if (commentTextarea) {
+    commentTextarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(date) {
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Agora mesmo';
+    if (minutes < 60) return `${minutes} minuto${minutes > 1 ? 's' : ''} atras`;
+    if (hours < 24) return `${hours} hora${hours > 1 ? 's' : ''} atras`;
+    if (days === 1) return 'Ontem';
+    if (days < 7) return `${days} dias atras`;
+    
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function renderComments() {
+    if (!commentsList) return;
+
+    if (comments.length === 0) {
+        commentsList.innerHTML = `
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                </svg>
+                <p>Ainda nao ha comentarios. Seja o primeiro a comentar!</p>
+            </div>
+        `;
+        if (commentCount) commentCount.textContent = '0';
+        return;
+    }
+
+    commentsList.innerHTML = comments.map((comment, index) => `
+        <div class="comment-card">
+            <div class="comment-header-info">
+                <span class="comment-author">${escapeHtml(comment.name)}</span>
+                <span class="comment-date">${formatDate(comment.date)}</span>
+            </div>
+            <p class="comment-text">${escapeHtml(comment.text)}</p>
+            <div class="comment-footer">
+                <button class="comment-action delete" onclick="deleteComment(${index})">
+                    🗑️ Excluir
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    if (commentCount) commentCount.textContent = comments.length;
+}
+
+if (commentForm) {
+    commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const text = commentTextarea.value.trim();
+
+        if (!name || !email || !text) {
+            alert('Por favor, preencha todos os campos!');
+            return;
+        }
+
+        if (text.length > 500) {
+            alert('O comentario nao pode ter mais de 500 caracteres!');
+            return;
+        }
+
+        const newComment = {
+            name: name,
+            email: email,
+            text: text,
+            date: new Date()
+        };
+
+        comments.unshift(newComment);
+        commentForm.reset();
+        charCount.textContent = '0';
+
+        successMessage.textContent = '✅ Comentario publicado com sucesso!';
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 3000);
+
+        renderComments();
+
+        if (commentsList) {
+            commentsList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    });
+}
+
+function deleteComment(index) {
+    if (confirm('Tem certeza que deseja excluir este comentario?')) {
+        comments.splice(index, 1);
+        renderComments();
+    }
+}
+
+if (commentsList) {
+    renderComments();
+}
+
+setInterval(() => {
+    if (comments.length > 0) {
+        renderComments();
+    }
+}, 60000);
+
+// ===== INICIALIZAR POSTS QUANDO A PAGINA CARREGAR =====
+console.log('Script carregado!');
+console.log('blogPosts:', blogPosts);
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, renderizando posts...');
+    renderBlogPosts();
+});
+
+// Se o DOM ja estiver carregado, renderiza imediatamente
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderBlogPosts);
+} else {
+    console.log('DOM ja estava carregado, renderizando agora...');
+    renderBlogPosts();
+}
+
+// Tentar novamente apos 2 segundos (backup)
+setTimeout(function() {
+    console.log('Tentativa de backup - renderizando posts...');
+    renderBlogPosts();
+}, 2000);

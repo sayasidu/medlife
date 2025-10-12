@@ -20,7 +20,6 @@ const blogPosts = [
         cta: "Quer dividir como essa história te inspirou?",
         ctaLink: "#comentarios"
     },
-    // ADICIONE NOVOS POSTS AQUI
     {
         id: "post-segundo-mes",
         badge: "Novidades",
@@ -37,25 +36,20 @@ const blogPosts = [
         ctaLink: "#comentarios"
     }
 ];
-];
 
 // Função para renderizar os posts
 function renderBlogPosts() {
     const blogLayout = document.querySelector('.blog-layout');
     if (!blogLayout) return;
 
-    const blogFeaturedContainer = blogLayout.querySelector('.blog-featured') 
-        ? blogLayout.querySelector('.blog-featured').parentElement 
-        : null;
-
-    if (!blogFeaturedContainer) return;
-
-    // Limpar posts antigos (manter apenas o container)
     const sidebar = blogLayout.querySelector('.blog-sidebar');
-    blogLayout.innerHTML = '';
+    
+    // Limpar posts antigos (manter apenas a sidebar)
+    const existingPosts = blogLayout.querySelectorAll('.blog-featured');
+    existingPosts.forEach(post => post.remove());
 
-    // Renderizar posts
-    blogPosts.forEach(post => {
+    // Renderizar posts do mais novo para o mais antigo
+    blogPosts.forEach((post, index) => {
         const article = document.createElement('article');
         article.className = 'blog-featured';
         article.id = post.id;
@@ -75,46 +69,51 @@ function renderBlogPosts() {
             <p class="post-cta">${post.cta} <a href="${post.ctaLink}">Deixa um comentário aqui</a>.</p>
         `;
 
-        blogLayout.appendChild(article);
+        // Inserir antes da sidebar
+        if (sidebar) {
+            blogLayout.insertBefore(article, sidebar);
+        } else {
+            blogLayout.appendChild(article);
+        }
     });
 
-    // Re-adicionar sidebar
-    if (sidebar) {
-        blogLayout.appendChild(sidebar);
-        updateSidebar();
-    }
+    // Atualizar sidebar
+    updateSidebar();
 }
 
 // Função para atualizar a sidebar com os posts
 function updateSidebar() {
-    const sidebarFavoritos = document.querySelector('.sidebar-card ul');
-    if (!sidebarFavoritos) return;
+    const sidebarTemas = document.getElementById('sidebar-temas');
+    const sidebarArquivo = document.getElementById('sidebar-arquivo');
+    
+    if (sidebarTemas) {
+        sidebarTemas.innerHTML = blogPosts.map(post => 
+            `<li><a href="#${post.id}">${post.titulo}</a></li>`
+        ).join('');
+    }
 
-    sidebarFavoritos.innerHTML = blogPosts.map(post => 
-        `<li><a href="#${post.id}">${post.titulo}</a></li>`
-    ).join('');
-
-    // Atualizar arquivo mensal
-    const sidebarArquivo = document.querySelectorAll('.sidebar-card')[1];
     if (sidebarArquivo) {
+        // Agrupar posts por mês
         const meses = {};
         blogPosts.forEach(post => {
-            const mes = post.data.split(' de ')[1] + ' ' + post.data.split(' de ')[2];
-            if (!meses[mes]) meses[mes] = [];
-            meses[mes].push(post);
+            const partes = post.data.split(' de ');
+            if (partes.length >= 3) {
+                const mes = `${partes[1]} ${partes[2]}`;
+                if (!meses[mes]) meses[mes] = 0;
+                meses[mes]++;
+            }
         });
 
-        const arquivoUl = sidebarArquivo.querySelector('ul');
-        if (arquivoUl) {
-            arquivoUl.innerHTML = Object.keys(meses).map(mes => 
-                `<li><a href="#blog">${mes} (${meses[mes].length})</a></li>`
-            ).join('');
-        }
+        sidebarArquivo.innerHTML = Object.keys(meses).map(mes => 
+            `<li><a href="#blog">${mes} (${meses[mes]})</a></li>`
+        ).join('');
     }
 }
 
 // ===== ATUALIZAR ANO NO FOOTER =====
-document.getElementById('year').textContent = new Date().getFullYear();
+if (document.getElementById('year')) {
+    document.getElementById('year').textContent = new Date().getFullYear();
+}
 
 // ===== NAVEGAÇÃO SUAVE =====
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -266,7 +265,14 @@ setInterval(() => {
     }
 }, 60000);
 
-// ===== INICIALIZAR POSTS =====
+// ===== INICIALIZAR POSTS QUANDO A PÁGINA CARREGAR =====
 document.addEventListener('DOMContentLoaded', function() {
     renderBlogPosts();
 });
+
+// Se o DOM já estiver carregado, renderiza imediatamente
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderBlogPosts);
+} else {
+    renderBlogPosts();
+}

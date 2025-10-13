@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sayasidu.github.io/medlife/sitemap.xml

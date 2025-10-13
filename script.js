@@ -1,7 +1,22 @@
 // ===== SISTEMA DE POSTS DO BLOG =====
 
 const blogPosts = [
-    {
+     {
+        id: "post-segundo-mes",
+        badge: "Novidades",
+        titulo: "Semana Caótica",
+        data: "11 de outubro de 2025",
+        categoria: "Semana de Prova",
+        conteudo: [
+            "Poderia começar dizendo que a semana foi tranquila, que dormi minhas 7h30 programadas, que comi bem e que tudo correu dentro do esperado… mas não seria verdade. A segunda semana de outubro foi um caos completo. Segunda já começou com prova de Técnica Cirúrgica — antigos traumas revisitados, porém superados (com café e fé). Estudei o suficiente pra não chorar e, honestamente, fui melhor do que esperava. Terça veio com tutoria, e parece que esse semestre resolveu colocar a gente à prova todo santo dia. É abertura, fechamento e mil leituras “aprofundadas”. Estamos no módulo de Aparelho Digestório, e acredite, esse módulo está gerando dualidades. Em conversas com meus amigos, a grande maioria diz que não gostou; eu ainda enfrento a dúvida se gostei ou não, mas sim, concordo quando dizem que está sendo bem difícil — não pelo conteúdo em si, mas pela somatória dos acontecimentos.",
+            "A alta densidade de afazeres na semana de um estudante de Medicina, por vezes, faz com que ela passe entre a lerdeza e o voar. Aqui não foi diferente. Não sei se é porque adoro procrastinar com coisas fúteis ou se o tempo realmente tem esse viés. Mas quinta-feira chegou — e chegou com prova. Prova de Habilidades de Clínica Médica. Nessa, eu tinha apenas uma opção: ir bem. E acreditem, eu fui razoável. Confesso que fiquei triste; a falta de atenção custa caro… e no meu caso custou 0,5 (alguns mais que isso). Mas consegui, pessoal, consegui.",
+            "Finalizamos com PICTória de hanseníase e tutoria de síndrome dispéptica. E assim, entre prazos, café e planilhas mentais, a semana se encerrou — caótica, cansativa, mas com resultados bons (não muito bons), mas foram bons. Eu digo: sobrevivi."
+        ],
+        assinatura: "Beijos da Sarinha 💙",
+        cta: "Gostou? Deixe seu comentario!",
+        ctaLink: "#comentarios"
+    },
+   {
         id: "post-inicio-sonho",
         badge: "Primeiro post",
         titulo: "Inicio de um sonho - Agosto de 2023",
@@ -18,21 +33,6 @@ const blogPosts = [
         ],
         assinatura: "Beijos da Sarinha 💙",
         cta: "Quer dividir como essa historia te inspirou?",
-        ctaLink: "#comentarios"
-    },
-    {
-        id: "post-segundo-mes",
-        badge: "Novidades",
-        titulo: "Semana Caótica",
-        data: "11 de outubro de 2025",
-        categoria: "Semana de Prova",
-        conteudo: [
-            "Poderia começar dizendo que a semana foi tranquila, que dormi minhas 7h30 programadas, que comi bem e que tudo correu dentro do esperado… mas não seria verdade. A segunda semana de outubro foi um caos completo. Segunda já começou com prova de Técnica Cirúrgica — antigos traumas revisitados, porém superados (com café e fé). Estudei o suficiente pra não chorar e, honestamente, fui melhor do que esperava. Terça veio com tutoria, e parece que esse semestre resolveu colocar a gente à prova todo santo dia. É abertura, fechamento e mil leituras “aprofundadas”. Estamos no módulo de Aparelho Digestório, e acredite, esse módulo está gerando dualidades. Em conversas com meus amigos, a grande maioria diz que não gostou; eu ainda enfrento a dúvida se gostei ou não, mas sim, concordo quando dizem que está sendo bem difícil — não pelo conteúdo em si, mas pela somatória dos acontecimentos.",
-            "A alta densidade de afazeres na semana de um estudante de Medicina, por vezes, faz com que ela passe entre a lerdeza e o voar. Aqui não foi diferente. Não sei se é porque adoro procrastinar com coisas fúteis ou se o tempo realmente tem esse viés. Mas quinta-feira chegou — e chegou com prova. Prova de Habilidades de Clínica Médica. Nessa, eu tinha apenas uma opção: ir bem. E acreditem, eu fui razoável. Confesso que fiquei triste; a falta de atenção custa caro… e no meu caso custou 0,5 (alguns mais que isso). Mas consegui, pessoal, consegui.",
-            "Finalizamos com PICTória de hanseníase e tutoria de síndrome dispéptica. E assim, entre prazos, café e planilhas mentais, a semana se encerrou — caótica, cansativa, mas com resultados bons (não muito bons), mas foram bons. Eu digo: sobrevivi."
-        ],
-        assinatura: "Beijos da Sarinha 💙",
-        cta: "Gostou? Deixe seu comentario!",
         ctaLink: "#comentarios"
     }
 ];
@@ -89,37 +89,37 @@ function renderBlogPosts() {
         }
     }
 
-    // Renderizar POSTS ANTIGOS (do segundo em diante)
-    if (blogPosts.length > 1) {
-        const oldPostsSection = document.createElement('div');
-        oldPostsSection.className = 'old-posts-section';
+   // Renderizar POSTS ANTIGOS (do segundo em diante)
+if (blogPosts.length > 1) {
+    const oldPostsSection = document.createElement('div');
+    oldPostsSection.className = 'old-posts-section';
+    
+    let oldPostsHTML = '<h3 class="old-posts-title">Posts Anteriores</h3><div class="old-posts-grid">';
+    
+    blogPosts.slice(1).forEach((post, index) => {
+        console.log('Renderizando post antigo:', post.titulo);
         
-        let oldPostsHTML = '<h3 class="old-posts-title">Posts Anteriores</h3><div class="old-posts-grid">';
-        
-        blogPosts.slice(1).forEach((post, index) => {
-            console.log('Renderizando post antigo:', post.titulo);
-            
-            oldPostsHTML += `
-                <article class="old-post-card" id="${post.id}">
-                    <span class="badge-small">${post.categoria}</span>
-                    <h4>${post.titulo}</h4>
-                    <p class="old-post-date">${post.data}</p>
-                    <p class="old-post-preview">${post.conteudo[0].substring(0, 120)}...</p>
-                    <a href="#${post.id}" class="read-more" onclick="scrollToPost('${post.id}')">Ler post completo →</a>
-                </article>
-            `;
-        });
-        
-        oldPostsHTML += '</div>';
-        oldPostsSection.innerHTML = oldPostsHTML;
-        
-        // Inserir antes da sidebar
-        if (sidebar) {
-            blogLayout.insertBefore(oldPostsSection, sidebar);
-        } else {
-            blogLayout.appendChild(oldPostsSection);
-        }
+        oldPostsHTML += `
+            <article class="old-post-card">
+                <span class="badge-small">${post.categoria}</span>
+                <h4>${post.titulo}</h4>
+                <p class="old-post-date">${post.data}</p>
+                <p class="old-post-preview">${post.conteudo[0].substring(0, 120)}...</p>
+                <button class="read-more" onclick="openPostModal('${post.id}')">Ler post completo →</button>
+            </article>
+        `;
+    });
+    
+    oldPostsHTML += '</div>';
+    oldPostsSection.innerHTML = oldPostsHTML;
+    
+    // Inserir antes da sidebar
+    if (sidebar) {
+        blogLayout.insertBefore(oldPostsSection, sidebar);
+    } else {
+        blogLayout.appendChild(oldPostsSection);
     }
+}
 
     console.log('Posts renderizados com sucesso!');
     // Atualizar sidebar
@@ -133,7 +133,54 @@ function scrollToPost(postId) {
         post.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
+// Funcao para abrir modal com post completo
+function openPostModal(postId) {
+    const post = blogPosts.find(p => p.id === postId);
+    if (!post) return;
+    
+    const paragrafos = post.conteudo.map(p => `<p>${p}</p>`).join('');
+    
+    const modalHTML = `
+        <div class="modal-overlay" id="postModal" onclick="closePostModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closePostModal()">&times;</button>
+                <article class="modal-post">
+                    <span class="badge">${post.badge}</span>
+                    <h2>${post.titulo}</h2>
+                    <div class="post-meta">
+                        <span>Publicado em ${post.data}</span>
+                        <span class="divider">•</span>
+                        <span class="tag">${post.categoria}</span>
+                    </div>
+                    ${paragrafos}
+                    <p class="signature">${post.assinatura}</p>
+                    <p class="post-cta">${post.cta} <a href="${post.ctaLink}" onclick="closePostModal()">Deixa um comentario aqui</a>.</p>
+                </article>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
 
+// Funcao para fechar modal
+function closePostModal(event) {
+    if (event && event.target.classList.contains('modal-content')) return;
+    
+    const modal = document.getElementById('postModal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Fechar modal com tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePostModal();
+    }
+});
 // Funcao para atualizar a sidebar com os posts
 function updateSidebar() {
     const sidebarTemas = document.getElementById('sidebar-temas');

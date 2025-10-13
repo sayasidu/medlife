@@ -244,45 +244,32 @@
         </section>
 
         <section class="comments" id="comentarios">
-    <div class="container">
-        <div class="section-intro">
-            <h2>💬 Comentários</h2>
-            <p>Compartilhe sua opinião, deixe uma mensagem ou conte como essa jornada te inspirou!</p>
-        </div>
+            <div class="container">
+                <div class="section-intro">
+                    <h2>💬 Comentários</h2>
+                    <p>Deixe seu comentário usando sua conta do GitHub! Os comentários ficam salvos permanentemente.</p>
+                </div>
 
-        <!-- Formulário de Comentários -->
-        <div class="comment-form-wrapper">
-            <div id="successMessage" style="display: none;" class="success-message"></div>
-            <form id="commentForm" class="comment-form">
-                <div class="form-group">
-                    <label for="name">Nome *</label>
-                    <input type="text" id="name" name="name" required placeholder="Digite seu nome">
+                <!-- Sistema de Comentários Giscus -->
+                <div class="giscus-wrapper">
+                    <script src="https://giscus.app/client.js"
+                            data-repo="sayasidu/medlife"
+                            data-repo-id="R_kgDOP8q26A"
+                            data-category="Announcements"
+                            data-category-id="DIC_kwDOP8q26M4CwkiQ"
+                            data-mapping="pathname"
+                            data-strict="0"
+                            data-reactions-enabled="1"
+                            data-emit-metadata="0"
+                            data-input-position="bottom"
+                            data-theme="preferred_color_scheme"
+                            data-lang="pt"
+                            crossorigin="anonymous"
+                            async>
+                    </script>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="comment">Comentário *</label>
-                    <textarea id="commentText" name="comment" required placeholder="Escreva seu comentário aqui..." maxlength="500"></textarea>
-                    <div class="char-counter">
-                        <span id="charCount">0</span>/500 caracteres
-                    </div>
-                </div>
-                <button type="submit" class="btn primary">Publicar Comentário</button>
-            </form>
-        </div>
-
-        <!-- Lista de Comentários -->
-        <div class="comments-display">
-            <div class="comments-header">
-                <h3>Todos os comentários</h3>
-                <span class="comment-count"><span id="commentCount">0</span> comentários</span>
             </div>
-            <div id="commentsList" class="comments-list"></div>
-        </div>
-    </div>
-</section>
+        </section>
     </main>
 
     <footer class="footer">
@@ -295,14 +282,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-

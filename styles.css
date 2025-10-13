@@ -273,6 +273,7 @@ main > section {
   margin-bottom: 16px;
   color: var(--text-light);
   line-height: 1.7;
+  text-align: justify;
 }
 
 .signature {
@@ -906,3 +907,4 @@ main > section {
     color: #e0e7ff;
   }
 }
+

@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Tarefas - Estudante Sara</title>
+    <title>Gerenciador de Tarefas - Estudante Sara | Organize seu Dia</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Gerenciador de tarefas gratuito para estudantes de medicina. Organize seu dia, acompanhe progresso, faça revisões diárias e melhore sua produtividade acadêmica.">
+    <meta name="keywords" content="gerenciador de tarefas, estudante medicina, organização acadêmica, produtividade estudantil, to-do list, tarefas diárias">
+    <meta name="author" content="Estudante Sara">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Gerenciador de Tarefas - Estudante Sara">
+    <meta property="og:description" content="Organize seu dia acadêmico com este gerenciador de tarefas gratuito. Perfeito para estudantes de medicina!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sayasidu.github.io/medlife/tarefas.html">
+    
     <style>
         * {
             margin: 0;
@@ -398,6 +411,60 @@
             transform: translateY(-2px);
         }
         
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .tab-btn:hover:not(.active) {
+            background: #f3f4f6;
+        }
+        
+        .tab-badge {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .tab-btn.active .tab-badge {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-btn:not(.active) .tab-badge {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
         .delete-modal {
             display: none;
             position: fixed;
@@ -517,7 +584,7 @@
         
         <div class="header-card">
             <h1>Minhas Tarefas de Hoje</h1>
-            <p class="date">Segunda-feira, 13 de outubro de 2025</p>
+            <p class="date" id="current-date">Carregando data...</p>
             
             <div class="progress-container">
                 <div class="progress-info">
@@ -528,6 +595,18 @@
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Abas de Tarefas -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-pendentes" onclick="switchTab('pendentes')">
+                📋 Pendentes
+                <span class="tab-badge" id="badge-pendentes">0</span>
+            </button>
+            <button class="tab-btn" id="tab-concluidas" onclick="switchTab('concluidas')">
+                ✅ Concluídas
+                <span class="tab-badge" id="badge-concluidas">0</span>
+            </button>
         </div>
         
         <button class="add-button" onclick="toggleAddForm()">
@@ -633,6 +712,7 @@
     <script>
         // Carregar tarefas do localStorage ou começar vazio
         let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        let activeTab = 'pendentes'; // Controla qual aba está ativa
         
         // Se for a primeira vez (sem tarefas salvas), adiciona exemplos
         if (tasks.length === 0 && !localStorage.getItem('hasVisited')) {
@@ -661,6 +741,21 @@
             localStorage.setItem('myTasks', JSON.stringify(tasks));
         }
         
+        // Atualizar data atual
+        function updateCurrentDate() {
+            const hoje = new Date();
+            const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            
+            const diaSemana = diasSemana[hoje.getDay()];
+            const dia = hoje.getDate();
+            const mes = meses[hoje.getMonth()];
+            const ano = hoje.getFullYear();
+            
+            const dataFormatada = `${diaSemana}, ${dia} de ${mes} de ${ano}`;
+            document.getElementById('current-date').textContent = dataFormatada;
+        }
+        
         const mensagens = {
             'Compromisso': [
                 "Achei que nunca ia ticar isso, mas parabéns! 💪",
@@ -682,12 +777,27 @@
         function renderTasks() {
             const container = document.getElementById('tasks-container');
             
-            if (tasks.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhuma tarefa ainda. Adicione uma acima!</div>';
+            // Filtra tarefas baseado na aba ativa
+            const filteredTasks = activeTab === 'pendentes' 
+                ? tasks.filter(t => !t.concluido)
+                : tasks.filter(t => t.concluido);
+            
+            // Atualiza contadores nas abas
+            const pendentesCount = tasks.filter(t => !t.concluido).length;
+            const concluidasCount = tasks.filter(t => t.concluido).length;
+            document.getElementById('badge-pendentes').textContent = pendentesCount;
+            document.getElementById('badge-concluidas').textContent = concluidasCount;
+            
+            if (filteredTasks.length === 0) {
+                const emptyMessage = activeTab === 'pendentes' 
+                    ? 'Nenhuma tarefa pendente! Adicione uma acima ou veja as concluídas.' 
+                    : 'Nenhuma tarefa concluída ainda! Marque suas tarefas como concluídas.';
+                container.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+                updateProgress();
                 return;
             }
             
-            container.innerHTML = tasks.map(task => `
+            container.innerHTML = filteredTasks.map(task => `
                 <div class="task-card ${task.concluido ? 'completed' : ''}" onclick="toggleTask(${task.id})">
                     <div class="task-header">
                         <div class="checkbox ${task.concluido ? 'checked' : ''}" onclick="event.stopPropagation(); toggleTask(${task.id})"></div>
@@ -702,6 +812,17 @@
             `).join('');
             
             updateProgress();
+        }
+        
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Atualiza visual das abas
+            document.getElementById('tab-pendentes').classList.remove('active');
+            document.getElementById('tab-concluidas').classList.remove('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            renderTasks();
         }
         
         function toggleTask(id) {
@@ -853,6 +974,8 @@
             }, 3000);
         }
         
+        // Inicializar
+        updateCurrentDate();
         renderTasks();
         
         // Sistema de Revisão do Dia

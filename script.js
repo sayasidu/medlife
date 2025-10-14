@@ -387,3 +387,90 @@ setTimeout(function() {
     console.log('Tentativa de backup - renderizando posts...');
     renderBlogPosts();
 }, 2000);
+// ===== SISTEMA DE COMENTÁRIOS COM FORMSPREE =====
+
+// Contador de caracteres
+const commentTextarea = document.getElementById('commentText');
+const charCount = document.getElementById('charCount');
+
+if (commentTextarea && charCount) {
+    commentTextarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+}
+
+// Envio do formulário
+const commentForm = document.getElementById('commentForm');
+const formStatus = document.getElementById('formStatus');
+
+if (commentForm) {
+    commentForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitButton = commentForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Desabilitar botão durante envio
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+        formStatus.style.display = 'none';
+        
+        try {
+            const formData = new FormData(commentForm);
+            
+            const response = await fetch(commentForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                // Sucesso
+                formStatus.className = 'success';
+                formStatus.textContent = '✅ Comentário enviado com sucesso! Aparecerá após aprovação.';
+                formStatus.style.display = 'block';
+                commentForm.reset();
+                charCount.textContent = '0';
+                
+                // Scroll suave para o status
+                formStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Esconder mensagem após 8 segundos
+                setTimeout(() => {
+                    formStatus.style.display = 'none';
+                }, 8000);
+            } else {
+                throw new Error('Erro ao enviar');
+            }
+        } catch (error) {
+            // Erro
+            formStatus.className = 'error';
+            formStatus.textContent = '❌ Erro ao enviar comentário. Tente novamente.';
+            formStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                formStatus.style.display = 'none';
+            }, 8000);
+        } finally {
+            // Reabilitar botão
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
+    });
+}
+
+// Verificar se voltou de um envio bem-sucedido (redirect do Formspree)
+if (window.location.hash === '#comentarios') {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true' && formStatus) {
+        formStatus.className = 'success';
+        formStatus.textContent = '✅ Comentário enviado com sucesso! Aparecerá após aprovação.';
+        formStatus.style.display = 'block';
+        
+        setTimeout(() => {
+            formStatus.style.display = 'none';
+        }, 8000);
+    }
+}

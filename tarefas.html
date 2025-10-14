@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Tarefas - Estudante Sara</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        #root {
+            width: 100%;
+            min-height: 100vh;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { CheckCircle2, Circle, Clock, MapPin, Book, Dumbbell, Plus, X, Calendar, List, Star, Moon } = lucide;
+
+        function TaskManager() {
+          const [tasks, setTasks] = useState([
+            {
+              id: 1,
+              horario: '07:15 – 10:00',
+              atividade: 'UBS Quilombo',
+              tipo: 'Compromisso',
+              icon: 'MapPin',
+              concluido: false
+            },
+            {
+              id: 2,
+              horario: '13:30 – 15:00',
+              atividade: 'Aula Teórica de Habilidades Cirúrgicas',
+              tipo: 'Compromisso',
+              icon: 'MapPin',
+              concluido: false
+            },
+            {
+              id: 3,
+              horario: 'Após 15:00',
+              atividade: 'Terminar de estudar o Problema 1',
+              tipo: 'Estudo',
+              icon: 'Book',
+              concluido: false
+            },
+            {
+              id: 4,
+              horario: 'Depois',
+              atividade: 'Estudar Aula de Farmacologia',
+              tipo: 'Estudo',
+              icon: 'Book',
+              concluido: false
+            },
+            {
+              id: 5,
+              horario: 'Final do dia',
+              atividade: 'Academia',
+              tipo: 'Atividade física',
+              icon: 'Dumbbell',
+              concluido: false
+            }
+          ]);
+
+          const [showForm, setShowForm] = useState(false);
+          const [congratsMessage, setCongratsMessage] = useState('');
+          const [showReflection, setShowReflection] = useState(false);
+          const [reflection, setReflection] = useState({
+            observacoes: '',
+            concluidas: 0,
+            pendentes: 0
+          });
+
+          const [newTask, setNewTask] = useState({
+            horario: '',
+            atividade: '',
+            tipo: 'Estudo',
+            icon: 'Book'
+          });
+
+          const mensagensPorTipo = {
+            'Compromisso': [
+              "Achei que nunca ia ticar isso, mas parabéns, está no caminho certo! 💪",
+              "Compromisso cumprido! Você é mais disciplinado do que pensa! 🎯",
+              "Olha você cumprindo compromissos! Continuando assim vai longe! 🚀"
+            ],
+            'Estudo': [
+              "Estudar dá trabalho, mas você está mandando bem! 📚",
+              "Mais um estudo concluído! O conhecimento é seu melhor investimento! 🧠",
+              "Foco e determinação! Sua dedicação aos estudos é inspiradora! ✨"
+            ],
+            'Atividade física': [
+              "Academia feita! Corpo e mente agradecem! 💪",
+              "Treino concluído! Você está investindo na sua saúde! 🏃",
+              "Essa é a energia! Mente sã, corpo são! 🔥"
+            ],
+            'Reunião': [
+              "Reunião concluída! Produtividade em alta! 📊",
+              "Mais uma reunião no papo! Você está arrasando! 🎯"
+            ]
+          };
+
+          const mensagensPorProgresso = {
+            25: "Começou bem! Continue nesse ritmo! 🌟",
+            50: "Já na metade! Você está arrasando hoje! 🔥",
+            75: "Quase lá! A reta final chegou! 🚀",
+            100: "INCRÍVEL! Você completou TUDO! Dia produtivo demais! 🎉🏆"
+          };
+
+          const toggleTask = (id) => {
+            const task = tasks.find(t => t.id === id);
+            const novoStatus = !task.concluido;
+            
+            setTasks(tasks.map(t => 
+              t.id === id ? { ...t, concluido: novoStatus } : t
+            ));
+
+            if (novoStatus) {
+              const mensagens = mensagensPorTipo[task.tipo] || ["Parabéns! Mais uma tarefa concluída! ✅"];
+              const mensagemAleatoria = mensagens[Math.floor(Math.random() * mensagens.length)];
+              setCongratsMessage(mensagemAleatoria);
+              
+              setTimeout(() => setCongratsMessage(''), 4000);
+            }
+          };
+
+          const removeTask = (id) => {
+            setTasks(tasks.filter(task => task.id !== id));
+          };
+
+          const addTask = () => {
+            if (!newTask.atividade || !newTask.horario) {
+              alert('Preencha o horário e a atividade!');
+              return;
+            }
+
+            const task = {
+              id: Math.max(...tasks.map(t => t.id), 0) + 1,
+              ...newTask,
+              concluido: false
+            };
+
+            setTasks([...tasks, task]);
+            setNewTask({
+              horario: '',
+              atividade: '',
+              tipo: 'Estudo',
+              icon: 'Book'
+            });
+            setShowForm(false);
+          };
+
+          const finalizarDia = () => {
+            const concluidas = tasks.filter(t => t.concluido).length;
+            const pendentes = tasks.length - concluidas;
+            setReflection({
+              ...reflection,
+              concluidas,
+              pendentes
+            });
+            setShowReflection(true);
+          };
+
+          const getIcon = (iconName) => {
+            const props = { className: "w-5 h-5" };
+            switch(iconName) {
+              case 'MapPin': return React.createElement(MapPin, props);
+              case 'Book': return React.createElement(Book, props);
+              case 'Dumbbell': return React.createElement(Dumbbell, props);
+              case 'Calendar': return React.createElement(Calendar, props);
+              default: return React.createElement(Clock, props);
+            }
+          };
+
+          const tiposComIcones = [
+            { tipo: 'Estudo', icon: 'Book' },
+            { tipo: 'Compromisso', icon: 'MapPin' },
+            { tipo: 'Atividade física', icon: 'Dumbbell' },
+            { tipo: 'Reunião', icon: 'Calendar' }
+          ];
+
+          const agruparPorTipo = () => {
+            const grupos = {};
+            tasks.forEach(task => {
+              if (!grupos[task.tipo]) {
+                grupos[task.tipo] = [];
+              }
+              grupos[task.tipo].push(task);
+            });
+            return grupos;
+          };
+
+          const concluidas = tasks.filter(t => t.concluido).length;
+          const progresso = tasks.length > 0 ? (concluidas / tasks.length) * 100 : 0;
+          const gruposPorTipo = agruparPorTipo();
+
+          useEffect(() => {
+            if (tasks.length === 0) return;
+            
+            const progressoAtual = Math.floor(progresso);
+            const marcos = [25, 50, 75];
+            
+            for (const marco of marcos) {
+              if (progressoAtual >= marco && progressoAtual < marco + 5) {
+                const mensagem = mensagensPorProgresso[marco];
+                if (mensagem && congratsMessage !== mensagem) {
+                  setCongratsMessage(mensagem);
+                  setTimeout(() => setCongratsMessage(''), 4000);
+                  break;
+                }
+              }
+            }
+          }, [progresso, tasks.length]);
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+              {congratsMessage && (
+                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+                    {React.createElement(Star, { className: "w-6 h-6" })}
+                    <span className="font-bold text-lg">{congratsMessage}</span>
+                  </div>
+                </div>
+              )}
+
+              {showReflection && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+                    <div className="flex items-center gap-3 mb-6">
+                      {React.createElement(Moon, { className: "w-8 h-8 text-indigo-600" })}
+                      <h2 className="text-2xl font-bold text-gray-800">Reflexão do Dia</h2>
+                    </div>
+
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                        <p className="text-sm text-gray-600 mb-1">Tarefas Concluídas</p>
+                        <p className="text-3xl font-bold text-green-600">{reflection.concluidas}</p>
+                      </div>
+
+                      <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded">
+                        <p className="text-sm text-gray-600 mb-1">Tarefas Pendentes</p>
+                        <p className="text-3xl font-bold text-orange-600">{reflection.pendentes}</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          O que você aprendeu hoje? Como foi seu dia?
+                        </label>
+                        <textarea
+                          value={reflection.observacoes}
+                          onChange={(e) => setReflection({...reflection, observacoes: e.target.value})}
+                          placeholder="Escreva suas observações sobre o dia..."
+                          rows="4"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowReflection(false)}
+                        className="flex-1 bg-gray-200 text-gray-700 rounded-lg py-3 font-semibold hover:bg-gray-300 transition-all"
+                      >
+                        Fechar
+                      </button>
+                      <button
+                        onClick={() => {
+                          alert(`Reflexão salva!\n\nConcluídas: ${reflection.concluidas}\nPendentes: ${reflection.pendentes}\n\nObservações: ${reflection.observacoes || 'Nenhuma observação'}`);
+                          setShowReflection(false);
+                        }}
+                        className="flex-1 bg-indigo-600 text-white rounded-lg py-3 font-semibold hover:bg-indigo-700 transition-all"
+                      >
+                        Salvar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="max-w-6xl mx-auto">
+                {/* Botão para voltar ao blog */}
+                <div className="mb-6">
+                  <a href="index.html" className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    ← Voltar ao Blog
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6">
+                      <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                        Minhas Tarefas de Hoje
+                      </h1>
+                      <p className="text-gray-600 mb-4">Segunda-feira, 13 de outubro de 2025</p>
+                      
+                      {tasks.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm text-gray-600">
+                            <span>Progresso do dia</span>
+                            <span className="font-semibold">{concluidas} de {tasks.length} concluídas</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div 
+                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
+                              style={{ width: `${progresso}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setShowForm(!showForm)}
+                      className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl shadow-md p-4 flex items-center justify-center gap-2 hover:shadow-lg transition-all font-semibold"
+                    >
+                      {React.createElement(Plus, { className: "w-5 h-5" })}
+                      {showForm ? 'Cancelar' : 'Adicionar Nova Tarefa'}
+                    </button>
+
+                    {showForm && (
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Nova Tarefa</h3>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Horário
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ex: 16:00 - 17:30"
+                              value={newTask.horario}
+                              onChange={(e) => setNewTask({...newTask, horario: e.target.value})}
+                              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Atividade
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ex: Estudar Anatomia"
+                              value={newTask.atividade}
+                              onChange={(e) => setNewTask({...newTask, atividade: e.target.value})}
+                              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Tipo
+                            </label>
+                            <select
+                              value={newTask.tipo}
+                              onChange={(e) => {
+                                const selected = tiposComIcones.find(t => t.tipo === e.target.value);
+                                setNewTask({
+                                  ...newTask, 
+                                  tipo: e.target.value,
+                                  icon: selected.icon
+                                });
+                              }}
+                              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                            >
+                              {tiposComIcones.map(t => (
+                                <option key={t.tipo} value={t.tipo}>{t.tipo}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <button
+                            onClick={addTask}
+                            className="w-full bg-green-500 text-white rounded-lg py-3 font-semibold hover:bg-green-600 transition-all"
+                          >
+                            Adicionar Tarefa
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      {tasks.length === 0 ? (
+                        <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
+                          <p className="text-lg">Nenhuma tarefa ainda. Adicione uma acima!</p>
+                        </div>
+                      ) : (
+                        tasks.map((task) => (
+                          <div
+                            key={task.id}
+                            className={`bg-white rounded-xl shadow-md p-5 transition-all duration-300 hover:shadow-xl ${
+                              task.concluido ? 'opacity-60 border-2 border-green-400' : 'border-2 border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div 
+                                className="flex-shrink-0 pt-1 cursor-pointer"
+                                onClick={() => toggleTask(task.id)}
+                              >
+                                {task.concluido ? 
+                                  React.createElement(CheckCircle2, { className: "w-7 h-7 text-green-500" }) : 
+                                  React.createElement(Circle, { className: "w-7 h-7 text-gray-300" })
+                                }
+                              </div>
+
+                              <div 
+                                className="flex-1 cursor-pointer"
+                                onClick={() => toggleTask(task.id)}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  {React.createElement(Clock, { className: "w-4 h-4 text-indigo-600" })}
+                                  <span className="text-sm font-semibold text-indigo-600">
+                                    {task.horario}
+                                  </span>
+                                </div>
+                                
+                                <h3 className={`text-lg font-bold mb-1 ${
+                                  task.concluido ? 'line-through text-gray-500' : 'text-gray-800'
+                                }`}>
+                                  {task.atividade}
+                                </h3>
+                                
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  {getIcon(task.icon)}
+                                  <span>{task.tipo}</span>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => removeTask(task.id)}
+                                className="flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
+                                title="Remover tarefa"
+                              >
+                                {React.createElement(X, { className: "w-6 h-6" })}
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {tasks.length > 0 && concluidas === tasks.length && (
+                      <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-xl shadow-lg p-6 text-white text-center">
+                        <h2 className="text-2xl font-bold mb-2">🎉 INCRÍVEL!</h2>
+                        <p className="text-lg mb-4">Você completou todas as tarefas do dia!</p>
+                        <button
+                          onClick={finalizarDia}
+                          className="bg-white text-green-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all"
+                        >
+                          Fazer Reflexão do Dia
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        {React.createElement(List, { className: "w-6 h-6 text-indigo-600" })}
+                        <h2 className="text-xl font-bold text-gray-800">
+                          Organização do Dia
+                        </h2>
+                      </div>
+
+                      {tasks.length === 0 ? (
+                        <p className="text-gray-500 text-sm">Adicione tarefas para organizar seu dia</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {Object.entries(gruposPorTipo).map(([tipo, tarefasDaTipo]) => (
+                            <div key={tipo} className="border-l-4 border-indigo-400 pl-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                {getIcon(tarefasDaTipo[0].icon)}
+                                <h3 className="font-bold text-gray-800">{tipo}</h3>
+                                <span className="ml-auto bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded-full">
+                                  {tarefasDaTipo.filter(t => !t.concluido).length}
+                                </span>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                {tarefasDaTipo.map(task => (
+                                  <div 
+                                    key={task.id}
+                                    className={`text-sm ${task.concluido ? 'opacity-50' : ''}`}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {React.createElement(Clock, { className: "w-3 h-3 text-gray-500" })}
+                                      <span className="font-semibold text-gray-700">
+                                        {task.horario}
+                                      </span>
+                                    </div>
+                                    <p className={`ml-5 text-gray-600 ${task.concluido ? 'line-through' : ''}`}>
+                                      {task.atividade}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {tasks.length > 0 && (
+                        <>
+                          <div className="mt-6 pt-6 border-t border-gray-200">
+                            <h3 className="font-bold text-gray-800 mb-3">Resumo</h3>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Total de tarefas:</span>
+                                <span className="font-bold text-gray-800">{tasks.length}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Concluídas:</span>
+                                <span className="font-bold text-green-600">{concluidas}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Pendentes:</span>
+                                <span className="font-bold text-orange-600">{tasks.length - concluidas}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={finalizarDia}
+                            className="w-full mt-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg py-3 font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                          >
+                            {React.createElement(Moon, { className: "w-5 h-5" })}
+                            Finalizar Dia
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(TaskManager));
+    </script>
+</body>
+</html>

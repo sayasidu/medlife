@@ -650,6 +650,12 @@
             🗑️ Limpar Todas as Tarefas
         </button>
         
+        <div style="text-align: center; margin-top: 16px; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px dashed #3b82f6;">
+            <p style="margin: 0; font-size: 14px; color: #1e40af; font-weight: 600;">
+                💡 Dica: Tarefas pendentes são mantidas automaticamente para o próximo dia!
+            </p>
+        </div>
+        
         <div id="complete-section" style="display: none;" class="complete-message">
             <h2>🎉 INCRÍVEL!</h2>
             <p style="font-size: 18px;">Você completou todas as tarefas do dia!</p>
@@ -714,6 +720,43 @@
         let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
         let activeTab = 'pendentes'; // Controla qual aba está ativa
         
+        // Sistema de controle de dias
+        function checkNewDay() {
+            const hoje = new Date().toDateString();
+            const ultimoDia = localStorage.getItem('lastAccessDate');
+            
+            if (ultimoDia && ultimoDia !== hoje) {
+                // É um novo dia!
+                const tarefasPendentes = tasks.filter(t => !t.concluido);
+                const tarefasConcluidas = tasks.filter(t => t.concluido);
+                
+                // Remove tarefas concluídas antigas
+                tasks = tarefasPendentes;
+                saveTasks();
+                
+                // Mostra notificação
+                if (tarefasPendentes.length > 0) {
+                    setTimeout(() => {
+                        const el = document.getElementById('congrats-message');
+                        el.textContent = `📅 Bom dia! ${tarefasPendentes.length} tarefa(s) pendente(s) de ontem foram mantidas.`;
+                        el.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+                        el.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            el.style.display = 'none';
+                        }, 5000);
+                    }, 500);
+                }
+                
+                if (tarefasConcluidas.length > 0) {
+                    console.log(`✅ ${tarefasConcluidas.length} tarefa(s) concluída(s) de ontem foram arquivadas.`);
+                }
+            }
+            
+            // Atualiza a última data de acesso
+            localStorage.setItem('lastAccessDate', hoje);
+        }
+        
         // Se for a primeira vez (sem tarefas salvas), adiciona exemplos
         if (tasks.length === 0 && !localStorage.getItem('hasVisited')) {
             tasks = [
@@ -735,6 +778,9 @@
             localStorage.setItem('hasVisited', 'true');
             saveTasks();
         }
+        
+        // Verifica se é um novo dia e processa tarefas automaticamente
+        checkNewDay();
         
         // Função para salvar no localStorage
         function saveTasks() {

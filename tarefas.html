@@ -251,6 +251,264 @@
             color: #9ca3af;
             font-size: 18px;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .modal-header h2 {
+            font-size: 28px;
+            color: #1f2937;
+        }
+        
+        .review-task {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .review-task-title {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .review-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .review-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .review-btn:hover {
+            border-color: #4f46e5;
+        }
+        
+        .review-btn.selected {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        
+        .review-btn.move-selected {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .review-question {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fef3c7;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+        
+        .modal-btn.secondary {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .finalize-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            margin-top: 24px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .finalize-btn:hover {
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            padding: 24px;
+        }
+        
+        .delete-modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .delete-modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .delete-modal-header span {
+            font-size: 48px;
+        }
+        
+        .delete-modal-header h3 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-top: 12px;
+        }
+        
+        .delete-task-info {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .delete-task-title {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .delete-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .delete-option-btn {
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .delete-option-btn:hover {
+            border-color: #4f46e5;
+            transform: translateX(4px);
+        }
+        
+        .delete-option-btn.move {
+            border-color: #10b981;
+        }
+        
+        .delete-option-btn.move:hover {
+            background: #ecfdf5;
+            border-color: #10b981;
+        }
+        
+        .delete-option-btn.discard {
+            border-color: #ef4444;
+        }
+        
+        .delete-option-btn.discard:hover {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+        
+        .cancel-delete-btn {
+            width: 100%;
+            padding: 14px;
+            background: #e5e7eb;
+            color: #6b7280;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cancel-delete-btn:hover {
+            background: #d1d5db;
+        }
     </style>
 </head>
 <body>
@@ -278,6 +536,10 @@
         
         <div id="tasks-container"></div>
         
+        <button class="finalize-btn" onclick="openReview()">
+            🌙 Finalizar Dia e Revisar Tarefas
+        </button>
+        
         <div id="complete-section" style="display: none;" class="complete-message">
             <h2>🎉 INCRÍVEL!</h2>
             <p style="font-size: 18px;">Você completou todas as tarefas do dia!</p>
@@ -285,6 +547,57 @@
     </div>
     
     <div id="congrats-message" class="congrats"></div>
+    
+    <!-- Modal de Revisão do Dia -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 32px;">🌙</span>
+                <h2>Revisão do Dia</h2>
+            </div>
+            <p style="color: #6b7280; margin-bottom: 24px;">Vamos revisar suas tarefas pendentes:</p>
+            <div id="review-tasks-container"></div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeReview()">Cancelar</button>
+                <button class="modal-btn primary" onclick="saveReview()">Salvar Revisão</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Delete -->
+    <div id="delete-modal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-header">
+                <span>🤔</span>
+                <h3>O que fazer com esta tarefa?</h3>
+            </div>
+            
+            <div class="delete-task-info">
+                <div class="delete-task-title" id="delete-task-name"></div>
+                <div style="font-size: 14px; color: #6b7280;" id="delete-task-time"></div>
+            </div>
+            
+            <div class="delete-options">
+                <button class="delete-option-btn move" onclick="confirmMoveTask()">
+                    <span style="font-size: 24px;">📅</span>
+                    <div>
+                        <div style="font-weight: 700;">Mover para o próximo dia</div>
+                        <div style="font-size: 13px; color: #6b7280;">Manter como tarefa pendente</div>
+                    </div>
+                </button>
+                
+                <button class="delete-option-btn discard" onclick="confirmDiscardTask()">
+                    <span style="font-size: 24px;">🗑️</span>
+                    <div>
+                        <div style="font-weight: 700;">Descartar tarefa</div>
+                        <div style="font-size: 13px; color: #6b7280;">Remover definitivamente</div>
+                    </div>
+                </button>
+            </div>
+            
+            <button class="cancel-delete-btn" onclick="closeDeleteModal()">Cancelar</button>
+        </div>
+    </div>
     
     <script>
         const tasks = [
@@ -380,11 +693,60 @@
         }
         
         function deleteTask(id) {
-            const index = tasks.findIndex(t => t.id === id);
-            if (confirm('Tem certeza que deseja remover esta tarefa?')) {
-                tasks.splice(index, 1);
-                renderTasks();
-            }
+            const task = tasks.find(t => t.id === id);
+            
+            // Mostra o modal com as informações da tarefa
+            document.getElementById('delete-task-name').textContent = task.atividade;
+            document.getElementById('delete-task-time').textContent = `⏰ ${task.horario} • ${task.tipo}`;
+            document.getElementById('delete-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Armazena o ID para usar depois
+            window.currentDeleteTaskId = id;
+        }
+        
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            window.currentDeleteTaskId = null;
+        }
+        
+        function confirmMoveTask() {
+            const task = tasks.find(t => t.id === window.currentDeleteTaskId);
+            
+            // Mostra mensagem
+            const el = document.getElementById('congrats-message');
+            el.textContent = `📅 "${task.atividade}" será mantida para o próximo dia!`;
+            el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            el.style.display = 'block';
+            
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 3000);
+            
+            closeDeleteModal();
+            // Tarefa continua na lista como pendente
+        }
+        
+        function confirmDiscardTask() {
+            const task = tasks.find(t => t.id === window.currentDeleteTaskId);
+            const index = tasks.findIndex(t => t.id === window.currentDeleteTaskId);
+            
+            // Remove a tarefa
+            tasks.splice(index, 1);
+            renderTasks();
+            
+            // Mostra mensagem
+            const el = document.getElementById('congrats-message');
+            el.textContent = `🗑️ "${task.atividade}" foi descartada!`;
+            el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            el.style.display = 'block';
+            
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 3000);
+            
+            closeDeleteModal();
         }
         
         function updateProgress() {
@@ -415,6 +777,144 @@
         }
         
         renderTasks();
+        
+        // Sistema de Revisão do Dia
+        const reviewData = {};
+        
+        function openReview() {
+            const pendingTasks = tasks.filter(t => !t.concluido);
+            
+            if (pendingTasks.length === 0) {
+                alert('🎉 Todas as tarefas foram concluídas! Parabéns!');
+                return;
+            }
+            
+            const container = document.getElementById('review-tasks-container');
+            container.innerHTML = pendingTasks.map(task => `
+                <div class="review-task" id="review-${task.id}">
+                    <div class="review-task-title">${task.atividade}</div>
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">⏰ ${task.horario}</div>
+                    
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #374151;">Você conseguiu concluir esta tarefa?</div>
+                    <div class="review-options">
+                        <button class="review-btn" onclick="markAsCompleted(${task.id})">✅ Sim, concluí</button>
+                        <button class="review-btn" onclick="showMoveOption(${task.id})">❌ Não concluí</button>
+                    </div>
+                    
+                    <div id="move-option-${task.id}" style="display: none;" class="review-question">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: #92400e;">Deseja mover para o próximo dia?</div>
+                        <div class="review-options">
+                            <button class="review-btn" onclick="setMoveDecision(${task.id}, true)">📅 Sim, mover</button>
+                            <button class="review-btn" onclick="setMoveDecision(${task.id}, false)">🗑️ Não, descartar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('review-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeReview() {
+            document.getElementById('review-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            Object.keys(reviewData).forEach(key => delete reviewData[key]);
+        }
+        
+        function markAsCompleted(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            task.concluido = true;
+            reviewData[taskId] = { completed: true };
+            
+            // Atualiza visualmente
+            const reviewTask = document.getElementById(`review-${taskId}`);
+            reviewTask.style.opacity = '0.5';
+            reviewTask.innerHTML = `
+                <div class="review-task-title" style="text-decoration: line-through;">${task.atividade}</div>
+                <div style="color: #10b981; font-weight: 600; margin-top: 8px;">✅ Marcada como concluída!</div>
+            `;
+            
+            renderTasks();
+        }
+        
+        function showMoveOption(taskId) {
+            document.getElementById(`move-option-${taskId}`).style.display = 'block';
+            reviewData[taskId] = { completed: false, moveToNextDay: null };
+        }
+        
+        function setMoveDecision(taskId, shouldMove) {
+            reviewData[taskId] = { completed: false, moveToNextDay: shouldMove };
+            
+            const task = tasks.find(t => t.id === taskId);
+            const reviewTask = document.getElementById(`review-${taskId}`);
+            
+            if (shouldMove) {
+                reviewTask.style.opacity = '0.5';
+                reviewTask.innerHTML = `
+                    <div class="review-task-title">${task.atividade}</div>
+                    <div style="color: #10b981; font-weight: 600; margin-top: 8px;">📅 Será movida para o próximo dia</div>
+                `;
+            } else {
+                reviewTask.style.opacity = '0.5';
+                reviewTask.innerHTML = `
+                    <div class="review-task-title" style="text-decoration: line-through;">${task.atividade}</div>
+                    <div style="color: #ef4444; font-weight: 600; margin-top: 8px;">🗑️ Será descartada</div>
+                `;
+            }
+        }
+        
+        function saveReview() {
+            const pendingTasks = tasks.filter(t => !t.concluido);
+            
+            // Verifica se todas as tarefas pendentes foram revisadas
+            const allReviewed = pendingTasks.every(task => reviewData[task.id] !== undefined);
+            
+            if (!allReviewed) {
+                alert('⚠️ Por favor, revise todas as tarefas pendentes antes de salvar!');
+                return;
+            }
+            
+            // Processa as decisões
+            const toMove = [];
+            const toDelete = [];
+            
+            Object.entries(reviewData).forEach(([taskId, data]) => {
+                if (!data.completed) {
+                    if (data.moveToNextDay) {
+                        toMove.push(tasks.find(t => t.id == taskId));
+                    } else {
+                        toDelete.push(parseInt(taskId));
+                    }
+                }
+            });
+            
+            // Remove tarefas descartadas
+            toDelete.forEach(id => {
+                const index = tasks.findIndex(t => t.id === id);
+                if (index > -1) tasks.splice(index, 1);
+            });
+            
+            // Mostra resumo
+            let message = '✅ Revisão salva com sucesso!\n\n';
+            
+            const completed = Object.values(reviewData).filter(d => d.completed).length;
+            if (completed > 0) {
+                message += `✅ ${completed} tarefa(s) concluída(s)\n`;
+            }
+            
+            if (toMove.length > 0) {
+                message += `📅 ${toMove.length} tarefa(s) movida(s) para o próximo dia\n`;
+            }
+            
+            if (toDelete.length > 0) {
+                message += `🗑️ ${toDelete.length} tarefa(s) descartada(s)\n`;
+            }
+            
+            alert(message);
+            
+            closeReview();
+            renderTasks();
+        }
     </script>
 </body>
 </html>

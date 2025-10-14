@@ -530,14 +530,45 @@
             </div>
         </div>
         
-        <button class="add-button" onclick="alert('Em breve você poderá adicionar tarefas! Por enquanto, use as tarefas de exemplo 😊')">
-            ➕ Adicionar Nova Tarefa
+        <button class="add-button" onclick="toggleAddForm()">
+            ➕ <span id="add-btn-text">Adicionar Nova Tarefa</span>
         </button>
+        
+        <!-- Formulário de adicionar tarefa -->
+        <div id="add-form" style="display: none; background: white; padding: 32px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <h3 style="margin-bottom: 24px; color: #1f2937;">Nova Tarefa</h3>
+            <div style="display: grid; gap: 16px;">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Horário</label>
+                    <input type="text" id="new-horario" placeholder="Ex: 14:00 - 16:00" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Atividade</label>
+                    <input type="text" id="new-atividade" placeholder="Ex: Estudar para a prova" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Tipo</label>
+                    <select id="new-tipo" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                        <option value="Estudo">📚 Estudo</option>
+                        <option value="Compromisso">📍 Compromisso</option>
+                        <option value="Atividade física">💪 Atividade física</option>
+                        <option value="Reunião">📅 Reunião</option>
+                    </select>
+                </div>
+                <button onclick="addNewTask()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 16px;">
+                    ✅ Adicionar Tarefa
+                </button>
+            </div>
+        </div>
         
         <div id="tasks-container"></div>
         
         <button class="finalize-btn" onclick="openReview()">
             🌙 Finalizar Dia e Revisar Tarefas
+        </button>
+        
+        <button onclick="clearAllTasks()" style="width: 100%; background: #ef4444; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.3s;">
+            🗑️ Limpar Todas as Tarefas
         </button>
         
         <div id="complete-section" style="display: none;" class="complete-message">
@@ -600,43 +631,35 @@
     </div>
     
     <script>
-        const tasks = [
-            {
-                id: 1,
-                horario: '07:15 – 10:00',
-                atividade: 'UBS Quilombo',
-                tipo: 'Compromisso',
-                concluido: false
-            },
-            {
-                id: 2,
-                horario: '13:30 – 15:00',
-                atividade: 'Aula Teórica de Habilidades Cirúrgicas',
-                tipo: 'Compromisso',
-                concluido: false
-            },
-            {
-                id: 3,
-                horario: 'Após 15:00',
-                atividade: 'Terminar de estudar o Problema 1',
-                tipo: 'Estudo',
-                concluido: false
-            },
-            {
-                id: 4,
-                horario: 'Depois',
-                atividade: 'Estudar Aula de Farmacologia',
-                tipo: 'Estudo',
-                concluido: false
-            },
-            {
-                id: 5,
-                horario: 'Final do dia',
-                atividade: 'Academia',
-                tipo: 'Atividade física',
-                concluido: false
-            }
-        ];
+        // Carregar tarefas do localStorage ou começar vazio
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        
+        // Se for a primeira vez (sem tarefas salvas), adiciona exemplos
+        if (tasks.length === 0 && !localStorage.getItem('hasVisited')) {
+            tasks = [
+                {
+                    id: 1,
+                    horario: '07:00 – 08:00',
+                    atividade: 'Exemplo: Acordar e café da manhã',
+                    tipo: 'Compromisso',
+                    concluido: false
+                },
+                {
+                    id: 2,
+                    horario: '14:00 – 16:00',
+                    atividade: 'Exemplo: Estudar para a prova',
+                    tipo: 'Estudo',
+                    concluido: false
+                }
+            ];
+            localStorage.setItem('hasVisited', 'true');
+            saveTasks();
+        }
+        
+        // Função para salvar no localStorage
+        function saveTasks() {
+            localStorage.setItem('myTasks', JSON.stringify(tasks));
+        }
         
         const mensagens = {
             'Compromisso': [
@@ -776,6 +799,60 @@
             }, 3000);
         }
         
+        // Funções para adicionar tarefa
+        function toggleAddForm() {
+            const form = document.getElementById('add-form');
+            const btnText = document.getElementById('add-btn-text');
+            
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btnText.textContent = 'Cancelar';
+            } else {
+                form.style.display = 'none';
+                btnText.textContent = 'Adicionar Nova Tarefa';
+                // Limpa os campos
+                document.getElementById('new-horario').value = '';
+                document.getElementById('new-atividade').value = '';
+                document.getElementById('new-tipo').value = 'Estudo';
+            }
+        }
+        
+        function addNewTask() {
+            const horario = document.getElementById('new-horario').value.trim();
+            const atividade = document.getElementById('new-atividade').value.trim();
+            const tipo = document.getElementById('new-tipo').value;
+            
+            if (!horario || !atividade) {
+                alert('⚠️ Preencha o horário e a atividade!');
+                return;
+            }
+            
+            // Cria nova tarefa
+            const newTask = {
+                id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                horario: horario,
+                atividade: atividade,
+                tipo: tipo,
+                concluido: false
+            };
+            
+            tasks.push(newTask);
+            saveTasks(); // Salva
+            renderTasks();
+            
+            // Fecha o formulário e limpa
+            toggleAddForm();
+            
+            // Mostra mensagem de sucesso
+            const el = document.getElementById('congrats-message');
+            el.textContent = `✅ "${atividade}" adicionada com sucesso!`;
+            el.style.display = 'block';
+            
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 3000);
+        }
+        
         renderTasks();
         
         // Sistema de Revisão do Dia
@@ -834,6 +911,7 @@
                 <div style="color: #10b981; font-weight: 600; margin-top: 8px;">✅ Marcada como concluída!</div>
             `;
             
+            saveTasks(); // Salva
             renderTasks();
         }
         
@@ -894,6 +972,8 @@
                 if (index > -1) tasks.splice(index, 1);
             });
             
+            saveTasks(); // Salva após revisão
+            
             // Mostra resumo
             let message = '✅ Revisão salva com sucesso!\n\n';
             
@@ -914,6 +994,29 @@
             
             closeReview();
             renderTasks();
+        }
+        
+        // Função para limpar todas as tarefas
+        function clearAllTasks() {
+            if (tasks.length === 0) {
+                alert('📋 Não há tarefas para limpar!');
+                return;
+            }
+            
+            if (confirm('⚠️ Tem certeza que deseja limpar TODAS as tarefas?\n\nEsta ação não pode ser desfeita!')) {
+                tasks = [];
+                saveTasks();
+                renderTasks();
+                
+                const el = document.getElementById('congrats-message');
+                el.textContent = '🗑️ Todas as tarefas foram limpas! Comece um novo dia!';
+                el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                el.style.display = 'block';
+                
+                setTimeout(() => {
+                    el.style.display = 'none';
+                }, 3000);
+            }
         }
     </script>
 </body>

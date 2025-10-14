@@ -576,11 +576,27 @@
         .cancel-delete-btn:hover {
             background: #d1d5db;
         }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="index.html" class="back-button">← Voltar ao Blog</a>
+        
+        <!-- Indicador de salvamento -->
+        <div id="save-indicator" style="display: none; position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); font-weight: 600; z-index: 1000; animation: slideIn 0.3s;">
+            💾 Salvo!
+        </div>
         
         <div class="header-card">
             <h1>Minhas Tarefas de Hoje</h1>
@@ -651,9 +667,12 @@
         </button>
         
         <div style="text-align: center; margin-top: 16px; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px dashed #3b82f6;">
-            <p style="margin: 0; font-size: 14px; color: #1e40af; font-weight: 600;">
+            <p style="margin: 0 0 12px 0; font-size: 14px; color: #1e40af; font-weight: 600;">
                 💡 Dica: Tarefas pendentes são mantidas automaticamente para o próximo dia!
             </p>
+            <button onclick="testStorage()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;">
+                🔍 Testar se está salvando corretamente
+            </button>
         </div>
         
         <div id="complete-section" style="display: none;" class="complete-message">
@@ -716,8 +735,34 @@
     </div>
     
     <script>
+        // Verificar se localStorage está disponível
+        function isLocalStorageAvailable() {
+            try {
+                const test = '__localStorage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch(e) {
+                return false;
+            }
+        }
+        
+        // Mostrar aviso se localStorage não funcionar
+        if (!isLocalStorageAvailable()) {
+            alert('⚠️ Aviso: O armazenamento local não está disponível no seu navegador.\n\nPossíveis causas:\n- Modo privado/anônimo ativado\n- Configurações de privacidade bloqueando cookies\n\nSuas tarefas não serão salvas entre sessões.');
+        }
+        
         // Carregar tarefas do localStorage ou começar vazio
-        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        let tasks = [];
+        try {
+            const savedTasks = localStorage.getItem('myTasks');
+            tasks = savedTasks ? JSON.parse(savedTasks) : [];
+            console.log('✅ Tarefas carregadas:', tasks.length);
+        } catch(e) {
+            console.error('❌ Erro ao carregar tarefas:', e);
+            tasks = [];
+        }
+        
         let activeTab = 'pendentes'; // Controla qual aba está ativa
         
         // Sistema de controle de dias
@@ -784,7 +829,35 @@
         
         // Função para salvar no localStorage
         function saveTasks() {
-            localStorage.setItem('myTasks', JSON.stringify(tasks));
+            try {
+                const tasksString = JSON.stringify(tasks);
+                localStorage.setItem('myTasks', tasksString);
+                console.log('💾 Tarefas salvas:', tasks.length, 'tarefas');
+                
+                // Verificar se salvou corretamente
+                const verificacao = localStorage.getItem('myTasks');
+                if (verificacao === tasksString) {
+                    console.log('✅ Verificação: Salvo com sucesso!');
+                    
+                    // Mostra indicador visual
+                    const indicator = document.getElementById('save-indicator');
+                    if (indicator) {
+                        indicator.style.display = 'block';
+                        setTimeout(() => {
+                            indicator.style.display = 'none';
+                        }, 2000);
+                    }
+                    
+                    return true;
+                } else {
+                    console.error('❌ Erro: Dados não foram salvos corretamente');
+                    return false;
+                }
+            } catch(e) {
+                console.error('❌ Erro ao salvar:', e);
+                alert('⚠️ Erro ao salvar suas tarefas. Verifique se o modo privado não está ativado.');
+                return false;
+            }
         }
         
         // Atualizar data atual
@@ -1186,6 +1259,42 @@
                     el.style.display = 'none';
                 }, 3000);
             }
+        }
+        
+        // Função de teste para verificar se está salvando
+        function testStorage() {
+            let resultado = '🔍 DIAGNÓSTICO:\n\n';
+            
+            // Teste 1: localStorage disponível
+            if (isLocalStorageAvailable()) {
+                resultado += '✅ localStorage disponível\n';
+            } else {
+                resultado += '❌ localStorage NÃO disponível\n';
+                resultado += '   → Desative modo privado/anônimo\n';
+                alert(resultado);
+                return;
+            }
+            
+            // Teste 2: Quantas tarefas tem salvas
+            const saved = localStorage.getItem('myTasks');
+            if (saved) {
+                const count = JSON.parse(saved).length;
+                resultado += `✅ ${count} tarefa(s) salva(s)\n`;
+            } else {
+                resultado += '⚠️ Nenhuma tarefa salva ainda\n';
+            }
+            
+            // Teste 3: Verificar tarefas concluídas
+            const concluidas = tasks.filter(t => t.concluido).length;
+            resultado += `✅ ${concluidas} tarefa(s) marcada(s) como concluída(s)\n`;
+            
+            // Teste 4: Última data de acesso
+            const ultimaData = localStorage.getItem('lastAccessDate');
+            resultado += `📅 Último acesso: ${ultimaData || 'Primeira vez'}\n`;
+            
+            resultado += '\n💡 Se estiver tudo OK, suas tarefas estão sendo salvas corretamente!';
+            
+            alert(resultado);
         }
     </script>
 </body>

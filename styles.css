@@ -1092,5 +1092,55 @@ main > section {
         align-items: flex-start;
     }
 }
+/* ===== COMENTÁRIOS ESTILO DIÁRIO ===== */
+
+.comments-feed {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin-top: 48px;
+}
+
+.comment-entry {
+    background: var(--surface-strong);
+    padding: 28px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    display: grid;
+    gap: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-entry:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(63, 94, 251, 0.15);
+}
+
+.comment-author-badge {
+    font-size: 0.85rem;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+}
+
+.comment-entry h3 {
+    font-size: 1.3rem;
+    margin: 0;
+    color: var(--text);
+}
+
+.comment-entry p {
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .comments-feed {
+        grid-template-columns: 1fr;
+    }
+}
 
 

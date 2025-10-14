@@ -244,32 +244,62 @@
         </section>
 
         <section class="comments" id="comentarios">
-            <div class="container">
-                <div class="section-intro">
-                    <h2>💬 Comentários</h2>
-                    <p>Deixe seu comentário usando sua conta do GitHub! Os comentários ficam salvos permanentemente.</p>
-                </div>
+    <div class="container">
+        <div class="section-intro">
+            <h2>💬 Comentários</h2>
+            <p>Deixe seu comentário abaixo! Sem necessidade de cadastro.</p>
+        </div>
 
-                <!-- Sistema de Comentários Giscus -->
-                <div class="giscus-wrapper">
-                    <script src="https://giscus.app/client.js"
-                            data-repo="sayasidu/medlife"
-                            data-repo-id="R_kgDOP8q26A"
-                            data-category="Announcements"
-                            data-category-id="DIC_kwDOP8q26M4CwkiQ"
-                            data-mapping="pathname"
-                            data-strict="0"
-                            data-reactions-enabled="1"
-                            data-emit-metadata="0"
-                            data-input-position="bottom"
-                            data-theme="preferred_color_scheme"
-                            data-lang="pt"
-                            crossorigin="anonymous"
-                            async>
-                    </script>
+        <!-- Formulário de Comentários -->
+        <div class="comment-form-wrapper">
+            <form id="commentForm" action="https://formspree.io/f/myznbeze" method="POST" class="comment-form">
+                <div class="form-group">
+                    <label for="commentName">Nome *</label>
+                    <input type="text" name="name" id="commentName" placeholder="Seu nome" required maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="commentEmail">E-mail (opcional)</label>
+                    <input type="email" name="email" id="commentEmail" placeholder="seu@email.com" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="commentText">Comentário *</label>
+                    <textarea name="message" id="commentText" placeholder="Escreva seu comentário..." required maxlength="500"></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/500 caracteres
+                    </div>
+                </div>
+                
+                <input type="hidden" name="_subject" value="Novo comentário no blog Estudante Sara">
+                <input type="hidden" name="_next" value="https://sayasidu.github.io/medlife/#comentarios">
+                
+                <button type="submit" class="btn primary">Enviar Comentário</button>
+            </form>
+            
+            <div id="formStatus" style="display: none;"></div>
+        </div>
+
+        <!-- Lista de Comentários Aprovados -->
+        <div class="comments-display">
+            <div class="comments-header">
+                <h3>Comentários</h3>
+                <span class="comment-count" id="displayCommentCount">1</span>
+            </div>
+            
+            <div id="approvedCommentsList" class="comments-list">
+                <!-- Comentário de boas-vindas -->
+                <div class="comment-card">
+                    <div class="comment-header-info">
+                        <span class="comment-author">Sara - Autora</span>
+                        <span class="comment-date">Hoje</span>
+                    </div>
+                    <p class="comment-text">Sejam bem-vindos ao meu blog! Fiquem à vontade para comentar e compartilhar suas experiências na jornada da medicina. Vou adorar ler cada mensagem! 💙</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
     </main>
 
     <footer class="footer">
@@ -282,3 +312,4 @@
 </body>
 
 </html>
+

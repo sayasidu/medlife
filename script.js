@@ -42,7 +42,6 @@ function renderBlogPosts() {
     const blogLayout = document.querySelector('.blog-layout');
     
     if (!blogLayout) {
-        console.error('blog-layout não encontrado!');
         return;
     }
 

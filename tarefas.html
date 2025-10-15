@@ -951,16 +951,17 @@
             renderTasks();
         }
         
-        function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            task.concluido = !task.concluido;
-            
-            if (task.concluido) {
-                showCongrats(task.tipo);
-            }
-            
-            renderTasks();
-        }
+       function toggleTask(id) {
+    const task = tasks.find(t => t.id === id);
+    task.concluido = !task.concluido;
+    
+    if (task.concluido) {
+        showCongrats(task.tipo);
+    }
+    
+    saveTasks();
+    renderTasks();
+}
         
         function deleteTask(id) {
             const task = tasks.find(t => t.id === id);
@@ -982,42 +983,44 @@
         }
         
         function confirmMoveTask() {
-            const task = tasks.find(t => t.id === window.currentDeleteTaskId);
-            
-            // Mostra mensagem
-            const el = document.getElementById('congrats-message');
-            el.textContent = `📅 "${task.atividade}" será mantida para o próximo dia!`;
-            el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            el.style.display = 'block';
-            
-            setTimeout(() => {
-                el.style.display = 'none';
-            }, 3000);
-            
-            closeDeleteModal();
-            // Tarefa continua na lista como pendente
-        }
+    const task = tasks.find(t => t.id === window.currentDeleteTaskId);
+    
+    // Mostra mensagem
+    const el = document.getElementById('congrats-message');
+    el.textContent = `📅 "${task.atividade}" será mantida para o próximo dia!`;
+    el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    el.style.display = 'block';
+    
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 3000);
+    
+    saveTasks();
+    closeDeleteModal();
+    // Tarefa continua na lista como pendente
+}
         
         function confirmDiscardTask() {
-            const task = tasks.find(t => t.id === window.currentDeleteTaskId);
-            const index = tasks.findIndex(t => t.id === window.currentDeleteTaskId);
-            
-            // Remove a tarefa
-            tasks.splice(index, 1);
-            renderTasks();
-            
-            // Mostra mensagem
-            const el = document.getElementById('congrats-message');
-            el.textContent = `🗑️ "${task.atividade}" foi descartada!`;
-            el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-            el.style.display = 'block';
-            
-            setTimeout(() => {
-                el.style.display = 'none';
-            }, 3000);
-            
-            closeDeleteModal();
-        }
+    const task = tasks.find(t => t.id === window.currentDeleteTaskId);
+    const index = tasks.findIndex(t => t.id === window.currentDeleteTaskId);
+    
+    // Remove a tarefa
+    tasks.splice(index, 1);
+    saveTasks();
+    renderTasks();
+    
+    // Mostra mensagem
+    const el = document.getElementById('congrats-message');
+    el.textContent = `🗑️ "${task.atividade}" foi descartada!`;
+    el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+    el.style.display = 'block';
+    
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 3000);
+    
+    closeDeleteModal();
+}
         
         function updateProgress() {
             const completed = tasks.filter(t => t.concluido).length;

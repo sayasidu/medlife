@@ -850,26 +850,28 @@
                 const div = document.createElement('div');
                 div.style.cssText = 'background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #9b59b6;';
                 
-                // Calcular peso total dos componentes desta submatéria
+                // Calcular soma dos pesos dos componentes
                 const pesoCompTotal = sub.componentes ? sub.componentes.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0) : 0;
-                const corPesoComp = Math.abs(pesoCompTotal - 100) < 0.1 ? '#27ae60' : '#e74c3c';
+                const pesoSubmateria = parseFloat(sub.peso) || 0;
+                const diferenca = Math.abs(pesoCompTotal - pesoSubmateria);
+                const corPesoComp = diferenca < 0.1 ? '#27ae60' : '#e74c3c';
                 
                 let html = `
                     <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
                         <input type="text" class="input-group" placeholder="Nome (ex: Módulo, Morfo)" 
                                value="${sub.nome || ''}" 
                                onchange="submateriasTemp[${sIndex}].nome = this.value; atualizarPesoTotal();">
-                        <input type="number" class="input-group" placeholder="Peso % da nota final" 
+                        <input type="number" class="input-group" placeholder="Peso % do total" 
                                value="${sub.peso || ''}" 
-                               onchange="submateriasTemp[${sIndex}].peso = parseFloat(this.value); atualizarPesoTotal();"
+                               onchange="submateriasTemp[${sIndex}].peso = parseFloat(this.value); renderizarSubmaterias();"
                                min="0" max="100" step="0.1">
                         <button class="btn btn-danger" onclick="removerSubmateria(${sIndex})">×</button>
                     </div>
-                    <div class="peso-info ${Math.abs(pesoCompTotal - 100) < 0.1 ? 'ok' : ''}" style="margin-bottom: 10px;">
-                        <strong>Componentes de "${sub.nome || 'Submatéria'}":</strong> <span style="color: ${corPesoComp}; font-weight: bold;">${pesoCompTotal.toFixed(1)}%</span>
-                        ${Math.abs(pesoCompTotal - 100) > 0.1 ? ' ⚠️ Devem somar 100%' : ' ✓ Correto!'}
+                    <div class="peso-info ${diferenca < 0.1 ? 'ok' : ''}" style="margin-bottom: 10px;">
+                        <strong>Componentes de "${sub.nome || 'Submatéria'}":</strong> <span style="color: ${corPesoComp}; font-weight: bold;">${pesoCompTotal.toFixed(1)}%</span> / ${pesoSubmateria.toFixed(1)}%
+                        ${diferenca < 0.1 ? ' ✓ Correto!' : ` ⚠️ Deve somar ${pesoSubmateria.toFixed(1)}%`}
                     </div>
-                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Componentes internos (devem somar 100%):</h4>
+                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Componentes (peso já é a contribuição final):</h4>
                     <div id="componentes-sub-${sIndex}"></div>
                     <button class="btn btn-secondary" style="margin-top: 10px;" onclick="adicionarComponenteSub(${sIndex})">+ Componente</button>
                 `;
@@ -902,7 +904,7 @@
                     <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
                            value="${comp.nome || ''}" 
                            onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
-                    <input type="number" class="input-group" placeholder="Peso % interno" 
+                    <input type="number" class="input-group" placeholder="Peso %" 
                            value="${comp.peso || ''}" 
                            onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].peso = parseFloat(this.value); renderizarSubmaterias();"
                            min="0" max="100" step="0.1">
@@ -984,7 +986,7 @@
                     return;
                 }
                 
-                // Validar componentes INTERNOS de cada submatéria (devem somar 100% DENTRO dela)
+                // Validar se componentes de cada submatéria somam o peso da submatéria
                 for (let i = 0; i < submateriasTemp.length; i++) {
                     const sub = submateriasTemp[i];
                     
@@ -994,18 +996,20 @@
                     }
                     
                     const pesoComp = sub.componentes.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0);
+                    const pesoSub = parseFloat(sub.peso) || 0;
                     
-                    if (Math.abs(pesoComp - 100) > 0.1) {
+                    if (Math.abs(pesoComp - pesoSub) > 0.1) {
                         alert(
-                            `❌ Os componentes INTERNOS de "${sub.nome || 'Submatéria ' + (i+1)}" devem somar 100%!\n\n` +
+                            `❌ Os componentes de "${sub.nome || 'Submatéria ' + (i+1)}" devem somar ${pesoSub.toFixed(1)}%!\n\n` +
                             `Atual: ${pesoComp.toFixed(1)}%\n\n` +
-                            `Exemplo para Módulo (80% da nota final):\n` +
-                            `• Somativa: 50% (metade do módulo)\n` +
-                            `• Formativa: 50% (outra metade)\n` +
-                            `Total interno: 100%\n\n` +
-                            `Isso significa:\n` +
-                            `• Somativa contribui 40% da nota final (50% de 80%)\n` +
-                            `• Formativa contribui 40% da nota final (50% de 80%)`
+                            `Exemplo para Módulo (80%):\n` +
+                            `• Somativa: 40%\n` +
+                            `• Formativa: 40%\n` +
+                            `Total: 80% ✓\n\n` +
+                            `Exemplo para Morfo (20%):\n` +
+                            `• Somativa: 16%\n` +
+                            `• Formativa: 4%\n` +
+                            `Total: 20% ✓`
                         );
                         return;
                     }
@@ -1182,10 +1186,8 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
                     if (mediaSub !== null) {
-                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
                             <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
-                            <br><small>Contribuição: <strong>${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1205,10 +1207,8 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '2bim');
                     if (mediaSub !== null) {
-                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
                             <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
-                            <br><small>Contribuição: <strong>${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1229,10 +1229,8 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
                     if (mediaSub !== null) {
-                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #e8f4f8; padding: 10px; border-radius: 6px; margin-top: 12px;">
                             <strong>📊 Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
-                            <br><small>Contribuição para nota final: <strong style="color: #667eea;">${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1268,7 +1266,7 @@
             const media = calcularMediaComponente(notas);
             if (media !== null) {
                 const contribuicao = media * (comp.peso / 100);
-                html += `<div class="media-badge">Média: <strong>${media.toFixed(2)}</strong> → Contribuição: <strong style="color: #667eea;">${contribuicao.toFixed(2)}</strong></div>`;
+                html += `<div class="media-badge">Média: <strong>${media.toFixed(2)}</strong> → Contribui: <strong style="color: #667eea;">${contribuicao.toFixed(2)}</strong> pontos</div>`;
             }
             
             html += '</div>';
@@ -1380,6 +1378,7 @@
                 const media = calcularMediaComponente(notas);
                 if (media !== null) {
                     temNotas = true;
+                    // Aqui é direto, sem dividir por 100 (pois o peso já é a contribuição)
                     soma += media * (parseFloat(comp.peso) / 100);
                 }
             });
@@ -1401,11 +1400,12 @@
                     }
                 });
             } else {
+                // Para matérias conjugadas, soma direto as submaterias
                 materia.submateria.forEach((sub, sIndex) => {
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, bimestre);
                     if (mediaSub !== null) {
                         temNotas = true;
-                        soma += mediaSub * (parseFloat(sub.peso) / 100);
+                        soma += mediaSub;
                     }
                 });
             }

@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim Acadêmico - MedLife</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+
+        .materia-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .materia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .materia-header h3 {
+            color: #667eea;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .flex-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: white;
+            margin-right: 8px;
+        }
+
+        .badge-individual { background: #3498db; }
+        .badge-conjugada { background: #9b59b6; }
+        .badge-bimestral { background: #27ae60; }
+
+        .notas-container {
+            display: grid;
+            gap: 30px;
+        }
+
+        .materia-notas {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .materia-notas-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .materia-notas-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .materia-notas-header small {
+            opacity: 0.9;
+        }
+
+        .materia-notas-conteudo {
+            padding: 20px;
+        }
+
+        .bimestres-lado-a-lado {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bimestre-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .bimestre-section h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .componente-bloco {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .componente-bloco label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .notas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+        }
+
+        .nota-input-pequeno {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .nota-input-pequeno:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .media-badge {
+            display: inline-block;
+            background: #e8f4f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: #2c3e50;
+        }
+
+        .media-badge strong {
+            color: #667eea;
+        }
+
+        .perspectiva-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .perspectiva-box strong {
+            color: #856404;
+        }
+
+        .perspectiva-ok {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .perspectiva-alerta {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .perspectiva-ok strong,
+        .perspectiva-alerta strong {
+            color: inherit;
+        }
+
+        .modulos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modulo-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .modulo-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .tipo-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tipo-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .tipo-option.active {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+
+        @media (max-width: 768px) {
+            .bimestres-lado-a-lado {
+                grid-template-columns: 1fr;
+            }
+
+            .modulos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .flex-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://sayasidu.github.io/medlife/" class="back-link">← Voltar ao Blog</a>
+        
+        <div class="header">
+            <h1>📊 Calculadora de Boletim</h1>
+            <p>Organize suas notas e acompanhe seu desempenho acadêmico</p>
+        </div>
+
+        <!-- TELA 1: Configuração -->
+        <div id="tela-config" class="card">
+            <h2>⚙️ Configuração Inicial</h2>
+            <div class="info-box">Configure as informações básicas do seu boletim</div>
+
+            <div class="input-group">
+                <label for="instituicao">Instituição:</label>
+                <input type="text" id="instituicao" placeholder="Ex: Univag - Medicina">
+            </div>
+
+            <div class="input-group">
+                <label for="media-aprovacao">Média para Aprovação:</label>
+                <input type="number" id="media-aprovacao" step="0.1" min="0" max="10" placeholder="Ex: 7.0">
+            </div>
+
+            <div class="input-group">
+                <label for="semestre">Semestre/Período:</label>
+                <input type="text" id="semestre" placeholder="Ex: 3º Semestre - 2024/2">
+            </div>
+
+            <div class="flex-buttons">
+                <button class="btn btn-primary" onclick="iniciarBoletim()">Continuar →</button>
+            </div>
+        </div>
+
+        <!-- TELA 2: Adicionar Matéria -->
+        <div id="tela-adicionar" class="card hidden">
+            <h2>📚 Adicionar Matéria</h2>
+            
+            <div class="info-box">
+                <strong id="info-instituicao"></strong><br>
+                Média para aprovação: <strong id="info-media"></strong>
+            </div>
+
+            <div class="input-group">
+                <label>Qual é o tipo de avaliação?</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="tipo-option active" onclick="selecionarAvaliacao('bimestral')">
+                        <h4>📅 Bimestral</h4>
+                        <small>2 bimestres</small>
+                    </div>
+                    <div class="tipo-option" onclick="selecionarAvaliacao('modular')">
+                        <h4>🎯 Modular</h4>
+                        <small>Com PF se reprovado</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Como é a estrutura?</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="tipo-materia-select">
+                    <div class="tipo-option active" onclick="selecionarTipo('individual')">
+                        <h4>📘 Individual</h4>
+                        <small>PIC, PEI, etc</small>
+                    </div>
+                    <div class="tipo-option" onclick="selecionarTipo('conjugada')">
+                        <h4>📚 Conjugada</h4>
+                        <small>Módulos, Habilidades</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="nome-materia">Nome da Matéria:</label>
+                <input type="text" id="nome-materia" placeholder="Ex: PIC, Módulo, Habilidades Médicas...">
+            </div>
+
+            <div class="input-group" id="area-modulos" style="display: none;">
+                <label>Quantos módulos são?</label>
+                <input type="number" id="num-modulos" min="1" max="20" value="1">
+            </div>
+
+            <div id="area-individual">
+                <h3>Componentes de Avaliação:</h3>
+                <div id="lista-componentes"></div>
+                <button class="btn btn-secondary" onclick="adicionarComponente()">+ Adicionar Componente</button>
+            </div>
+
+            <div id="area-conjugada" class="hidden">
+                <h3>Submaterias:</h3>
+                <div id="lista-submateria"></div>
+                <button class="btn btn-secondary" onclick="adicionarSubmateria()">+ Adicionar Submatéria</button>
+            </div>
+
+            <div class="flex-buttons">
+                <button class="btn btn-secondary" onclick="voltarListaMaterias()">← Voltar</button>
+                <button class="btn btn-primary" onclick="salvarMateria()">Salvar Matéria</button>
+            </div>
+        </div>
+
+        <!-- TELA 3: Lista de Matérias -->
+        <div id="tela-materias" class="card hidden">
+            <h2>📋 Matérias Cadastradas</h2>
+            
+            <div class="info-box">
+                <strong id="info-instituicao2"></strong><br>
+                Média para aprovação: <strong id="info-media2"></strong>
+            </div>
+
+            <div id="materias-lista"></div>
+
+            <div class="flex-buttons">
+                <button class="btn btn-secondary" onclick="voltarConfig()">← Configurações</button>
+                <button class="btn btn-primary" onclick="mostrarAdicionar()">+ Nova Matéria</button>
+                <button class="btn btn-primary" onclick="irParaNotas()">Inserir Notas →</button>
+            </div>
+        </div>
+
+        <!-- TELA 4: Lançamento de Notas -->
+        <div id="tela-notas" class="card hidden">
+            <h2>📝 Lançamento de Notas</h2>
+            
+            <div class="info-box">
+                <strong id="boletim-info"></strong><br>
+                <small>Insira as notas e acompanhe suas perspectivas em tempo real</small>
+            </div>
+
+            <div class="notas-container" id="notas-container"></div>
+
+            <div class="flex-buttons">
+                <button class="btn btn-secondary" onclick="voltarParaMaterias()">← Editar Matérias</button>
+                <button class="btn btn-primary" onclick="irParaBoletimFinal()">Ver Boletim Final →</button>
+            </div>
+        </div>
+
+        <!-- TELA 5: Boletim Final -->
+        <div id="tela-boletim" class="card hidden">
+            <h2>📊 Boletim de Aproveitamento</h2>
+            
+            <div class="info-box">
+                <strong id="boletim-final-info"></strong>
+            </div>
+
+            <div id="boletim-resumo"></div>
+
+            <div class="flex-buttons">
+                <button class="btn btn-secondary" onclick="voltarParaNotas()">← Editar Notas</button>
+                <button class="btn btn-danger" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="modal-confirmar" class="modal-overlay hidden" style="display: none;">
+        <div class="modal-content">
+            <h3>⚠️ Confirmar Exclusão</h3>
+            <p id="modal-mensagem"></p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
+                <button class="btn btn-danger" id="btn-confirmar">Sim, Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let config = { instituicao: '', mediaAprovacao: 7.0, semestre: '' };
+        let materias = [];
+        let tipoMateria = 'individual';
+        let usaBimestres = true;
+        let componentesTemp = [];
+        let submateriasTemp = [];
+        let indexParaExcluir = null;
+        let tipoAcao = null;
+        let indexEmEdicao = null;
+
+        // ===== FUNÇÕES AUXILIARES =====
+        function selecionarAvaliacao(tipo) {
+            usaBimestres = tipo === 'bimestral';
+            const container = document.querySelector('[onclick*="selecionarAvaliacao"]').parentElement.parentElement;
+            const opts = container.querySelectorAll('.tipo-option');
+            opts.forEach(el => el.classList.remove('active'));
+            if (tipo === 'bimestral') {
+                opts[0].classList.add('active');
+            } else {
+                opts[1].classList.add('active');
+            }
+        }
+        
+        function selecionarTipo(tipo) {
+            tipoMateria = tipo;
+            const container = document.getElementById('tipo-materia-select');
+            const opts = container.querySelectorAll('.tipo-option');
+            opts.forEach(el => el.classList.remove('active'));
+            
+            if (tipo === 'individual') {
+                opts[0].classList.add('active');
+                document.getElementById('area-individual').classList.remove('hidden');
+                document.getElementById('area-conjugada').classList.add('hidden');
+                document.getElementById('area-modulos').style.display = 'none';
+                if (componentesTemp.length === 0) adicionarComponente();
+            } else {
+                opts[1].classList.add('active');
+                document.getElementById('area-individual').classList.add('hidden');
+                document.getElementById('area-conjugada').classList.remove('hidden');
+                document.getElementById('area-modulos').style.display = 'block';
+                if (submateriasTemp.length === 0) adicionarSubmateria();
+            }
+        }
+
+        window.onload = function() {
+            carregarDados();
+            document.getElementById('btn-cancelar').onclick = fecharModal;
+            document.getElementById('btn-confirmar').onclick = confirmarAcao;
+        };
+
+        function carregarDados() {
+            const dados = localStorage.getItem('boletimAcademico');
+            if (dados) {
+                try {
+                    const parsed = JSON.parse(dados);
+                    config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, semestre: '' };
+                    materias = parsed.materias || [];
+                    
+                    if (config.instituicao) {
+                        document.getElementById('instituicao').value = config.instituicao;
+                        document.getElementById('media-aprovacao').value = config.mediaAprovacao;
+                        document.getElementById('semestre').value = config.semestre;
+                    }
+                } catch (e) {
+                    materias = [];
+                }
+            }
+        }
+
+        function salvarDados() {
+            localStorage.setItem('boletimAcademico', JSON.stringify({ config, materias }));
+        }
+
+        function mostrarTela(id) {
+            document.querySelectorAll('.card').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id)?.classList.remove('hidden');
+        }
+
+        // ===== NAVEGAÇÃO =====
+        function iniciarBoletim() {
+            const instituicao = document.getElementById('instituicao').value.trim();
+            const media = parseFloat(document.getElementById('media-aprovacao').value);
+            const semestre = document.getElementById('semestre').value.trim();
+
+            if (!instituicao || !media || !semestre) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            config = { instituicao, mediaAprovacao: media, semestre };
+            if (!Array.isArray(materias)) materias = [];
+            
+            salvarDados();
+            document.getElementById('info-instituicao').textContent = config.instituicao;
+            document.getElementById('info-media').textContent = config.mediaAprovacao.toFixed(1);
+            document.getElementById('info-instituicao2').textContent = config.instituicao;
+            document.getElementById('info-media2').textContent = config.mediaAprovacao.toFixed(1);
+
+            mostrarTela('tela-materias');
+            renderizarMaterias();
+        }
+
+        function voltarConfig() {
+            mostrarTela('tela-config');
+        }
+
+        function mostrarAdicionar() {
+            tipoMateria = 'individual';
+            usaBimestres = true;
+            componentesTemp = [];
+            submateriasTemp = [];
+            indexEmEdicao = null;
+            document.getElementById('nome-materia').value = '';
+            document.getElementById('num-modulos').value = '1';
+            document.getElementById('lista-componentes').innerHTML = '';
+            document.getElementById('lista-submateria').innerHTML = '';
+            document.getElementById('area-modulos').style.display = 'none';
+            
+            selecionarAvaliacao('bimestral');
+            selecionarTipo('individual');
+            mostrarTela('tela-adicionar');
+        }
+
+        function editarMateria(index) {
+            const materia = materias[index];
+            if (!materia) return;
+            
+            indexEmEdicao = index;
+            tipoMateria = materia.tipo;
+            usaBimestres = materia.usaBimestres;
+            
+            document.getElementById('nome-materia').value = materia.nome;
+            
+            if (materia.tipo === 'individual') {
+                componentesTemp = JSON.parse(JSON.stringify(materia.componentes));
+                submateriasTemp = [];
+                selecionarAvaliacao(usaBimestres ? 'bimestral' : 'modular');
+                selecionarTipo('individual');
+                renderizarComponentes();
+            } else {
+                submateriasTemp = JSON.parse(JSON.stringify(materia.submateria));
+                componentesTemp = [];
+                selecionarAvaliacao(usaBimestres ? 'bimestral' : 'modular');
+                selecionarTipo('conjugada');
+                renderizarSubmaterias();
+            }
+            
+            mostrarTela('tela-adicionar');
+        }
+
+        function voltarListaMaterias() {
+            mostrarTela('tela-materias');
+            renderizarMaterias();
+        }
+
+        function irParaNotas() {
+            if (materias.length === 0) {
+                alert('Cadastre pelo menos uma matéria!');
+                return;
+            }
+            document.getElementById('boletim-info').textContent = `${config.instituicao} - ${config.semestre}`;
+            mostrarTela('tela-notas');
+            renderizarNotasUnicaTela();
+        }
+
+        function voltarParaMaterias() {
+            mostrarTela('tela-materias');
+        }
+
+        function irParaBoletimFinal() {
+            document.getElementById('boletim-final-info').textContent = `${config.instituicao} - ${config.semestre}`;
+            mostrarTela('tela-boletim');
+            atualizarBoletimFinal();
+        }
+
+        function voltarParaNotas() {
+            mostrarTela('tela-notas');
+        }
+
+        // ===== COMPONENTES =====
+        function adicionarComponente() {
+            componentesTemp.push({ nome: '', peso: 0, numAvaliacoes: 1, notas1Bim: [], notas2Bim: [] });
+            renderizarComponentes();
+        }
+
+        function renderizarComponentes() {
+            const lista = document.getElementById('lista-componentes');
+            lista.innerHTML = '';
+
+            componentesTemp.forEach((comp, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
+                div.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
+                        <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
+                               value="${comp.nome || ''}" 
+                               onchange="componentesTemp[${index}].nome = this.value">
+                        <input type="number" class="input-group" placeholder="Peso %" 
+                               value="${comp.peso || ''}" 
+                               onchange="componentesTemp[${index}].peso = parseFloat(this.value)"
+                               min="0" max="100">
+                        <input type="number" class="input-group" placeholder="Nº Avaliações" 
+                               value="${comp.numAvaliacoes || 1}" 
+                               onchange="componentesTemp[${index}].numAvaliacoes = parseInt(this.value)"
+                               min="1" max="10">
+                        <button class="btn btn-danger" onclick="removerComponente(${index})">×</button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        function removerComponente(index) {
+            componentesTemp.splice(index, 1);
+            renderizarComponentes();
+        }
+
+        function adicionarSubmateria() {
+            submateriasTemp.push({ nome: '', peso: 0, componentes: [] });
+            renderizarSubmaterias();
+        }
+
+        function renderizarSubmaterias() {
+            const lista = document.getElementById('lista-submateria');
+            lista.innerHTML = '';
+
+            submateriasTemp.forEach((sub, sIndex) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #9b59b6;';
+                
+                let html = `
+                    <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
+                        <input type="text" class="input-group" placeholder="Nome (ex: Morfo)" 
+                               value="${sub.nome || ''}" 
+                               onchange="submateriasTemp[${sIndex}].nome = this.value">
+                        <input type="number" class="input-group" placeholder="Peso %" 
+                               value="${sub.peso || ''}" 
+                               onchange="submateriasTemp[${sIndex}].peso = parseFloat(this.value)"
+                               min="0" max="100">
+                        <button class="btn btn-danger" onclick="removerSubmateria(${sIndex})">×</button>
+                    </div>
+                    <h4 style="margin-bottom: 10px;">Componentes:</h4>
+                    <div id="componentes-sub-${sIndex}"></div>
+                    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="adicionarComponenteSub(${sIndex})">+ Componente</button>
+                `;
+                div.innerHTML = html;
+                lista.appendChild(div);
+                renderizarComponentesSub(sIndex);
+            });
+        }
+
+        function adicionarComponenteSub(sIndex) {
+            if (!submateriasTemp[sIndex].componentes) {
+                submateriasTemp[sIndex].componentes = [];
+            }
+            submateriasTemp[sIndex].componentes.push({ nome: '', peso: 0, numAvaliacoes: 1, notas1Bim: [], notas2Bim: [] });
+            renderizarComponentesSub(sIndex);
+        }
+
+        function renderizarComponentesSub(sIndex) {
+            const container = document.getElementById(`componentes-sub-${sIndex}`);
+            if (!container) return;
+            container.innerHTML = '';
+
+            const componentes = submateriasTemp[sIndex]?.componentes || [];
+            componentes.forEach((comp, cIndex) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;';
+                div.innerHTML = `
+                    <input type="text" class="input-group" placeholder="Nome" 
+                           value="${comp.nome || ''}" 
+                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
+                    <input type="number" class="input-group" placeholder="Peso %" 
+                           value="${comp.peso || ''}" 
+                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].peso = parseFloat(this.value)"
+                           min="0" max="100">
+                    <input type="number" class="input-group" placeholder="Nº Aval" 
+                           value="${comp.numAvaliacoes || 1}" 
+                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
+                           min="1" max="10">
+                    <button class="btn btn-danger" onclick="removerComponenteSub(${sIndex}, ${cIndex})">×</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function removerComponenteSub(sIndex, cIndex) {
+            submateriasTemp[sIndex].componentes.splice(cIndex, 1);
+            renderizarComponentesSub(sIndex);
+        }
+
+        function removerSubmateria(index) {
+            submateriasTemp.splice(index, 1);
+            renderizarSubmaterias();
+        }
+
+        function salvarMateria() {
+            const nome = document.getElementById('nome-materia').value.trim();
+            
+            if (!nome) {
+                alert('Digite o nome da matéria!');
+                return;
+            }
+
+            if (tipoMateria === 'individual') {
+                if (!componentesTemp.length) {
+                    alert('Adicione pelo menos um componente!');
+                    return;
+                }
+                
+                const pesoTotal = componentesTemp.reduce((sum, c) => sum + (c.peso || 0), 0);
+                if (Math.abs(pesoTotal - 100) > 0.1) {
+                    alert(`Soma dos pesos deve ser 100%! Atual: ${pesoTotal.toFixed(1)}%`);
+                    return;
+                }
+                
+                if (indexEmEdicao !== null) {
+                    materias[indexEmEdicao] = {
+                        ...materias[indexEmEdicao],
+                        nome,
+                        usaBimestres,
+                        componentes: componentesTemp.map(c => ({ ...c }))
+                    };
+                } else {
+                    materias.push({ 
+                        id: Date.now(), 
+                        nome, 
+                        tipo: 'individual', 
+                        usaBimestres,
+                        componentes: componentesTemp.map(c => ({ ...c }))
+                    });
+                }
+            } else {
+                if (!submateriasTemp.length) {
+                    alert('Adicione pelo menos uma submatéria!');
+                    return;
+                }
+                
+                // Validar pesos das submatérias
+                const pesoTotalSub = submateriasTemp.reduce((sum, s) => sum + (s.peso || 0), 0);
+                if (Math.abs(pesoTotalSub - 100) > 0.1) {
+                    alert(`Soma dos pesos das submatérias deve ser 100%! Atual: ${pesoTotalSub.toFixed(1)}%`);
+                    return;
+                }
+                
+                // Validar pesos dos componentes de cada submatéria
+                for (let i = 0; i < submateriasTemp.length; i++) {
+                    const sub = submateriasTemp[i];
+                    if (!sub.componentes || sub.componentes.length === 0) {
+                        alert(`Adicione componentes para "${sub.nome}"!`);
+                        return;
+                    }
+                    const pesoComp = sub.componentes.reduce((sum, c) => sum + (c.peso || 0), 0);
+                    if (Math.abs(pesoComp - 100) > 0.1) {
+                        alert(`Soma dos pesos dos componentes de "${sub.nome}" deve ser 100%! Atual: ${pesoComp.toFixed(1)}%`);
+                        return;
+                    }
+                }
+                
+                const numModulos = parseInt(document.getElementById('num-modulos').value) || 1;
+                
+                if (indexEmEdicao !== null) {
+                    // Atualizar matéria existente
+                    materias[indexEmEdicao] = {
+                        ...materias[indexEmEdicao],
+                        nome,
+                        usaBimestres,
+                        submateria: submateriasTemp.map(s => ({ ...s, componentes: s.componentes.map(c => ({ ...c })) }))
+                    };
+                } else {
+                    // Criar novos módulos
+                    for (let m = 0; m < numModulos; m++) {
+                        const nomeModulo = numModulos > 1 ? `${nome} ${m + 1}` : nome;
+                        materias.push({
+                            id: Date.now() + m,
+                            nome: nomeModulo,
+                            tipo: 'conjugada',
+                            usaBimestres,
+                            submateria: submateriasTemp.map(s => ({ ...s, componentes: s.componentes.map(c => ({ ...c })) }))
+                        });
+                    }
+                }
+            }
+
+            indexEmEdicao = null;
+            salvarDados();
+            mostrarTela('tela-materias');
+            renderizarMaterias();
+        }
+
+        function renderizarMaterias() {
+            const lista = document.getElementById('materias-lista');
+            lista.innerHTML = '';
+
+            if (!materias.length) {
+                lista.innerHTML = '<p style="text-align: center; color: #999;">Nenhuma matéria cadastrada</p>';
+                return;
+            }
+
+            materias.forEach((materia, index) => {
+                const div = document.createElement('div');
+                div.className = 'materia-item';
+                
+                let badges = `<span class="badge ${materia.tipo === 'individual' ? 'badge-individual' : 'badge-conjugada'}">
+                    ${materia.tipo === 'individual' ? '📘 Individual' : '📚 Conjugada'}
+                </span>`;
+                
+                if (materia.usaBimestres) {
+                    badges += `<span class="badge badge-bimestral">📅 Bimestral</span>`;
+                } else {
+                    badges += `<span class="badge" style="background: #e67e22;">🎯 Modular</span>`;
+                }
+                
+                div.innerHTML = `
+                    <div class="materia-header">
+                        <div>
+                            <h3>${materia.nome}</h3>
+                            <div>${badges}</div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="editarMateria(${index})" style="padding: 8px 16px; font-size: 0.9rem;">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="excluirMateria(${index})" style="padding: 8px 16px; font-size: 0.9rem;">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        function excluirMateria(index) {
+            indexParaExcluir = index;
+            tipoAcao = 'excluir';
+            document.getElementById('modal-mensagem').innerHTML = 
+                `Deseja excluir <strong>"${materias[index].nome}"</strong>?`;
+            abrirModal();
+        }
+
+        // ===== TELA DE NOTAS =====
+        function renderizarNotasUnicaTela() {
+            const container = document.getElementById('notas-container');
+            container.innerHTML = '';
+
+            materias.forEach((materia, mIndex) => {
+                if (materia.tipo === 'individual') {
+                    renderizarMateriaIndividual(materia, mIndex, container);
+                } else {
+                    renderizarMateriaConjugada(materia, mIndex, container);
+                }
+            });
+        }
+
+        function renderizarMateriaIndividual(materia, mIndex, container) {
+            const div = document.createElement('div');
+            div.className = 'materia-notas';
+            
+            let headerHtml = `<div class="materia-notas-header">
+                <h3>${materia.nome}</h3>
+                <small>${materia.usaBimestres ? '📅 Bimestral' : '🎯 Modular'}</small>
+            </div>`;
+            
+            let conteudoHtml = '<div class="materia-notas-conteudo">';
+            
+            if (materia.usaBimestres) {
+                conteudoHtml += '<div class="bimestres-lado-a-lado">';
+                
+                // 1º Bimestre
+                conteudoHtml += '<div class="bimestre-section"><h4>1º Bimestre</h4>';
+                materia.componentes.forEach((comp, cIndex) => {
+                    conteudoHtml += renderizarComponenteNotas(materia, mIndex, null, cIndex, comp, '1bim');
+                });
+                const media1Bim = calcularMediaMateria(materia, '1bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média 1º Bimestre:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${media1Bim !== null ? media1Bim.toFixed(2) : '--'}</span>
+                </div>`;
+                conteudoHtml += '</div>';
+                
+                // 2º Bimestre
+                conteudoHtml += '<div class="bimestre-section"><h4>2º Bimestre</h4>';
+                materia.componentes.forEach((comp, cIndex) => {
+                    conteudoHtml += renderizarComponenteNotas(materia, mIndex, null, cIndex, comp, '2bim');
+                });
+                const media2Bim = calcularMediaMateria(materia, '2bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média 2º Bimestre:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${media2Bim !== null ? media2Bim.toFixed(2) : '--'}</span>
+                </div>`;
+                conteudoHtml += '</div>';
+                
+                conteudoHtml += '</div>';
+            } else {
+                materia.componentes.forEach((comp, cIndex) => {
+                    conteudoHtml += renderizarComponenteNotas(materia, mIndex, null, cIndex, comp, 'unico');
+                });
+                const mediaUnica = calcularMediaMateria(materia, '1bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média do Módulo:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${mediaUnica !== null ? mediaUnica.toFixed(2) : '--'}</span>
+                </div>`;
+            }
+            
+            conteudoHtml += renderizarPerspectiva(materia, mIndex);
+            conteudoHtml += '</div>';
+            
+            div.innerHTML = headerHtml + conteudoHtml;
+            container.appendChild(div);
+        }
+
+        function renderizarMateriaConjugada(materia, mIndex, container) {
+            const div = document.createElement('div');
+            div.className = 'materia-notas';
+            
+            let headerHtml = `<div class="materia-notas-header">
+                <h3>${materia.nome}</h3>
+                <small>${materia.usaBimestres ? '📅 Bimestral' : '🎯 Modular'}</small>
+            </div>`;
+            
+            let conteudoHtml = '<div class="materia-notas-conteudo">';
+            
+            if (materia.usaBimestres) {
+                conteudoHtml += '<div class="bimestres-lado-a-lado">';
+                
+                // 1º Bimestre - todas as submatérias
+                conteudoHtml += '<div class="bimestre-section"><h4>1º Bimestre</h4>';
+                materia.submateria.forEach((sub, sIndex) => {
+                    conteudoHtml += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 15px;">`;
+                    conteudoHtml += `<h5 style="color: #9b59b6; margin-bottom: 10px;">${sub.nome} (${sub.peso}%)</h5>`;
+                    sub.componentes.forEach((comp, cIndex) => {
+                        conteudoHtml += renderizarComponenteNotas(materia, mIndex, sIndex, cIndex, comp, '1bim');
+                    });
+                    const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
+                    if (mediaSub !== null) {
+                        conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
+                            <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                        </div>`;
+                    }
+                    conteudoHtml += '</div>';
+                });
+                const media1Bim = calcularMediaMateria(materia, '1bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média 1º Bimestre:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${media1Bim !== null ? media1Bim.toFixed(2) : '--'}</span>
+                </div>`;
+                conteudoHtml += '</div>';
+                
+                // 2º Bimestre - todas as submatérias
+                conteudoHtml += '<div class="bimestre-section"><h4>2º Bimestre</h4>';
+                materia.submateria.forEach((sub, sIndex) => {
+                    conteudoHtml += `<div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 15px;">`;
+                    conteudoHtml += `<h5 style="color: #9b59b6; margin-bottom: 10px;">${sub.nome} (${sub.peso}%)</h5>`;
+                    sub.componentes.forEach((comp, cIndex) => {
+                        conteudoHtml += renderizarComponenteNotas(materia, mIndex, sIndex, cIndex, comp, '2bim');
+                    });
+                    const mediaSub = calcularMediaSubmateria(materia, sIndex, '2bim');
+                    if (mediaSub !== null) {
+                        conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
+                            <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                        </div>`;
+                    }
+                    conteudoHtml += '</div>';
+                });
+                const media2Bim = calcularMediaMateria(materia, '2bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média 2º Bimestre:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${media2Bim !== null ? media2Bim.toFixed(2) : '--'}</span>
+                </div>`;
+                conteudoHtml += '</div>';
+                
+                conteudoHtml += '</div>';
+            } else {
+                // Modular - sem divisão de bimestres
+                materia.submateria.forEach((sub, sIndex) => {
+                    conteudoHtml += `<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 3px solid #9b59b6;">`;
+                    conteudoHtml += `<h4 style="color: #9b59b6; margin-bottom: 15px;">${sub.nome} (${sub.peso}%)</h4>`;
+                    sub.componentes.forEach((comp, cIndex) => {
+                        conteudoHtml += renderizarComponenteNotas(materia, mIndex, sIndex, cIndex, comp, 'unico');
+                    });
+                    const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
+                    if (mediaSub !== null) {
+                        conteudoHtml += `<div style="background: #e8f4f8; padding: 10px; border-radius: 6px; margin-top: 12px;">
+                            <strong>📊 Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                        </div>`;
+                    }
+                    conteudoHtml += '</div>';
+                });
+                const mediaUnica = calcularMediaMateria(materia, '1bim');
+                conteudoHtml += `<div style="background: #e8f4f8; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #667eea;">
+                    <strong>📊 Média do Módulo:</strong> <span style="color: #667eea; font-size: 1.2em; font-weight: bold;">${mediaUnica !== null ? mediaUnica.toFixed(2) : '--'}</span>
+                </div>`;
+            }
+            
+            conteudoHtml += renderizarPerspectiva(materia, mIndex);
+            conteudoHtml += '</div>';
+            
+            div.innerHTML = headerHtml + conteudoHtml;
+            container.appendChild(div);
+        }
+
+        function renderizarComponenteNotas(materia, mIndex, sIndex, cIndex, comp, tipo) {
+            let html = `<div class="componente-bloco">
+                <label>${comp.nome} (${comp.peso}%)</label>
+                <div class="notas-grid">`;
+            
+            const notas = tipo === '1bim' ? comp.notas1Bim : (tipo === '2bim' ? comp.notas2Bim : comp.notas1Bim);
+            
+            for (let i = 0; i < comp.numAvaliacoes; i++) {
+                html += `<input type="number" class="nota-input-pequeno" step="0.1" min="0" max="10"
+                        placeholder="Av${i+1}" value="${notas && notas[i] !== undefined && notas[i] !== null ? notas[i] : ''}"
+                        onchange="atualizarNota(${mIndex}, ${sIndex}, ${cIndex}, ${i}, this.value, '${tipo}')">`;
+            }
+            
+            html += '</div>';
+            
+            const media = calcularMediaComponente(notas);
+            if (media !== null) {
+                const contribuicao = media * (comp.peso / 100);
+                html += `<div class="media-badge">Média: <strong>${media.toFixed(2)}</strong> → Contribuição: <strong style="color: #667eea;">${contribuicao.toFixed(2)}</strong></div>`;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderizarPerspectiva(materia, mIndex) {
+            if (materia.usaBimestres) {
+                const media1Bim = calcularMediaMateria(materia, '1bim');
+                const media2Bim = calcularMediaMateria(materia, '2bim');
+                
+                if (media1Bim === null && media2Bim === null) {
+                    return '';
+                }
+                
+                const mediaFinal = calcularMediaFinal(materia);
+                
+                if (mediaFinal !== null) {
+                    const classe = mediaFinal >= config.mediaAprovacao ? 'perspectiva-ok' : 'perspectiva-alerta';
+                    const status = mediaFinal >= config.mediaAprovacao ? '✅ Aprovado' : '❌ Reprovado';
+                    return `<div class="perspectiva-box ${classe}">
+                        <strong>📊 Média Final:</strong> ${mediaFinal.toFixed(2)} -- ${status}
+                    </div>`;
+                } else if (media1Bim !== null && media2Bim === null) {
+                    const notaNecessaria = (config.mediaAprovacao * 2) - media1Bim;
+                    let texto = '';
+                    let classe = '';
+                    
+                    if (notaNecessaria <= 0) {
+                        texto = '✅ Já está aprovado! Pode tirar 0 no 2º bimestre.';
+                        classe = 'perspectiva-ok';
+                    } else if (notaNecessaria > 10) {
+                        texto = `❌ Impossível atingir a média ${config.mediaAprovacao}`;
+                        classe = 'perspectiva-alerta';
+                    } else {
+                        texto = `⚠️ Precisa de <strong>${notaNecessaria.toFixed(2)}</strong> no 2º bimestre para ser aprovado`;
+                        classe = '';
+                    }
+                    
+                    return `<div class="perspectiva-box ${classe}">
+                        <strong>📊 Média 1º Bimestre:</strong> ${media1Bim.toFixed(2)}<br>
+                        ${texto}
+                    </div>`;
+                }
+            } else {
+                // Modular
+                const mediaUnica = calcularMediaMateria(materia, '1bim');
+                
+                if (mediaUnica === null) {
+                    return '';
+                }
+                
+                if (mediaUnica >= config.mediaAprovacao) {
+                    return `<div class="perspectiva-box perspectiva-ok">
+                        <strong>📊 Média:</strong> ${mediaUnica.toFixed(2)} -- ✅ Aprovado no módulo!
+                    </div>`;
+                } else {
+                    const notaPF = config.mediaAprovacao;
+                    return `<div class="perspectiva-box perspectiva-alerta">
+                        <strong>📊 Média:</strong> ${mediaUnica.toFixed(2)} -- ❌ Reprovado<br>
+                        ⚠️ Ficará de <strong>Prova Final</strong>. Precisará tirar <strong>${notaPF.toFixed(2)}</strong> na PF para ser aprovado.
+                    </div>`;
+                }
+            }
+            
+            return '';
+        }
+
+        function atualizarNota(mIndex, sIndex, cIndex, nIndex, valor, tipo) {
+            const nota = valor.trim() === '' ? null : parseFloat(valor);
+            
+            let comp;
+            if (sIndex === null) {
+                comp = materias[mIndex].componentes[cIndex];
+            } else {
+                comp = materias[mIndex].submateria[sIndex].componentes[cIndex];
+            }
+            
+            if (tipo === '1bim') {
+                if (!Array.isArray(comp.notas1Bim)) comp.notas1Bim = [];
+                comp.notas1Bim[nIndex] = nota;
+            } else if (tipo === '2bim') {
+                if (!Array.isArray(comp.notas2Bim)) comp.notas2Bim = [];
+                comp.notas2Bim[nIndex] = nota;
+            } else {
+                if (!Array.isArray(comp.notas1Bim)) comp.notas1Bim = [];
+                comp.notas1Bim[nIndex] = nota;
+            }
+            
+            salvarDados();
+            renderizarNotasUnicaTela();
+        }
+
+        function calcularMediaComponente(notas) {
+            if (!Array.isArray(notas)) return null;
+            const validas = notas.filter(n => n !== null && n !== undefined && !isNaN(n));
+            if (validas.length === 0) return null;
+            return validas.reduce((a, b) => a + b, 0) / validas.length;
+        }
+
+        function calcularMediaSubmateria(materia, sIndex, bimestre) {
+            const sub = materia.submateria[sIndex];
+            if (!sub || !sub.componentes) return null;
+            
+            let soma = 0;
+            let temNotas = false;
+            
+            sub.componentes.forEach(comp => {
+                const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
+                const media = calcularMediaComponente(notas);
+                if (media !== null) {
+                    temNotas = true;
+                    soma += media * (comp.peso / 100);
+                }
+            });
+            
+            return temNotas ? soma : null;
+        }
+
+        function calcularMediaMateria(materia, bimestre) {
+            let soma = 0;
+            let temNotas = false;
+            
+            if (materia.tipo === 'individual') {
+                materia.componentes.forEach(comp => {
+                    const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
+                    const media = calcularMediaComponente(notas);
+                    if (media !== null) {
+                        temNotas = true;
+                        soma += media * (comp.peso / 100);
+                    }
+                });
+            } else {
+                materia.submateria.forEach(sub => {
+                    const mediaSub = calcularMediaSubmateria(materia, materia.submateria.indexOf(sub), bimestre);
+                    if (mediaSub !== null) {
+                        temNotas = true;
+                        soma += mediaSub * (sub.peso / 100);
+                    }
+                });
+            }
+            
+            return temNotas ? soma : null;
+        }
+
+        function calcularMediaFinal(materia) {
+            const m1 = calcularMediaMateria(materia, '1bim');
+            const m2 = calcularMediaMateria(materia, '2bim');
+            
+            if (m1 === null && m2 === null) return null;
+            if (m1 === null) return m2;
+            if (m2 === null) return m1;
+            return (m1 + m2) / 2;
+        }
+
+        // ===== BOLETIM FINAL =====
+        function atualizarBoletimFinal() {
+            const resumo = document.getElementById('boletim-resumo');
+            resumo.innerHTML = '';
+
+            const table = document.createElement('table');
+            table.style.cssText = 'width: 100%; border-collapse: collapse; background: #f9f9f9;';
+            
+            table.innerHTML = `
+                <thead>
+                    <tr style="background: #34495e; color: white;">
+                        <th style="padding: 12px; text-align: left; border: 1px solid #2c3e50;">DISCIPLINA</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50; width: 100px;">1º BIM</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50; width: 100px;">2º BIM</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50; width: 120px;">MÉDIA</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50; width: 100px;">SITUAÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody id="boletim-body"></tbody>
+            `;
+            
+            const tbody = table.querySelector('#boletim-body');
+            materias.forEach((materia, idx) => {
+                const m1 = materia.usaBimestres ? calcularMediaMateria(materia, '1bim') : calcularMediaMateria(materia, '1bim');
+                const m2 = materia.usaBimestres ? calcularMediaMateria(materia, '2bim') : null;
+                const mf = materia.usaBimestres ? calcularMediaFinal(materia) : m1;
+                
+                const n1 = m1 !== null ? m1.toFixed(2) : '--';
+                const n2 = m2 !== null ? m2.toFixed(2) : (materia.usaBimestres ? '--' : 'N/A');
+                const nf = mf !== null ? mf.toFixed(2) : '--';
+                
+                let situacao;
+                if (mf !== null) {
+                    if (mf >= config.mediaAprovacao) {
+                        situacao = '<span style="color: #27ae60; font-weight: bold;">✅ APROVADO</span>';
+                    } else if (materia.usaBimestres) {
+                        situacao = '<span style="color: #e74c3c; font-weight: bold;">❌ REPROVADO</span>';
+                    } else {
+                        situacao = '<span style="color: #f39c12; font-weight: bold;">⚠️ PROVA FINAL</span>';
+                    }
+                } else {
+                    situacao = '<span style="color: #95a5a6;">-- Sem notas</span>';
+                }
+                
+                const tr = document.createElement('tr');
+                tr.style.background = idx % 2 === 0 ? '#fff' : '#f5f5f5';
+                tr.innerHTML = `
+                    <td style="padding: 12px; border: 1px solid #ddd;">${materia.nome}</td>
+                    <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">${n1}</td>
+                    <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">${n2}</td>
+                    <td style="padding: 12px; text-align: center; border: 1px solid #ddd; font-weight: bold; color: #2980b9;">${nf}</td>
+                    <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">${situacao}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            resumo.appendChild(table);
+        }
+
+        // ===== MODAL =====
+        function abrirModal() {
+            document.getElementById('modal-confirmar').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-confirmar').style.display = 'none';
+            indexParaExcluir = null;
+            tipoAcao = null;
+        }
+
+        function confirmarAcao() {
+            if (tipoAcao === 'limpar') {
+                localStorage.removeItem('boletimAcademico');
+                location.reload();
+            } else if (tipoAcao === 'excluir' && indexParaExcluir !== null) {
+                materias.splice(indexParaExcluir, 1);
+                salvarDados();
+                fecharModal();
+                renderizarMaterias();
+            }
+        }
+
+        function limparTudo() {
+            tipoAcao = 'limpar';
+            document.getElementById('modal-mensagem').innerHTML = 
+                'Isso apagará <strong>TODOS os dados</strong>!<br>Tem certeza?';
+            abrirModal();
+        }
+    </script>
+</body>
+</html>

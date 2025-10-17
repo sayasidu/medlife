@@ -304,25 +304,6 @@
             color: inherit;
         }
 
-        .modulos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .modulo-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-        }
-
-        .modulo-card h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
         .tipo-option {
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -364,12 +345,24 @@
             color: #155724;
         }
 
+        .toggle-peso {
+            display: inline-flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .toggle-peso input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .bimestres-lado-a-lado {
-                grid-template-columns: 1fr;
-            }
-
-            .modulos-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -510,6 +503,7 @@
             <div class="input-group" id="area-modulos" style="display: none;">
                 <label>Quantos módulos são?</label>
                 <input type="number" id="num-modulos" min="1" max="20" value="1">
+                <small style="color: #666; display: block; margin-top: 5px;">💡 Cada módulo terá notas independentes</small>
             </div>
 
             <div id="area-individual">
@@ -520,6 +514,19 @@
 
             <div id="area-conjugada" class="hidden">
                 <h3>Submatérias:</h3>
+                
+                <div class="toggle-peso" style="margin-bottom: 15px;">
+                    <strong>Modo de entrada:</strong>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="radio" name="modo-peso" value="direto" checked onchange="alterarModoPeso()">
+                        Contribuição final (ex: 16%, 4%)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="radio" name="modo-peso" value="interno" onchange="alterarModoPeso()">
+                        Peso interno (ex: 80%, 20%)
+                    </label>
+                </div>
+
                 <div id="info-peso-total" class="peso-info" style="display: none;">
                     <strong>💡 Dica:</strong> A soma dos pesos das submatérias deve ser 100%<br>
                     <strong>Total atual:</strong> <span id="peso-total-valor">0</span>%
@@ -608,8 +615,37 @@
         let indexParaExcluir = null;
         let tipoAcao = null;
         let indexEmEdicao = null;
+        let modoPeso = 'direto'; // 'direto' ou 'interno'
 
-        // ===== FUNÇÕES AUXILIARES =====
+        function criarComponenteLimpo(componente) {
+            return {
+                nome: componente.nome,
+                peso: componente.peso,
+                numAvaliacoes: componente.numAvaliacoes,
+                notas1Bim: [],
+                notas2Bim: []
+            };
+        }
+
+        function criarSubMateriaLimpa(submateria) {
+            return {
+                nome: submateria.nome,
+                peso: submateria.peso,
+                componentes: submateria.componentes.map(c => criarComponenteLimpo(c))
+            };
+        }
+
+        function alterarModoPeso() {
+            const radios = document.getElementsByName('modo-peso');
+            for (let radio of radios) {
+                if (radio.checked) {
+                    modoPeso = radio.value;
+                    break;
+                }
+            }
+            renderizarSubmaterias();
+        }
+
         function selecionarAvaliacao(tipo) {
             usaBimestres = tipo === 'bimestral';
             const container = document.querySelector('[onclick*="selecionarAvaliacao"]').parentElement.parentElement;
@@ -697,7 +733,6 @@
             document.getElementById(id)?.classList.remove('hidden');
         }
 
-        // ===== NAVEGAÇÃO =====
         function iniciarBoletim() {
             const instituicao = document.getElementById('instituicao').value.trim();
             const media = parseFloat(document.getElementById('media-aprovacao').value);
@@ -731,6 +766,7 @@
             componentesTemp = [];
             submateriasTemp = [];
             indexEmEdicao = null;
+            modoPeso = 'direto';
             document.getElementById('nome-materia').value = '';
             document.getElementById('num-modulos').value = '1';
             document.getElementById('lista-componentes').innerHTML = '';
@@ -799,7 +835,6 @@
             mostrarTela('tela-notas');
         }
 
-        // ===== COMPONENTES =====
         function adicionarComponente() {
             componentesTemp.push({ nome: '', peso: 0, numAvaliacoes: 1, notas1Bim: [], notas2Bim: [] });
             renderizarComponentes();
@@ -850,11 +885,14 @@
                 const div = document.createElement('div');
                 div.style.cssText = 'background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #9b59b6;';
                 
-                // Calcular soma dos pesos dos componentes
                 const pesoCompTotal = sub.componentes ? sub.componentes.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0) : 0;
                 const pesoSubmateria = parseFloat(sub.peso) || 0;
                 const diferenca = Math.abs(pesoCompTotal - pesoSubmateria);
                 const corPesoComp = diferenca < 0.1 ? '#27ae60' : '#e74c3c';
+                
+                const placeholderPeso = modoPeso === 'interno' 
+                    ? 'Peso % interno (ex: 80, 20)'
+                    : 'Peso % final (ex: 16, 4)';
                 
                 let html = `
                     <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
@@ -871,7 +909,9 @@
                         <strong>Componentes de "${sub.nome || 'Submatéria'}":</strong> <span style="color: ${corPesoComp}; font-weight: bold;">${pesoCompTotal.toFixed(1)}%</span> / ${pesoSubmateria.toFixed(1)}%
                         ${diferenca < 0.1 ? ' ✓ Correto!' : ` ⚠️ Deve somar ${pesoSubmateria.toFixed(1)}%`}
                     </div>
-                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Componentes (peso já é a contribuição final):</h4>
+                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">
+                        Componentes ${modoPeso === 'interno' ? '(peso interno - será convertido)' : '(contribuição final)'}:
+                    </h4>
                     <div id="componentes-sub-${sIndex}"></div>
                     <button class="btn btn-secondary" style="margin-top: 10px;" onclick="adicionarComponenteSub(${sIndex})">+ Componente</button>
                 `;
@@ -897,25 +937,58 @@
             container.innerHTML = '';
 
             const componentes = submateriasTemp[sIndex]?.componentes || [];
+            const pesoSub = parseFloat(submateriasTemp[sIndex]?.peso) || 0;
+            
             componentes.forEach((comp, cIndex) => {
                 const div = document.createElement('div');
-                div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;';
+                div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px;';
+                
+                let pesoExibido = comp.peso;
+                let pesoInfo = '';
+                
+                // Se modo interno, mostrar conversão
+                if (modoPeso === 'interno' && comp.peso && pesoSub) {
+                    const pesoFinal = (comp.peso * pesoSub / 100).toFixed(1);
+                    pesoInfo = `<small style="color: #666; display: block; margin-top: 4px;">→ Contribuição final: ${pesoFinal}%</small>`;
+                }
+                
                 div.innerHTML = `
-                    <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
-                           value="${comp.nome || ''}" 
-                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
-                    <input type="number" class="input-group" placeholder="Peso %" 
-                           value="${comp.peso || ''}" 
-                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].peso = parseFloat(this.value); renderizarSubmaterias();"
-                           min="0" max="100" step="0.1">
-                    <input type="number" class="input-group" placeholder="Nº Aval" 
-                           value="${comp.numAvaliacoes || 1}" 
-                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
-                           min="1" max="10">
-                    <button class="btn btn-danger" onclick="removerComponenteSub(${sIndex}, ${cIndex})">×</button>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;">
+                        <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
+                               value="${comp.nome || ''}" 
+                               onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
+                        <div>
+                            <input type="number" class="input-group" placeholder="${modoPeso === 'interno' ? 'Peso %' : 'Contr. %'}" 
+                                   value="${pesoExibido || ''}" 
+                                   onchange="atualizarPesoComponente(${sIndex}, ${cIndex}, this.value)"
+                                   min="0" max="100" step="0.1">
+                            ${pesoInfo}
+                        </div>
+                        <input type="number" class="input-group" placeholder="Nº Aval" 
+                               value="${comp.numAvaliacoes || 1}" 
+                               onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
+                               min="1" max="10">
+                        <button class="btn btn-danger" onclick="removerComponenteSub(${sIndex}, ${cIndex})">×</button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
+        }
+
+        function atualizarPesoComponente(sIndex, cIndex, valor) {
+            const pesoDigitado = parseFloat(valor) || 0;
+            const pesoSub = parseFloat(submateriasTemp[sIndex]?.peso) || 0;
+            
+            if (modoPeso === 'interno') {
+                // Converter peso interno para contribuição final
+                const pesoFinal = (pesoDigitado * pesoSub / 100);
+                submateriasTemp[sIndex].componentes[cIndex].peso = pesoFinal;
+            } else {
+                // Modo direto
+                submateriasTemp[sIndex].componentes[cIndex].peso = pesoDigitado;
+            }
+            
+            renderizarSubmaterias();
         }
 
         function removerComponenteSub(sIndex, cIndex) {
@@ -965,28 +1038,18 @@
                     });
                 }
             } else {
-                // MATÉRIA CONJUGADA
                 if (!submateriasTemp.length) {
                     alert('❌ Adicione pelo menos uma submatéria!');
                     return;
                 }
                 
-                // Validar se submatérias somam 100%
                 const pesoTotalSub = submateriasTemp.reduce((sum, s) => sum + (parseFloat(s.peso) || 0), 0);
                 
                 if (Math.abs(pesoTotalSub - 100) > 1) {
-                    alert(
-                        `❌ A soma dos pesos das submatérias deve ser 100%!\n\n` +
-                        `Atual: ${pesoTotalSub.toFixed(1)}%\n\n` +
-                        `Exemplo correto:\n` +
-                        `• Módulo: 80%\n` +
-                        `• Morfo: 20%\n` +
-                        `Total: 100%`
-                    );
+                    alert(`❌ A soma dos pesos das submatérias deve ser 100%!\n\nAtual: ${pesoTotalSub.toFixed(1)}%`);
                     return;
                 }
                 
-                // Validar se componentes de cada submatéria somam o peso da submatéria
                 for (let i = 0; i < submateriasTemp.length; i++) {
                     const sub = submateriasTemp[i];
                     
@@ -999,18 +1062,7 @@
                     const pesoSub = parseFloat(sub.peso) || 0;
                     
                     if (Math.abs(pesoComp - pesoSub) > 0.1) {
-                        alert(
-                            `❌ Os componentes de "${sub.nome || 'Submatéria ' + (i+1)}" devem somar ${pesoSub.toFixed(1)}%!\n\n` +
-                            `Atual: ${pesoComp.toFixed(1)}%\n\n` +
-                            `Exemplo para Módulo (80%):\n` +
-                            `• Somativa: 40%\n` +
-                            `• Formativa: 40%\n` +
-                            `Total: 80% ✓\n\n` +
-                            `Exemplo para Morfo (20%):\n` +
-                            `• Somativa: 16%\n` +
-                            `• Formativa: 4%\n` +
-                            `Total: 20% ✓`
-                        );
+                        alert(`❌ Os componentes de "${sub.nome}" devem somar ${pesoSub.toFixed(1)}%!\n\nAtual: ${pesoComp.toFixed(1)}%`);
                         return;
                     }
                 }
@@ -1022,10 +1074,7 @@
                         ...materias[indexEmEdicao],
                         nome,
                         usaBimestres,
-                        submateria: submateriasTemp.map(s => ({ 
-                            ...s, 
-                            componentes: s.componentes.map(c => ({ ...c })) 
-                        }))
+                        submateria: submateriasTemp.map(s => criarSubMateriaLimpa(s))
                     };
                 } else {
                     for (let m = 0; m < numModulos; m++) {
@@ -1035,10 +1084,7 @@
                             nome: nomeModulo,
                             tipo: 'conjugada',
                             usaBimestres,
-                            submateria: submateriasTemp.map(s => ({ 
-                                ...s, 
-                                componentes: s.componentes.map(c => ({ ...c })) 
-                            }))
+                            submateria: submateriasTemp.map(s => criarSubMateriaLimpa(s))
                         });
                     }
                 }
@@ -1097,7 +1143,10 @@
             abrirModal();
         }
 
-        // ===== TELA DE NOTAS =====
+        // [RESTANTE DO CÓDIGO - renderização de notas, cálculos, etc - continua igual...]
+        // Por questão de espaço, mantenha todo o código de renderização de notas, 
+        // cálculos de média e boletim final como está no código anterior
+
         function renderizarNotasUnicaTela() {
             const container = document.getElementById('notas-container');
             container.innerHTML = '';
@@ -1250,7 +1299,7 @@
 
         function renderizarComponenteNotas(materia, mIndex, sIndex, cIndex, comp, tipo) {
             let html = `<div class="componente-bloco">
-                <label>${comp.nome} (${comp.peso}%)</label>
+                <label>${comp.nome} (${comp.peso.toFixed(1)}%)</label>
                 <div class="notas-grid">`;
             
             const notas = tipo === '1bim' ? comp.notas1Bim : (tipo === '2bim' ? comp.notas2Bim : comp.notas1Bim);
@@ -1378,7 +1427,6 @@
                 const media = calcularMediaComponente(notas);
                 if (media !== null) {
                     temNotas = true;
-                    // Aqui é direto, sem dividir por 100 (pois o peso já é a contribuição)
                     soma += media * (parseFloat(comp.peso) / 100);
                 }
             });
@@ -1400,7 +1448,6 @@
                     }
                 });
             } else {
-                // Para matérias conjugadas, soma direto as submaterias
                 materia.submateria.forEach((sub, sIndex) => {
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, bimestre);
                     if (mediaSub !== null) {
@@ -1423,7 +1470,6 @@
             return (m1 + m2) / 2;
         }
 
-        // ===== BOLETIM FINAL =====
         function atualizarBoletimFinal() {
             const resumo = document.getElementById('boletim-resumo');
             resumo.innerHTML = '';
@@ -1482,7 +1528,6 @@
             resumo.appendChild(table);
         }
 
-        // ===== MODAL =====
         function abrirModal() {
             document.getElementById('modal-confirmar').style.display = 'flex';
         }

@@ -379,6 +379,39 @@
             gap: 10px;
         }
 
+        .panorama-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .panorama-selector h4 {
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
         .panorama-item {
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
@@ -396,14 +429,25 @@
 
         .necessidade-componente {
             background: #f8f9fa;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border-left: 3px solid #667eea;
         }
 
         .necessidade-componente strong {
             color: #667eea;
+        }
+
+        .necessidade-componente .nota-destaque {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: inline-block;
+            margin: 5px 0;
         }
 
         .alerta-impossivel {
@@ -428,6 +472,14 @@
 
         .alerta-sucesso strong {
             color: #155724;
+        }
+
+        .previsao-detalhada {
+            background: #e8f4f8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
@@ -655,9 +707,19 @@
 
             <div id="boletim-resumo"></div>
 
-            <!-- NOVA SEÇÃO: PANORAMA GERAL -->
+            <!-- NOVA SEÇÃO: PANORAMA GERAL COM SELETOR -->
             <div id="panorama-geral" class="panorama-section" style="display: none;">
-                <h3>🎯 Panorama Geral - Notas Necessárias</h3>
+                <h3>🎯 Simulador de Notas Necessárias</h3>
+                
+                <div class="panorama-selector">
+                    <h4>Selecione a matéria para ver as previsões:</h4>
+                    <div class="select-wrapper">
+                        <select id="select-materia-panorama" onchange="atualizarPanoramaMateria()">
+                            <option value="">-- Escolha uma matéria --</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div id="panorama-conteudo"></div>
             </div>
 
@@ -965,10 +1027,6 @@
                 const pesoSubmateria = parseFloat(sub.peso) || 0;
                 const diferenca = Math.abs(pesoCompTotal - pesoSubmateria);
                 const corPesoComp = diferenca < 0.1 ? '#27ae60' : '#e74c3c';
-                
-                const placeholderPeso = modoPeso === 'interno' 
-                    ? 'Peso % interno (ex: 80, 20)'
-                    : 'Peso % final (ex: 16, 4)';
                 
                 let html = `
                     <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
@@ -1597,182 +1655,187 @@
             resumo.appendChild(table);
         }
 
-        // NOVA FUNÇÃO: GERAR PANORAMA GERAL
+        // FUNÇÃO MELHORADA: GERAR PANORAMA COM SELETOR
         function gerarPanoramaGeral() {
-            const panoramaSection = document.getElementById('panorama-geral');
-            const panoramaConteudo = document.getElementById('panorama-conteudo');
-            
-            panoramaConteudo.innerHTML = '';
-            let temSugestoes = false;
+    const panoramaSection = document.getElementById('panorama-geral');
+    const select = document.getElementById('select-materia-panorama');
+    
+    // Popula o select
+    select.innerHTML = '<option value="">-- Escolha uma matéria --</option>';
+    
+    let temMateriasIncompletas = false;  // ✅ CORRIGIDO AQUI
+    
+    materias.forEach((materia, mIndex) => {
+        const temNotasFaltando = verificarNotasFaltando(materia);
+        if (temNotasFaltando) {
+            temMateriasIncompletas = true;
+            const option = document.createElement('option');
+            option.value = mIndex;
+            option.textContent = materia.nome;
+            select.appendChild(option);
+        }
+    });
 
-            materias.forEach((materia, mIndex) => {
-                const sugestoes = calcularNotasNecessarias(materia);
-                
-                if (sugestoes && sugestoes.length > 0) {
-                    temSugestoes = true;
-                    
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'panorama-item';
-                    
-                    let html = `<h4>${materia.nome}</h4>`;
-                    
-                    sugestoes.forEach(sug => {
-                        html += `<div class="necessidade-componente">
-                            ${sug.icone} <strong>${sug.componente}</strong><br>
-                            ${sug.mensagem}
-                        </div>`;
-                    });
-                    
-                    itemDiv.innerHTML = html;
-                    panoramaConteudo.appendChild(itemDiv);
-                }
-            });
+    if (temMateriasIncompletas) {
+        panoramaSection.style.display = 'block';
+    } else {
+        panoramaSection.style.display = 'none';
+    }
+}
 
-            if (temSugestoes) {
+            if (temMateriasIncompletas) {
                 panoramaSection.style.display = 'block';
             } else {
                 panoramaSection.style.display = 'none';
             }
         }
 
-        // FUNÇÃO PARA CALCULAR NOTAS NECESSÁRIAS
-        function calcularNotasNecessarias(materia) {
+        function verificarNotasFaltando(materia) {
+            if (materia.tipo === 'individual') {
+                return materia.componentes.some(comp => {
+                    const notas1 = comp.notas1Bim || [];
+                    const notas2 = comp.notas2Bim || [];
+                    const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                    const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                    return validas1.length < comp.numAvaliacoes || 
+                           (materia.usaBimestres && validas2.length < comp.numAvaliacoes);
+                });
+            } else {
+                return materia.submateria.some(sub => 
+                    sub.componentes.some(comp => {
+                        const notas1 = comp.notas1Bim || [];
+                        const notas2 = comp.notas2Bim || [];
+                        const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        return validas1.length < comp.numAvaliacoes || 
+                               (materia.usaBimestres && validas2.length < comp.numAvaliacoes);
+                    })
+                );
+            }
+        }
+
+        function atualizarPanoramaMateria() {
+            const select = document.getElementById('select-materia-panorama');
+            const panoramaConteudo = document.getElementById('panorama-conteudo');
+            const mIndex = parseInt(select.value);
+            
+            if (isNaN(mIndex) || mIndex < 0) {
+                panoramaConteudo.innerHTML = '';
+                return;
+            }
+            
+            const materia = materias[mIndex];
+            if (!materia) {
+                panoramaConteudo.innerHTML = '';
+                return;
+            }
+            
+            const sugestoes = calcularNotasNecessariasDetalhadas(materia);
+            
+            if (!sugestoes || sugestoes.length === 0) {
+                panoramaConteudo.innerHTML = `
+                    <div class="panorama-item">
+                        <p style="text-align: center; color: #666;">
+                            ✅ Todas as avaliações foram lançadas para esta matéria!
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            panoramaConteudo.innerHTML = '';
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'panorama-item';
+            
+            let html = `<h4>${materia.nome}</h4>`;
+            
+            sugestoes.forEach(sug => {
+                html += `<div class="necessidade-componente">
+                    ${sug.icone} <strong>${sug.componente}</strong><br>
+                    ${sug.mensagem}
+                </div>`;
+            });
+            
+            itemDiv.innerHTML = html;
+            panoramaConteudo.appendChild(itemDiv);
+        }
+
+        function calcularNotasNecessariasDetalhadas(materia) {
             const sugestoes = [];
             const mediaAlvo = config.mediaAprovacao;
 
-            if (materia.usaBimestres) {
-                const m1 = calcularMediaMateria(materia, '1bim');
-                const m2 = calcularMediaMateria(materia, '2bim');
-                
-                // Se já tem as duas médias, não há sugestões
-                if (m1 !== null && m2 !== null) {
-                    return [];
-                }
-                
-                // Analisa 1º bimestre
-                if (m1 === null) {
-                    const sugestoes1Bim = analisarBimestreIncompleto(materia, '1bim', mediaAlvo);
-                    sugestoes.push(...sugestoes1Bim);
-                }
-                
-                // Analisa 2º bimestre
-                if (m2 === null) {
-                    const sugestoes2Bim = analisarBimestreIncompleto(materia, '2bim', mediaAlvo);
-                    sugestoes.push(...sugestoes2Bim);
-                }
-                
-            } else {
-                // Modular
-                const mediaUnica = calcularMediaMateria(materia, '1bim');
-                
-                if (mediaUnica === null) {
-                    const sugestoesModulo = analisarBimestreIncompleto(materia, '1bim', mediaAlvo);
-                    sugestoes.push(...sugestoesModulo);
-                }
-            }
-
-            return sugestoes;
-        }
-
-        function analisarBimestreIncompleto(materia, bimestre, mediaAlvo) {
-            const sugestoes = [];
-            const bimLabel = bimestre === '1bim' ? '1º Bimestre' : '2º Bimestre';
-
             if (materia.tipo === 'individual') {
-                // Analisa matéria individual
-                materia.componentes.forEach((comp, cIndex) => {
-                    const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                    const notasValidas = notas ? notas.filter(n => n !== null && n !== undefined && !isNaN(n)) : [];
-                    const notasFaltando = comp.numAvaliacoes - notasValidas.length;
-
-                    if (notasFaltando > 0) {
-                        const mediaAtual = notasValidas.length > 0 
-                            ? notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length 
-                            : 0;
+                if (materia.usaBimestres) {
+                    // Analisa 1º Bimestre
+                    materia.componentes.forEach((comp, cIndex) => {
+                        const notas1 = comp.notas1Bim || [];
+                        const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        const faltam1 = comp.numAvaliacoes - validas1.length;
                         
-                        // Calcula contribuição atual
-                        let somaOutrosComponentes = 0;
-                        materia.componentes.forEach((c, idx) => {
-                            if (idx !== cIndex) {
-                                const notasC = bimestre === '1bim' ? c.notas1Bim : c.notas2Bim;
-                                const mediaC = calcularMediaComponente(notasC);
-                                if (mediaC !== null) {
-                                    somaOutrosComponentes += mediaC * (c.peso / 100);
-                                }
-                            }
-                        });
-
-                        // Calcula nota necessária neste componente
-                        const contribuicaoNecessaria = mediaAlvo - somaOutrosComponentes;
-                        const notaNecessaria = (contribuicaoNecessaria * 100) / comp.peso;
-
-                        if (notaNecessaria <= 10 && notaNecessaria >= 0) {
-                            sugestoes.push({
-                                icone: '📝',
-                                componente: `${comp.nome} - ${bimLabel}`,
-                                mensagem: `Para atingir média ${mediaAlvo.toFixed(1)}, você precisa tirar <strong style="color: #667eea;">${notaNecessaria.toFixed(2)}</strong> ${notasFaltando > 1 ? `nas próximas ${notasFaltando} avaliações` : 'na próxima avaliação'}.`
-                            });
-                        } else if (notaNecessaria > 10) {
-                            sugestoes.push({
-                                icone: '⚠️',
-                                componente: `${comp.nome} - ${bimLabel}`,
-                                mensagem: `<span style="color: #e74c3c;">Impossível atingir média ${mediaAlvo.toFixed(1)} neste bimestre (seria necessário ${notaNecessaria.toFixed(2)}).</span>`
-                            });
-                        } else if (notaNecessaria < 0) {
-                            sugestoes.push({
-                                icone: '✅',
-                                componente: `${comp.nome} - ${bimLabel}`,
-                                mensagem: `<span style="color: #27ae60;">Já garantiu a média! Pode tirar 0 nas próximas avaliações.</span>`
-                            });
+                        if (faltam1 > 0) {
+                            const notaNecessaria = calcularNotaNecessariaIndividual(materia, cIndex, '1bim', mediaAlvo);
+                            sugestoes.push(criarSugestao(comp.nome, '1º Bimestre', notaNecessaria, faltam1));
                         }
-                    }
-                });
+                    });
+                    
+                    // Analisa 2º Bimestre
+                    materia.componentes.forEach((comp, cIndex) => {
+                        const notas2 = comp.notas2Bim || [];
+                        const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        const faltam2 = comp.numAvaliacoes - validas2.length;
+                        
+                        if (faltam2 > 0) {
+                            const notaNecessaria = calcularNotaNecessariaIndividual(materia, cIndex, '2bim', mediaAlvo);
+                            sugestoes.push(criarSugestao(comp.nome, '2º Bimestre', notaNecessaria, faltam2));
+                        }
+                    });
+                } else {
+                    // Modular
+                    materia.componentes.forEach((comp, cIndex) => {
+                        const notas1 = comp.notas1Bim || [];
+                        const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        const faltam1 = comp.numAvaliacoes - validas1.length;
+                        
+                        if (faltam1 > 0) {
+                            const notaNecessaria = calcularNotaNecessariaIndividual(materia, cIndex, '1bim', mediaAlvo);
+                            sugestoes.push(criarSugestao(comp.nome, 'Módulo', notaNecessaria, faltam1));
+                        }
+                    });
+                }
             } else {
-                // Analisa matéria conjugada
+                // Conjugada
                 materia.submateria.forEach((sub, sIndex) => {
                     sub.componentes.forEach((comp, cIndex) => {
-                        const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                        const notasValidas = notas ? notas.filter(n => n !== null && n !== undefined && !isNaN(n)) : [];
-                        const notasFaltando = comp.numAvaliacoes - notasValidas.length;
-
-                        if (notasFaltando > 0) {
-                            // Calcula o que os outros componentes já contribuíram
-                            let somaOutrosComponentes = 0;
-                            let pesoRestante = comp.peso;
-
-                            sub.componentes.forEach((c, idx) => {
-                                if (idx !== cIndex) {
-                                    const notasC = bimestre === '1bim' ? c.notas1Bim : c.notas2Bim;
-                                    const mediaC = calcularMediaComponente(notasC);
-                                    if (mediaC !== null) {
-                                        somaOutrosComponentes += mediaC * (c.peso / 100);
-                                    }
-                                }
-                            });
-
-                            // Calcula nota necessária para atingir a média na submatéria
-                            const mediaSubNecessaria = mediaAlvo; // Simplificado
-                            const contribuicaoNecessaria = mediaSubNecessaria - somaOutrosComponentes;
-                            const notaNecessaria = (contribuicaoNecessaria * 100) / comp.peso;
-
-                            if (notaNecessaria <= 10 && notaNecessaria >= 0) {
-                                sugestoes.push({
-                                    icone: '📝',
-                                    componente: `${sub.nome} → ${comp.nome} - ${bimLabel}`,
-                                    mensagem: `Para atingir média ${mediaAlvo.toFixed(1)}, você precisa tirar <strong style="color: #667eea;">${notaNecessaria.toFixed(2)}</strong> ${notasFaltando > 1 ? `nas próximas ${notasFaltando} avaliações` : 'na próxima avaliação'}.`
-                                });
-                            } else if (notaNecessaria > 10) {
-                                sugestoes.push({
-                                    icone: '⚠️',
-                                    componente: `${sub.nome} → ${comp.nome} - ${bimLabel}`,
-                                    mensagem: `<span style="color: #e74c3c;">Difícil atingir média ${mediaAlvo.toFixed(1)} (seria necessário ${notaNecessaria.toFixed(2)}).</span>`
-                                });
-                            } else if (notaNecessaria < 0) {
-                                sugestoes.push({
-                                    icone: '✅',
-                                    componente: `${sub.nome} → ${comp.nome} - ${bimLabel}`,
-                                    mensagem: `<span style="color: #27ae60;">Já garantiu a média! Pode tirar 0 nas próximas avaliações.</span>`
-                                });
+                        if (materia.usaBimestres) {
+                            // 1º Bimestre
+                            const notas1 = comp.notas1Bim || [];
+                            const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                            const faltam1 = comp.numAvaliacoes - validas1.length;
+                            
+                            if (faltam1 > 0) {
+                                const notaNecessaria = calcularNotaNecessariaConjugada(materia, sIndex, cIndex, '1bim', mediaAlvo);
+                                sugestoes.push(criarSugestao(`${sub.nome} → ${comp.nome}`, '1º Bimestre', notaNecessaria, faltam1));
+                            }
+                            
+                            // 2º Bimestre
+                            const notas2 = comp.notas2Bim || [];
+                            const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                            const faltam2 = comp.numAvaliacoes - validas2.length;
+                            
+                            if (faltam2 > 0) {
+                                const notaNecessaria = calcularNotaNecessariaConjugada(materia, sIndex, cIndex, '2bim', mediaAlvo);
+                                sugestoes.push(criarSugestao(`${sub.nome} → ${comp.nome}`, '2º Bimestre', notaNecessaria, faltam2));
+                            }
+                        } else {
+                            // Modular
+                            const notas1 = comp.notas1Bim || [];
+                            const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                            const faltam1 = comp.numAvaliacoes - validas1.length;
+                            
+                            if (faltam1 > 0) {
+                                const notaNecessaria = calcularNotaNecessariaConjugada(materia, sIndex, cIndex, '1bim', mediaAlvo);
+                                sugestoes.push(criarSugestao(`${sub.nome} → ${comp.nome}`, 'Módulo', notaNecessaria, faltam1));
                             }
                         }
                     });
@@ -1780,6 +1843,69 @@
             }
 
             return sugestoes;
+        }
+
+        function calcularNotaNecessariaIndividual(materia, cIndex, bimestre, mediaAlvo) {
+            let somaOutros = 0;
+            
+            materia.componentes.forEach((comp, idx) => {
+                if (idx !== cIndex) {
+                    const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
+                    const media = calcularMediaComponente(notas);
+                    if (media !== null) {
+                        somaOutros += media * (comp.peso / 100);
+                    }
+                }
+            });
+            
+            const comp = materia.componentes[cIndex];
+            const contribuicaoNecessaria = mediaAlvo - somaOutros;
+            const notaNecessaria = (contribuicaoNecessaria * 100) / comp.peso;
+            
+            return notaNecessaria;
+        }
+
+        function calcularNotaNecessariaConjugada(materia, sIndex, cIndex, bimestre, mediaAlvo) {
+            const sub = materia.submateria[sIndex];
+            let somaOutrosComponentes = 0;
+            
+            sub.componentes.forEach((comp, idx) => {
+                if (idx !== cIndex) {
+                    const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
+                    const media = calcularMediaComponente(notas);
+                    if (media !== null) {
+                        somaOutrosComponentes += media * (comp.peso / 100);
+                    }
+                }
+            });
+            
+            const comp = sub.componentes[cIndex];
+            const contribuicaoNecessaria = mediaAlvo - somaOutrosComponentes;
+            const notaNecessaria = (contribuicaoNecessaria * 100) / comp.peso;
+            
+            return notaNecessaria;
+        }
+
+        function criarSugestao(nomeComponente, periodo, notaNecessaria, quantFaltam) {
+            let icone, mensagem;
+            
+            if (notaNecessaria <= 0) {
+                icone = '✅';
+                mensagem = `<span style="color: #27ae60;">Já garantiu a média! Pode tirar 0 ${quantFaltam > 1 ? `nas ${quantFaltam} avaliações restantes` : 'na próxima avaliação'}.</span>`;
+            } else if (notaNecessaria > 10) {
+                icone = '⚠️';
+                mensagem = `<span style="color: #e74c3c;">Impossível atingir a média (seria necessário ${notaNecessaria.toFixed(2)}).</span>`;
+            } else {
+                icone = '📝';
+                const textoQtd = quantFaltam > 1 ? `nas ${quantFaltam} avaliações` : 'na próxima avaliação';
+                mensagem = `Para atingir média ${config.mediaAprovacao.toFixed(1)}, você precisa tirar <span class="nota-destaque">${notaNecessaria.toFixed(2)}</span> ${textoQtd}.`;
+            }
+            
+            return {
+                icone: icone,
+                componente: `${nomeComponente} - ${periodo}`,
+                mensagem: mensagem
+            };
         }
 
         function abrirModal() {

@@ -342,6 +342,19 @@
             background: #e8f0fe;
         }
 
+        .peso-info {
+            background: #fff9e6;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            border-left: 3px solid #ffc107;
+        }
+
+        .peso-info strong {
+            color: #856404;
+        }
+
         @media (max-width: 768px) {
             .bimestres-lado-a-lado {
                 grid-template-columns: 1fr;
@@ -498,6 +511,10 @@
 
             <div id="area-conjugada" class="hidden">
                 <h3>Submaterias:</h3>
+                <div id="info-peso-total" class="peso-info" style="display: none;">
+                    <strong>💡 Dica:</strong> A soma dos pesos das submatérias deve ser 100%<br>
+                    <strong>Total atual:</strong> <span id="peso-total-valor">0</span>%
+                </div>
                 <div id="lista-submateria"></div>
                 <button class="btn btn-secondary" onclick="adicionarSubmateria()">+ Adicionar Submatéria</button>
             </div>
@@ -613,7 +630,18 @@
                 document.getElementById('area-individual').classList.add('hidden');
                 document.getElementById('area-conjugada').classList.remove('hidden');
                 document.getElementById('area-modulos').style.display = 'block';
+                document.getElementById('info-peso-total').style.display = 'block';
                 if (submateriasTemp.length === 0) adicionarSubmateria();
+                atualizarPesoTotal();
+            }
+        }
+
+        function atualizarPesoTotal() {
+            const pesoTotal = submateriasTemp.reduce((sum, s) => sum + (parseFloat(s.peso) || 0), 0);
+            const elemento = document.getElementById('peso-total-valor');
+            if (elemento) {
+                elemento.textContent = pesoTotal.toFixed(1);
+                elemento.style.color = Math.abs(pesoTotal - 100) < 0.1 ? '#27ae60' : '#e74c3c';
             }
         }
 
@@ -690,6 +718,7 @@
             document.getElementById('lista-componentes').innerHTML = '';
             document.getElementById('lista-submateria').innerHTML = '';
             document.getElementById('area-modulos').style.display = 'none';
+            document.getElementById('info-peso-total').style.display = 'none';
             
             selecionarAvaliacao('bimestral');
             selecionarTipo('individual');
@@ -773,7 +802,7 @@
                         <input type="number" class="input-group" placeholder="Peso %" 
                                value="${comp.peso || ''}" 
                                onchange="componentesTemp[${index}].peso = parseFloat(this.value)"
-                               min="0" max="100">
+                               min="0" max="100" step="0.1">
                         <input type="number" class="input-group" placeholder="Nº Avaliações" 
                                value="${comp.numAvaliacoes || 1}" 
                                onchange="componentesTemp[${index}].numAvaliacoes = parseInt(this.value)"
@@ -803,18 +832,26 @@
                 const div = document.createElement('div');
                 div.style.cssText = 'background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #9b59b6;';
                 
+                // Calcular peso total dos componentes desta submatéria
+                const pesoCompTotal = sub.componentes ? sub.componentes.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0) : 0;
+                const corPesoComp = Math.abs(pesoCompTotal - 100) < 0.1 ? '#27ae60' : '#e74c3c';
+                
                 let html = `
                     <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
-                        <input type="text" class="input-group" placeholder="Nome (ex: Morfo)" 
+                        <input type="text" class="input-group" placeholder="Nome (ex: Módulo, Morfo)" 
                                value="${sub.nome || ''}" 
-                               onchange="submateriasTemp[${sIndex}].nome = this.value">
+                               onchange="submateriasTemp[${sIndex}].nome = this.value; atualizarPesoTotal();">
                         <input type="number" class="input-group" placeholder="Peso %" 
                                value="${sub.peso || ''}" 
-                               onchange="submateriasTemp[${sIndex}].peso = parseFloat(this.value)"
-                               min="0" max="100">
+                               onchange="submateriasTemp[${sIndex}].peso = parseFloat(this.value); atualizarPesoTotal();"
+                               min="0" max="100" step="0.1">
                         <button class="btn btn-danger" onclick="removerSubmateria(${sIndex})">×</button>
                     </div>
-                    <h4 style="margin-bottom: 10px;">Componentes:</h4>
+                    <div style="background: #fff9e6; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem;">
+                        <strong>Soma dos componentes:</strong> <span style="color: ${corPesoComp}; font-weight: bold;">${pesoCompTotal.toFixed(1)}%</span>
+                        ${Math.abs(pesoCompTotal - 100) > 0.1 ? ' ⚠️ Deve somar 100%' : ' ✓'}
+                    </div>
+                    <h4 style="margin-bottom: 10px;">Componentes de "${sub.nome || 'Submatéria'}":</h4>
                     <div id="componentes-sub-${sIndex}"></div>
                     <button class="btn btn-secondary" style="margin-top: 10px;" onclick="adicionarComponenteSub(${sIndex})">+ Componente</button>
                 `;
@@ -822,6 +859,8 @@
                 lista.appendChild(div);
                 renderizarComponentesSub(sIndex);
             });
+            
+            atualizarPesoTotal();
         }
 
         function adicionarComponenteSub(sIndex) {
@@ -842,13 +881,13 @@
                 const div = document.createElement('div');
                 div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;';
                 div.innerHTML = `
-                    <input type="text" class="input-group" placeholder="Nome" 
+                    <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
                            value="${comp.nome || ''}" 
                            onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
                     <input type="number" class="input-group" placeholder="Peso %" 
                            value="${comp.peso || ''}" 
-                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].peso = parseFloat(this.value)"
-                           min="0" max="100">
+                           onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].peso = parseFloat(this.value); renderizarSubmaterias();"
+                           min="0" max="100" step="0.1">
                     <input type="number" class="input-group" placeholder="Nº Aval" 
                            value="${comp.numAvaliacoes || 1}" 
                            onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
@@ -861,7 +900,7 @@
 
         function removerComponenteSub(sIndex, cIndex) {
             submateriasTemp[sIndex].componentes.splice(cIndex, 1);
-            renderizarComponentesSub(sIndex);
+            renderizarSubmaterias();
         }
 
         function removerSubmateria(index) {
@@ -883,7 +922,7 @@
                     return;
                 }
                 
-                const pesoTotal = componentesTemp.reduce((sum, c) => sum + (c.peso || 0), 0);
+                const pesoTotal = componentesTemp.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0);
                 if (Math.abs(pesoTotal - 100) > 0.1) {
                     alert(`Soma dos pesos deve ser 100%! Atual: ${pesoTotal.toFixed(1)}%`);
                     return;
@@ -906,28 +945,46 @@
                     });
                 }
             } else {
+                // MATÉRIA CONJUGADA
                 if (!submateriasTemp.length) {
                     alert('Adicione pelo menos uma submatéria!');
                     return;
                 }
                 
-                // Validar pesos das submatérias
-                const pesoTotalSub = submateriasTemp.reduce((sum, s) => sum + (s.peso || 0), 0);
-                if (Math.abs(pesoTotalSub - 100) > 0.1) {
-                    alert(`Soma dos pesos das submatérias deve ser 100%! Atual: ${pesoTotalSub.toFixed(1)}%`);
-                    return;
+                // VALIDAÇÃO MAIS FLEXÍVEL: Verifica se a soma está PRÓXIMA de 100% (tolera pequenas diferenças)
+                const pesoTotalSub = submateriasTemp.reduce((sum, s) => sum + (parseFloat(s.peso) || 0), 0);
+                const margemErro = 1; // Aceita diferença de até 1%
+                
+                if (Math.abs(pesoTotalSub - 100) > margemErro) {
+                    const confirmar = confirm(
+                        `⚠️ ATENÇÃO!\n\n` +
+                        `A soma dos pesos das submatérias é ${pesoTotalSub.toFixed(1)}%\n` +
+                        `O ideal é que some 100%.\n\n` +
+                        `Exemplo correto:\n` +
+                        `• Módulo: 80%\n` +
+                        `  - Somativa: 40%\n` +
+                        `  - Formativa: 40%\n` +
+                        `• Morfo: 20%\n` +
+                        `  - Somativa: 80%\n` +
+                        `  - Formativa: 20%\n\n` +
+                        `Deseja salvar mesmo assim?`
+                    );
+                    
+                    if (!confirmar) {
+                        return;
+                    }
                 }
                 
                 // Validar pesos dos componentes de cada submatéria
                 for (let i = 0; i < submateriasTemp.length; i++) {
                     const sub = submateriasTemp[i];
                     if (!sub.componentes || sub.componentes.length === 0) {
-                        alert(`Adicione componentes para "${sub.nome}"!`);
+                        alert(`❌ Adicione componentes para "${sub.nome || 'Submatéria ' + (i+1)}"!`);
                         return;
                     }
-                    const pesoComp = sub.componentes.reduce((sum, c) => sum + (c.peso || 0), 0);
+                    const pesoComp = sub.componentes.reduce((sum, c) => sum + (parseFloat(c.peso) || 0), 0);
                     if (Math.abs(pesoComp - 100) > 0.1) {
-                        alert(`Soma dos pesos dos componentes de "${sub.nome}" deve ser 100%! Atual: ${pesoComp.toFixed(1)}%`);
+                        alert(`❌ Os componentes de "${sub.nome || 'Submatéria ' + (i+1)}" devem somar 100%!\nAtual: ${pesoComp.toFixed(1)}%`);
                         return;
                     }
                 }
@@ -940,7 +997,10 @@
                         ...materias[indexEmEdicao],
                         nome,
                         usaBimestres,
-                        submateria: submateriasTemp.map(s => ({ ...s, componentes: s.componentes.map(c => ({ ...c })) }))
+                        submateria: submateriasTemp.map(s => ({ 
+                            ...s, 
+                            componentes: s.componentes.map(c => ({ ...c })) 
+                        }))
                     };
                 } else {
                     // Criar novos módulos
@@ -951,7 +1011,10 @@
                             nome: nomeModulo,
                             tipo: 'conjugada',
                             usaBimestres,
-                            submateria: submateriasTemp.map(s => ({ ...s, componentes: s.componentes.map(c => ({ ...c })) }))
+                            submateria: submateriasTemp.map(s => ({ 
+                                ...s, 
+                                componentes: s.componentes.map(c => ({ ...c })) 
+                            }))
                         });
                     }
                 }
@@ -1102,8 +1165,10 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
                     if (mediaSub !== null) {
+                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
                             <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                            <br><small>Contribuição: <strong>${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1124,8 +1189,10 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '2bim');
                     if (mediaSub !== null) {
+                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #f0f0f0; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center;">
                             <strong>Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                            <br><small>Contribuição: <strong>${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1147,8 +1214,10 @@
                     });
                     const mediaSub = calcularMediaSubmateria(materia, sIndex, '1bim');
                     if (mediaSub !== null) {
+                        const contribuicaoSub = mediaSub * (sub.peso / 100);
                         conteudoHtml += `<div style="background: #e8f4f8; padding: 10px; border-radius: 6px; margin-top: 12px;">
                             <strong>📊 Média ${sub.nome}:</strong> <span style="color: #9b59b6; font-weight: bold;">${mediaSub.toFixed(2)}</span>
+                            <br><small>Contribuição para nota final: <strong style="color: #667eea;">${contribuicaoSub.toFixed(2)}</strong></small>
                         </div>`;
                     }
                     conteudoHtml += '</div>';
@@ -1297,7 +1366,7 @@
                 const media = calcularMediaComponente(notas);
                 if (media !== null) {
                     temNotas = true;
-                    soma += media * (comp.peso / 100);
+                    soma += media * (parseFloat(comp.peso) / 100);
                 }
             });
             
@@ -1314,15 +1383,15 @@
                     const media = calcularMediaComponente(notas);
                     if (media !== null) {
                         temNotas = true;
-                        soma += media * (comp.peso / 100);
+                        soma += media * (parseFloat(comp.peso) / 100);
                     }
                 });
             } else {
-                materia.submateria.forEach(sub => {
-                    const mediaSub = calcularMediaSubmateria(materia, materia.submateria.indexOf(sub), bimestre);
+                materia.submateria.forEach((sub, sIndex) => {
+                    const mediaSub = calcularMediaSubmateria(materia, sIndex, bimestre);
                     if (mediaSub !== null) {
                         temNotas = true;
-                        soma += mediaSub * (sub.peso / 100);
+                        soma += mediaSub * (parseFloat(sub.peso) / 100);
                     }
                 });
             }

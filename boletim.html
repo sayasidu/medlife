@@ -1000,31 +1000,34 @@
         }
 
         function renderizarComponentes() {
-            const lista = document.getElementById('lista-componentes');
-            lista.innerHTML = '';
+    const lista = document.getElementById('lista-componentes');
+    lista.innerHTML = '';
 
-            componentesTemp.forEach((comp, index) => {
-                const div = document.createElement('div');
-                div.style.cssText = 'background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
-                div.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
-                        <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
-                               value="${comp.nome || ''}" 
-                               onchange="componentesTemp[${index}].nome = this.value">
-                        <input type="number" class="input-group" placeholder="Peso %" 
-                               value="${comp.peso || ''}" 
-                               onchange="componentesTemp[${index}].peso = parseFloat(this.value)"
-                               min="0" max="100" step="0.1">
-                        <input type="number" class="input-group" placeholder="Nº Avaliações" 
-                               value="${comp.numAvaliacoes || 1}" 
-                               onchange="componentesTemp[${index}].numAvaliacoes = parseInt(this.value)"
-                               min="1" max="10">
-                        <button class="btn btn-danger" onclick="removerComponente(${index})">×</button>
-                    </div>
-                `;
-                lista.appendChild(div);
-            });
-        }
+    componentesTemp.forEach((comp, index) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
+        div.innerHTML = `
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
+                <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                       placeholder="Nome (ex: Somativa)" 
+                       value="${comp.nome || ''}" 
+                       onchange="componentesTemp[${index}].nome = this.value">
+                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                       placeholder="Peso %" 
+                       value="${comp.peso || ''}" 
+                       onchange="componentesTemp[${index}].peso = parseFloat(this.value)"
+                       min="0" max="100" step="0.1">
+                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                       placeholder="Nº Avaliações" 
+                       value="${comp.numAvaliacoes || 1}" 
+                       onchange="componentesTemp[${index}].numAvaliacoes = parseInt(this.value)"
+                       min="1" max="10">
+                <button class="btn btn-danger" onclick="removerComponente(${index})">×</button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
 
         function removerComponente(index) {
             componentesTemp.splice(index, 1);
@@ -1766,10 +1769,9 @@
 
         // FUNÇÃO CORRIGIDA: Gera combinações mantendo notas já lançadas
         function gerarCombinacoesCombinadas(materia, mIndex) {
-            const mediaAlvo = config.mediaAprovacao;
-            const combinacoes = [];
-            
-            const componentesFaltando = [];
+    const mediaAlvo = config.mediaAprovacao;
+    const combinacoes = [];
+    const componentesFaltando = [];
             
             if (materia.tipo === 'individual') {
                 materia.componentes.forEach((comp, cIdx) => {
@@ -1869,9 +1871,9 @@
                 });
             }
             
-            if (componentesFaltando.length === 0) {
-                return [];
-            }
+           if (componentesFaltando.length === 0) {
+        return [];
+    }
             
             function gerarCombinacoes(indiceAtual, notasNovas) {
                 if (indiceAtual === componentesFaltando.length) {
@@ -2176,3 +2178,12 @@
                 'Isso apagará <strong>TODOS os dados</strong>!<br>Tem certeza?';
             abrirModal();
         }
+function limparTudo() {
+            tipoAcao = 'limpar';
+            document.getElementById('modal-mensagem').innerHTML = 
+                'Isso apagará <strong>TODOS os dados</strong>!<br>Tem certeza?';
+            abrirModal();
+        }
+    </script>
+</body>
+</html>

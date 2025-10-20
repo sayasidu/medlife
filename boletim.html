@@ -1707,53 +1707,177 @@
             }
         }
 
-        function atualizarPanoramaMateria() {
-            const select = document.getElementById('select-materia-panorama');
-            const panoramaConteudo = document.getElementById('panorama-conteudo');
-            const mIndex = parseInt(select.value);
+        function gerarCombinacoesCombinadas(materia, mIndex) {
+    const mediaAlvo = config.mediaAprovacao;
+    const combinacoes = [];
+    
+    const componentesFaltando = [];
+    
+    if (materia.tipo === 'individual') {
+        materia.componentes.forEach((comp, cIdx) => {
+            const notas1 = comp.notas1Bim || [];
+            const notas2 = comp.notas2Bim || [];
+            const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+            const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
             
-            if (isNaN(mIndex) || mIndex < 0) {
-                panoramaConteudo.innerHTML = '';
-                return;
+            if (materia.usaBimestres) {
+                if (validas1.length < comp.numAvaliacoes) {
+                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '1bim', comp });
+                }
+                if (validas2.length < comp.numAvaliacoes) {
+                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '2bim', comp });
+                }
+            } else {
+                if (validas1.length < comp.numAvaliacoes) {
+                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '1bim', comp });
+                }
             }
+        });
+    } else {
+        materia.submateria.forEach((sub, sIdx) => {
+            sub.componentes.forEach((comp, cIdx) => {
+                const notas1 = comp.notas1Bim || [];
+                const notas2 = comp.notas2Bim || [];
+                const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                
+                if (materia.usaBimestres) {
+                    if (validas1.length < comp.numAvaliacoes) {
+                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '1bim', comp, sub });
+                    }
+                    if (validas2.length < comp.numAvaliacoes) {
+                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '2bim', comp, sub });
+                    }
+                } else {
+                    if (validas1.length < comp.numAvaliacoes) {
+                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '1bim', comp, sub });
+                    }
+                }
+            });
+        });
+    }
+    
+    if (componentesFaltando.length === 0) {
+        return [];
+    }
+    
+    function gerarCombinacoes(faltando, notasAtuais = []) {
+        if (faltando.length === 0) {
+            const materiaCopia = JSON.parse(JSON.stringify(materia));
             
-            const materia = materias[mIndex];
-            if (!materia) {
-                panoramaConteudo.innerHTML = '';
-                return;
-            }
-            
-            const sugestoes = calcularNotasNecessariasDetalhadas(materia);
-            
-            if (!sugestoes || sugestoes.length === 0) {
-                panoramaConteudo.innerHTML = `
-                    <div class="panorama-item">
-                        <p style="text-align: center; color: #666;">
-                            ✅ Todas as avaliações foram lançadas para esta matéria!
-                        </p>
-                    </div>
-                `;
-                return;
-            }
-            
-            panoramaConteudo.innerHTML = '';
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'panorama-item';
-            
-            let html = `<h4>${materia.nome}</h4>`;
-            
-            sugestoes.forEach(sug => {
-                html += `<div class="necessidade-componente">
-                    ${sug.icone} <strong>${sug.componente}</strong><br>
-                    ${sug.mensagem}
-                </div>`;
+            notasAtuais.forEach((nota, idx) => {
+                const comp = faltando[idx];
+                if (comp.tipo === 'individual') {
+                    if (comp.bim === '1bim') {
+                        materiaCopia.componentes[comp.compIdx].notas1Bim = [nota];
+                    } else {
+                        materiaCopia.componentes[comp.compIdx].notas2Bim = [nota];
+                    }
+                } else {
+                    if (comp.bim === '1bim') {
+                        materiaCopia.submateria[comp.subIdx].componentes[comp.compIdx].notas1Bim = [nota];
+                    } else {
+                        materiaCopia.submateria[comp.subIdx].componentes[comp.compIdx].notas2Bim = [nota];
+                    }
+                }
             });
             
-            itemDiv.innerHTML = html;
-            panoramaConteudo.appendChild(itemDiv);
+            const mediaFinal = calcularMediaFinal(materiaCopia);
+            
+            if (mediaFinal !== null && Math.abs(mediaFinal - mediaAlvo) < 0.05) {
+                combinacoes.push({
+                    notas: notasAtuais.map(n => n.toFixed(1)),
+                    mediaFinal: mediaFinal.toFixed(2),
+                    componentes: faltando
+                });
+            }
+            return;
         }
+        
+        for (let nota = 0; nota <= 10; nota += 0.5) {
+            gerarCombinacoes(faltando.slice(1), [...notasAtuais, nota]);
+        }
+    }
+    
+    gerarCombinacoes(componentesFaltando);
+    
+    combinacoes.sort((a, b) => {
+        const somaA = a.notas.reduce((s, n) => s + parseFloat(n), 0);
+        const somaB = b.notas.reduce((s, n) => s + parseFloat(n), 0);
+        return somaA - somaB;
+    });
+    
+    return combinacoes.slice(0, 10);
+}
 
+function renderizarCombinacoesPanorama(materia, mIndex) {
+    const combinacoes = gerarCombinacoesCombinadas(materia, mIndex);
+    const panoramaConteudo = document.getElementById('panorama-conteudo');
+    
+    if (combinacoes.length === 0) {
+        panoramaConteudo.innerHTML = `
+            <div class="panorama-item">
+                <p style="text-align: center; color: #666;">
+                    ✅ Todas as avaliações foram lançadas!
+                </p>
+            </div>
+        `;
+        return;
+    }
+    
+    panoramaConteudo.innerHTML = '';
+    
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'panorama-item';
+    
+    let html = `<h4>🎯 ${materia.nome}</h4>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
+                    Combinações para atingir média <strong>${config.mediaAprovacao.toFixed(1)}</strong>:
+                </p>`;
+    
+    combinacoes.forEach((combo, idx) => {
+        html += `<div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${idx === 0 ? '#27ae60' : '#667eea'};">`;
+        
+        combo.componentes.forEach((comp, compIdx) => {
+            const label = comp.tipo === 'individual' 
+                ? `${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`
+                : `${comp.sub.nome} → ${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`;
+            
+            html += `<div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.95rem;">
+                        <span>${label}:</span>
+                        <strong style="color: #667eea;">${combo.notas[compIdx]}</strong>
+                    </div>`;
+        });
+        
+        html += `<div style="border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 10px; text-align: right; color: #27ae60; font-weight: bold;">
+                    📊 Média Final: ${combo.mediaFinal}
+                 </div>
+                 ${idx === 0 ? '<div style="margin-top: 8px; font-size: 0.85rem; color: #27ae60;">✨ Opção mais fácil</div>' : ''}
+            </div>`;
+    });
+    
+    itemDiv.innerHTML = html;
+    panoramaConteudo.appendChild(itemDiv);
+}
+
+function atualizarPanoramaMateria() {
+    const select = document.getElementById('select-materia-panorama');
+    const mIndex = parseInt(select.value);
+    
+    if (isNaN(mIndex) || mIndex < 0) {
+        document.getElementById('panorama-conteudo').innerHTML = '';
+        return;
+    }
+    
+    const materia = materias[mIndex];
+    if (!materia) {
+        document.getElementById('panorama-conteudo').innerHTML = '';
+        return;
+    }
+    
+    renderizarCombinacoesPanorama(materia, mIndex);
+}
+        
         function calcularNotasNecessariasDetalhadas(materia) {
             const sugestoes = [];
             const mediaAlvo = config.mediaAprovacao;

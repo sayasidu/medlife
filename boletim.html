@@ -177,12 +177,12 @@
             color: white;
         }
 
-        .badge-individual {
+        .badge-bimestral {
             background: #3498db;
         }
 
-        .badge-conjugada {
-            background: #9b59b6;
+        .badge-modular {
+            background: #e74c3c;
         }
 
         .materia-item {
@@ -196,6 +196,11 @@
         .materia-item.aprovado {
             border-left-color: #51cf66;
             background: #f0fdf4;
+        }
+
+        .materia-item.pf {
+            border-left-color: #ffa94d;
+            background: #fffbf0;
         }
 
         .materia-item.reprovado {
@@ -218,43 +223,13 @@
             font-size: 1.4rem;
         }
 
-        .sub-materias-container {
-            margin-top: 20px;
-        }
-
-        .sub-materia-card {
+        .avaliacao-card {
             background: white;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 15px;
             border-left: 4px solid #9b59b6;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .sub-materia-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .sub-materia-header h4 {
-            color: #9b59b6;
-            font-size: 1.1rem;
-        }
-
-        .avaliacoes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .avaliacao-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
         }
 
         .avaliacao-header {
@@ -325,14 +300,14 @@
             color: #2b8a3e;
         }
 
+        .status-pf {
+            background: #ffe3b6;
+            color: #d97706;
+        }
+
         .status-reprovado {
             background: #ffe3e3;
             color: #c92a2a;
-        }
-
-        .status-cursando {
-            background: #fff3bf;
-            color: #e67700;
         }
 
         .modal-overlay {
@@ -431,42 +406,6 @@
             background: #e8f0fe;
         }
 
-        .sub-materias-form {
-            margin-top: 20px;
-        }
-
-        .sub-materia-form-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #9b59b6;
-        }
-
-        .avaliacoes-form {
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .avaliacao-form-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid #dee2e6;
-        }
-
-        .peso-info {
-            background: #fff3cd;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 10px 0;
-            font-size: 0.9rem;
-            border-left: 3px solid #ffc107;
-        }
-
         .btn-remove {
             background: #dc3545;
             color: white;
@@ -477,13 +416,40 @@
             cursor: pointer;
         }
 
+        .boletim-final {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .boletim-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .boletim-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .boletim-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .boletim-table tr:hover {
+            background: #f8f9fa;
+        }
+
         @media (max-width: 768px) {
             .materia-header {
                 flex-direction: column;
                 gap: 15px;
-            }
-            .avaliacoes-container {
-                grid-template-columns: 1fr;
             }
             .tipo-radio {
                 flex-direction: column;
@@ -493,11 +459,11 @@
 </head>
 <body>
     <div class="container">
-        <a href="https://sayasidu.github.io/medlife/" class="back-link">← Voltar ao Blog</a>
+        <a href="#" class="back-link">← Voltar</a>
         
         <div class="header">
             <h1>📊 Calculadora de Boletim</h1>
-            <p>Sistema de Notas com Pesos Hierárquicos</p>
+            <p>Sistema de Notas Bimestrais e Modulares</p>
         </div>
 
         <!-- TELA 1: Configuração -->
@@ -516,6 +482,11 @@
             </div>
 
             <div class="input-group">
+                <label for="media-pf">📋 Média mínima para PF (Prova Final):</label>
+                <input type="number" id="media-pf" step="0.1" min="0" max="10" placeholder="Ex: 4.0" value="4.0">
+            </div>
+
+            <div class="input-group">
                 <label for="semestre">📅 Semestre/Período:</label>
                 <input type="text" id="semestre" placeholder="Ex: 3º Semestre - 2024/2">
             </div>
@@ -531,7 +502,7 @@
             
             <div class="info-box">
                 <strong id="info-instituicao"></strong><br>
-                Média para aprovação: <strong id="info-media"></strong>
+                Média para aprovação: <strong id="info-media"></strong> | PF a partir de: <strong id="info-pf"></strong>
             </div>
 
             <div id="media-geral-container"></div>
@@ -540,9 +511,21 @@
 
             <div id="materias-lista"></div>
 
+            <button class="btn btn-success" onclick="gerarBoletimFinal()" style="width: 100%; margin: 20px 0; font-size: 1.1rem;">📄 Gerar Boletim Final</button>
+
             <div class="flex-buttons">
                 <button class="btn btn-secondary" onclick="voltarConfig()">← Configurações</button>
                 <button class="btn btn-danger" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+            </div>
+        </div>
+
+        <!-- TELA 3: Boletim Final -->
+        <div id="tela-boletim-final" class="card hidden">
+            <h2>📄 Boletim Final</h2>
+            <div id="boletim-conteudo"></div>
+            <div class="flex-buttons">
+                <button class="btn btn-secondary" onclick="voltarMaterias()">← Voltar</button>
+                <button class="btn btn-primary" onclick="imprimirBoletim()">🖨️ Imprimir</button>
             </div>
         </div>
     </div>
@@ -556,54 +539,31 @@
                 <label>📋 Tipo de Matéria:</label>
                 <div class="tipo-radio">
                     <label>
-                        <input type="radio" name="tipo-materia" value="individual" checked onchange="mudarTipoMateria()">
-                        <span>Individual</span>
+                        <input type="radio" name="tipo-periodo" value="bimestral" checked onchange="mudarTipoPeriodo()">
+                        <span>Bimestral</span>
                     </label>
                     <label>
-                        <input type="radio" name="tipo-materia" value="conjugada" onchange="mudarTipoMateria()">
-                        <span>Conjugada</span>
+                        <input type="radio" name="tipo-periodo" value="modular" onchange="mudarTipoPeriodo()">
+                        <span>Modular (PIC, PEI, Módulo)</span>
                     </label>
                 </div>
-                <small id="tipo-descricao">Matéria com avaliações diretas</small>
+                <small id="tipo-descricao">Matéria com avaliações bimestrais</small>
             </div>
 
-            <!-- INDIVIDUAL -->
-            <div id="individual-container">
-                <div class="input-group">
-                    <label for="materia-nome">📚 Nome da Matéria:</label>
-                    <input type="text" id="materia-nome" placeholder="Ex: Anatomia">
-                </div>
-
-                <div class="input-group">
-                    <label for="materia-peso">⚖️ Peso da Matéria (%):</label>
-                    <input type="number" id="materia-peso" step="1" min="1" max="100" value="100" placeholder="Ex: 100">
-                    <small>Peso total da matéria no boletim</small>
-                </div>
-
-                <div id="avaliacoes-individuais-container">
-                    <h4 style="margin: 20px 0 10px 0;">📝 Avaliações</h4>
-                    <div id="avaliacoes-individuais-lista"></div>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="adicionarAvaliacaoIndividual()">+ Adicionar Avaliação</button>
-                </div>
+            <div class="input-group">
+                <label for="materia-nome">📚 Nome da Matéria:</label>
+                <input type="text" id="materia-nome" placeholder="Ex: Anatomia">
             </div>
 
-            <!-- CONJUGADA -->
-            <div id="conjugada-container" class="hidden">
-                <div class="input-group">
-                    <label for="materia-nome-conjugada">📚 Nome da Matéria Principal:</label>
-                    <input type="text" id="materia-nome-conjugada" placeholder="Ex: Habilidades Médicas">
-                </div>
+            <div class="input-group">
+                <label for="materia-peso">⚖️ Peso da Matéria (%):</label>
+                <input type="number" id="materia-peso" step="1" min="1" max="100" value="100" placeholder="Ex: 100">
+            </div>
 
-                <div class="input-group">
-                    <label for="materia-peso-conjugada">⚖️ Peso Total (%):</label>
-                    <input type="number" id="materia-peso-conjugada" step="1" min="1" max="100" value="100">
-                </div>
-
-                <div class="sub-materias-form">
-                    <h4 style="margin-bottom: 15px;">Sub-matérias</h4>
-                    <div id="sub-materias-lista"></div>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="adicionarSubMateria()">+ Adicionar Sub-matéria</button>
-                </div>
+            <div id="avaliacoes-container">
+                <h4 style="margin: 20px 0 10px 0;">📝 Avaliações</h4>
+                <div id="avaliacoes-lista"></div>
+                <button type="button" class="btn btn-secondary btn-small" onclick="adicionarAvaliacao()">+ Adicionar Avaliação</button>
             </div>
 
             <div class="modal-buttons">
@@ -638,17 +598,16 @@
     </div>
 
     <script>
-        let config = { instituicao: '', mediaAprovacao: 7.0, semestre: '' };
+        let config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '' };
         let materias = [];
         let indexParaExcluir = null;
-        let indexEdicao = null;
         let indexNotas = null;
+        let contadorAvaliacoes = 0;
 
         window.onload = function() {
             carregarDados();
             document.getElementById('btn-cancelar').onclick = fecharModal;
             document.getElementById('btn-confirmar').onclick = confirmarAcao;
-            adicionarAvaliacaoIndividual(); // Adiciona uma avaliação padrão
         };
 
         function carregarDados() {
@@ -656,12 +615,13 @@
             if (dados) {
                 try {
                     const parsed = JSON.parse(dados);
-                    config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, semestre: '' };
+                    config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '' };
                     materias = parsed.materias || [];
                     
                     if (config.instituicao) {
                         document.getElementById('instituicao').value = config.instituicao;
                         document.getElementById('media-aprovacao').value = config.mediaAprovacao;
+                        document.getElementById('media-pf').value = config.mediaPF || 4.0;
                         document.getElementById('semestre').value = config.semestre;
                     }
                 } catch (e) {
@@ -684,18 +644,20 @@
         function iniciarBoletim() {
             const instituicao = document.getElementById('instituicao').value.trim();
             const media = parseFloat(document.getElementById('media-aprovacao').value);
+            const mediaPF = parseFloat(document.getElementById('media-pf').value);
             const semestre = document.getElementById('semestre').value.trim();
 
             if (!instituicao || !media || !semestre) {
-                alert('⚠️ Preencha todos os campos!');
+                alert('Preencha todos os campos!');
                 return;
             }
 
-            config = { instituicao, mediaAprovacao: media, semestre };
+            config = { instituicao, mediaAprovacao: media, mediaPF, semestre };
             salvarDados();
             
             document.getElementById('info-instituicao').textContent = config.instituicao;
             document.getElementById('info-media').textContent = config.mediaAprovacao.toFixed(1);
+            document.getElementById('info-pf').textContent = config.mediaPF.toFixed(1);
 
             mostrarTela('tela-materias');
             renderizarMaterias();
@@ -705,133 +667,52 @@
             mostrarTela('tela-config');
         }
 
-        function mudarTipoMateria() {
-            const tipo = document.querySelector('input[name="tipo-materia"]:checked').value;
-            
-            document.getElementById('individual-container').classList.add('hidden');
-            document.getElementById('conjugada-container').classList.add('hidden');
+        function voltarMaterias() {
+            mostrarTela('tela-materias');
+        }
 
-            if (tipo === 'individual') {
-                document.getElementById('individual-container').classList.remove('hidden');
-                document.getElementById('tipo-descricao').textContent = 'Matéria com avaliações diretas (Ex: Anatomia)';
+        function mudarTipoPeriodo() {
+            const tipo = document.querySelector('input[name="tipo-periodo"]:checked').value;
+            if (tipo === 'bimestral') {
+                document.getElementById('tipo-descricao').textContent = 'Matéria com avaliações bimestrais';
             } else {
-                document.getElementById('conjugada-container').classList.remove('hidden');
-                document.getElementById('tipo-descricao').textContent = 'Matéria dividida em sub-matérias com pesos (Ex: Habilidades Médicas)';
+                document.getElementById('tipo-descricao').textContent = 'Matéria modular (PIC, PEI, Módulo, etc)';
             }
         }
 
-        // ========== AVALIAÇÕES INDIVIDUAIS ==========
-        let contadorAvaliacoesInd = 0;
-
-        function adicionarAvaliacaoIndividual() {
-            const lista = document.getElementById('avaliacoes-individuais-lista');
-            const id = contadorAvaliacoesInd++;
+        function adicionarAvaliacao() {
+            const lista = document.getElementById('avaliacoes-lista');
+            const id = contadorAvaliacoes++;
             
             const div = document.createElement('div');
-            div.className = 'avaliacao-form-item';
-            div.id = `avaliacao-ind-${id}`;
+            div.className = 'avaliacao-card';
+            div.id = `avaliacao-${id}`;
             div.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h5>Avaliação ${id + 1}</h5>
-                    <button type="button" class="btn-remove" onclick="removerAvaliacaoIndividual(${id})">×</button>
+                    <button type="button" class="btn-remove" onclick="removerAvaliacao(${id})">×</button>
                 </div>
                 <div class="input-group">
                     <label>Nome:</label>
-                    <input type="text" class="avaliacao-ind-nome" placeholder="Ex: Somativa" value="">
+                    <input type="text" class="avaliacao-nome" placeholder="Ex: Somativa, Prova 1" value="">
                 </div>
                 <div class="input-group">
                     <label>Peso (%):</label>
-                    <input type="number" class="avaliacao-ind-peso" step="1" min="1" max="100" value="50">
+                    <input type="number" class="avaliacao-peso" step="1" min="1" max="100" value="50">
                 </div>
                 <div class="input-group">
                     <label>Quantidade de Provas:</label>
-                    <input type="number" class="avaliacao-ind-provas" min="1" max="10" value="1">
+                    <input type="number" class="avaliacao-provas" min="1" max="10" value="1">
                 </div>
             `;
             lista.appendChild(div);
         }
 
-        function removerAvaliacaoIndividual(id) {
-            const el = document.getElementById(`avaliacao-ind-${id}`);
+        function removerAvaliacao(id) {
+            const el = document.getElementById(`avaliacao-${id}`);
             if (el) el.remove();
         }
 
-        // ========== SUB-MATÉRIAS ==========
-        let contadorSubMaterias = 0;
-
-        function adicionarSubMateria() {
-            const lista = document.getElementById('sub-materias-lista');
-            const id = contadorSubMaterias++;
-            
-            const div = document.createElement('div');
-            div.className = 'sub-materia-form-item';
-            div.id = `sub-materia-${id}`;
-            div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h5 style="color: #9b59b6;">Sub-matéria ${id + 1}</h5>
-                    <button type="button" class="btn-remove" onclick="removerSubMateria(${id})">×</button>
-                </div>
-                <div class="input-group">
-                    <label>Nome:</label>
-                    <input type="text" class="sub-nome" placeholder="Ex: Clínica Médica">
-                </div>
-                <div class="input-group">
-                    <label>Peso (% do total):</label>
-                    <input type="number" class="sub-peso" step="1" min="1" max="100" value="40">
-                    <small>Peso em relação ao total da matéria principal</small>
-                </div>
-                <div class="avaliacoes-form">
-                    <h5 style="margin-bottom: 10px;">Avaliações desta sub-matéria</h5>
-                    <div class="avaliacoes-sub-lista" id="avaliacoes-sub-${id}"></div>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="adicionarAvaliacaoSub(${id})" style="margin-top: 10px;">+ Adicionar Avaliação</button>
-                </div>
-            `;
-            lista.appendChild(div);
-            
-            // Adiciona uma avaliação padrão
-            adicionarAvaliacaoSub(id);
-        }
-
-        function removerSubMateria(id) {
-            const el = document.getElementById(`sub-materia-${id}`);
-            if (el) el.remove();
-        }
-
-        function adicionarAvaliacaoSub(subId) {
-            const lista = document.getElementById(`avaliacoes-sub-${subId}`);
-            const avalId = Date.now();
-            
-            const div = document.createElement('div');
-            div.className = 'avaliacao-form-item';
-            div.id = `avaliacao-sub-${subId}-${avalId}`;
-            div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <strong style="font-size: 0.9rem;">Avaliação</strong>
-                    <button type="button" class="btn-remove" onclick="removerAvaliacaoSub(${subId}, ${avalId})">×</button>
-                </div>
-                <div class="input-group">
-                    <label>Nome:</label>
-                    <input type="text" class="avaliacao-sub-nome" placeholder="Ex: Somativa">
-                </div>
-                <div class="input-group">
-                    <label>Peso (% da sub-matéria):</label>
-                    <input type="number" class="avaliacao-sub-peso" step="1" min="1" max="100" value="70">
-                    <small>Ex: Somativa = 70%, Formativa = 30%</small>
-                </div>
-                <div class="input-group">
-                    <label>Quantidade de Provas:</label>
-                    <input type="number" class="avaliacao-sub-provas" min="1" max="10" value="1">
-                </div>
-            `;
-            lista.appendChild(div);
-        }
-
-        function removerAvaliacaoSub(subId, avalId) {
-            const el = document.getElementById(`avaliacao-sub-${subId}-${avalId}`);
-            if (el) el.remove();
-        }
-
-        // ========== CÁLCULOS ==========
         function calcularMediaAvaliacao(notas) {
             if (!notas || notas.length === 0) return null;
             const notasValidas = notas.filter(n => n !== null && n !== '');
@@ -840,85 +721,35 @@
         }
 
         function calcularMediaMateria(materia) {
-            if (materia.tipo === 'individual') {
-                let somaMediasPonderadas = 0;
-                let somaPesos = 0;
-
-                materia.avaliacoes.forEach(aval => {
-                    const media = calcularMediaAvaliacao(aval.notas);
-                    if (media !== null) {
-                        somaMediasPonderadas += media * aval.peso;
-                        somaPesos += aval.peso;
-                    }
-                });
-
-                return somaPesos > 0 ? (somaMediasPonderadas / somaPesos).toFixed(2) : null;
-
-            } else if (materia.tipo === 'conjugada') {
-                let somaMediasPonderadas = 0;
-                let somaPesos = 0;
-
-                materia.subMaterias.forEach(sub => {
-                    let somaAvalPonderadas = 0;
-                    let somaPesosAval = 0;
-
-                    sub.avaliacoes.forEach(aval => {
-                        const media = calcularMediaAvaliacao(aval.notas);
-                        if (media !== null) {
-                            somaAvalPonderadas += media * aval.peso;
-                            somaPesosAval += aval.peso;
-                        }
-                    });
-
-                    if (somaPesosAval > 0) {
-                        const mediaSub = somaAvalPonderadas / somaPesosAval;
-                        somaMediasPonderadas += mediaSub * sub.peso;
-                        somaPesos += sub.peso;
-                    }
-                });
-
-                return somaPesos > 0 ? (somaMediasPonderadas / somaPesos).toFixed(2) : null;
-            }
-
-            return null;
-        }
-
-        function calcularMediaGeral() {
-            if (materias.length === 0) return null;
-            
             let somaMediasPonderadas = 0;
             let somaPesos = 0;
 
-            materias.forEach(materia => {
-                const media = calcularMediaMateria(materia);
+            materia.avaliacoes.forEach(aval => {
+                const media = calcularMediaAvaliacao(aval.notas);
                 if (media !== null) {
-                    somaMediasPonderadas += parseFloat(media) * materia.peso;
-                    somaPesos += materia.peso;
+                    somaMediasPonderadas += media * aval.peso;
+                    somaPesos += aval.peso;
                 }
             });
 
             return somaPesos > 0 ? (somaMediasPonderadas / somaPesos).toFixed(2) : null;
         }
 
-        // ========== RENDERIZAÇÃO ==========
-        function renderizarMediaGeral() {
-            const container = document.getElementById('media-geral-container');
-            const mediaGeral = calcularMediaGeral();
-
-            if (mediaGeral !== null) {
-                const status = parseFloat(mediaGeral) >= config.mediaAprovacao ? '✅ Aprovado' : '❌ Reprovado';
-                const statusClass = parseFloat(mediaGeral) >= config.mediaAprovacao ? 'status-aprovado' : 'status-reprovado';
-                
-                container.innerHTML = `
-                    <div class="media-geral">
-                        <h3>Média Geral do Período</h3>
-                        <div class="valor">${mediaGeral}</div>
-                        <div class="status-badge ${statusClass}">${status}</div>
-                    </div>
-                `;
+        function obterStatus(media) {
+            const mediaNum = parseFloat(media);
+            if (mediaNum >= config.mediaAprovacao) {
+                return 'aprovado';
+            } else if (mediaNum >= config.mediaPF) {
+                return 'pf';
             } else {
-                container.innerHTML = '';
+                return 'reprovado';
             }
+        }
+
+        function obterTextoStatus(status) {
+            if (status === 'aprovado') return '✅ Aprovado';
+            if (status === 'pf') return '⚠️ PF (Prova Final)';
+            return '❌ Reprovado';
         }
 
         function renderizarMaterias() {
@@ -926,141 +757,51 @@
             lista.innerHTML = '';
 
             if (!materias || materias.length === 0) {
-                lista.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">Nenhuma matéria cadastrada ainda.<br>Clique em "➕ Adicionar Matéria" para começar!</p>';
-                renderizarMediaGeral();
+                lista.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">Nenhuma matéria cadastrada ainda.</p>';
                 return;
             }
 
             materias.forEach((materia, index) => {
                 const mediaFinal = calcularMediaMateria(materia);
-                let statusClass = '';
-                let statusBadge = '';
-
-                if (mediaFinal !== null) {
-                    if (parseFloat(mediaFinal) >= config.mediaAprovacao) {
-                        statusClass = 'aprovado';
-                        statusBadge = '<span class="status-badge status-aprovado">✅ Aprovado</span>';
-                    } else {
-                        statusClass = 'reprovado';
-                        statusBadge = '<span class="status-badge status-reprovado">❌ Reprovado</span>';
-                    }
-                } else {
-                    statusBadge = '<span class="status-badge status-cursando">📚 Cursando</span>';
-                }
+                const status = mediaFinal ? obterStatus(mediaFinal) : null;
+                const statusClass = status || '';
+                const statusBadge = mediaFinal ? `<span class="status-badge status-${status}">${obterTextoStatus(status)}</span>` : '';
 
                 const div = document.createElement('div');
                 div.className = `materia-item ${statusClass}`;
 
-                const tipoBadge = materia.tipo === 'individual' 
-                    ? '<span class="badge badge-individual">Individual</span>'
-                    : '<span class="badge badge-conjugada">Conjugada</span>';
+                const tipoBadge = materia.tipoPeriodo === 'bimestral' 
+                    ? '<span class="badge badge-bimestral">Bimestral</span>'
+                    : '<span class="badge badge-modular">Modular</span>';
 
-                let conteudoHTML = '';
-
-                if (materia.tipo === 'individual') {
-                    let avaliacoesHTML = '<div class="avaliacoes-container">';
-                    materia.avaliacoes.forEach((aval, avalIndex) => {
-                        const mediaAval = calcularMediaAvaliacao(aval.notas);
-                        const pesoReal = (aval.peso / 100 * materia.peso).toFixed(1);
-                        
-                        let notasHTML = '';
-                        if (aval.notas && aval.notas.length > 0) {
-                            notasHTML = '<div class="notas-list">';
-                            aval.notas.forEach((nota, i) => {
-                                notasHTML += `<div class="nota-badge">P${i+1}: <strong>${nota !== null ? parseFloat(nota).toFixed(1) : '-'}</strong></div>`;
-                            });
-                            notasHTML += '</div>';
-                        }
-
-                        avaliacoesHTML += `
-                            <div class="avaliacao-card">
-                                <div class="avaliacao-header">
-                                    <h5>${aval.nome}</h5>
-                                    <span class="peso-badge">${aval.peso}%</span>
-                                </div>
-                                <div style="text-align: center; margin: 10px 0;">
-                                    <small style="color: #666;">Média: </small>
-                                    <strong style="color: #667eea; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>
-                                </div>
-                                ${notasHTML}
-                                <button class="btn btn-info btn-small" style="width: 100%; margin-top: 10px;" onclick="abrirModalNotasIndividual(${index}, ${avalIndex})">📝 Gerenciar Notas</button>
-                            </div>
-                        `;
-                    });
-                    avaliacoesHTML += '</div>';
-                    conteudoHTML = avaliacoesHTML;
-
-                } else if (materia.tipo === 'conjugada') {
-                    let subMateriasHTML = '<div class="sub-materias-container">';
-                    materia.subMaterias.forEach((sub, subIndex) => {
-                        let somaAvalPonderadas = 0;
-                        let somaPesosAval = 0;
-                        
-                        sub.avaliacoes.forEach(aval => {
-                            const media = calcularMediaAvaliacao(aval.notas);
-                            if (media !== null) {
-                                somaAvalPonderadas += media * aval.peso;
-                                somaPesosAval += aval.peso;
-                            }
+                let avaliacoesHTML = '';
+                materia.avaliacoes.forEach((aval, avalIndex) => {
+                    const mediaAval = calcularMediaAvaliacao(aval.notas);
+                    
+                    let notasHTML = '';
+                    if (aval.notas && aval.notas.length > 0) {
+                        notasHTML = '<div class="notas-list">';
+                        aval.notas.forEach((nota, i) => {
+                            notasHTML += `<div class="nota-badge">P${i+1}: <strong>${nota !== null ? parseFloat(nota).toFixed(1) : '-'}</strong></div>`;
                         });
-                        
-                        const mediaSub = somaPesosAval > 0 ? (somaAvalPonderadas / somaPesosAval).toFixed(2) : null;
+                        notasHTML += '</div>';
+                    }
 
-                        let avaliacoesHTML = '<div class="avaliacoes-container">';
-                        sub.avaliacoes.forEach((aval, avalIndex) => {
-                            const mediaAval = calcularMediaAvaliacao(aval.notas);
-                            const pesoRealSub = (aval.peso / 100 * sub.peso).toFixed(1);
-                            const pesoRealTotal = (aval.peso / 100 * sub.peso / 100 * materia.peso).toFixed(1);
-                            
-                            let notasHTML = '';
-                            if (aval.notas && aval.notas.length > 0) {
-                                notasHTML = '<div class="notas-list">';
-                                aval.notas.forEach((nota, i) => {
-                                    notasHTML += `<div class="nota-badge">P${i+1}: <strong>${nota !== null ? parseFloat(nota).toFixed(1) : '-'}</strong></div>`;
-                                });
-                                notasHTML += '</div>';
-                            }
-
-                            avaliacoesHTML += `
-                                <div class="avaliacao-card">
-                                    <div class="avaliacao-header">
-                                        <h5>${aval.nome}</h5>
-                                        <span class="peso-badge">${aval.peso}%</span>
-                                    </div>
-                                    <div class="peso-info">
-                                        ${aval.peso}% de ${sub.peso}% = <strong>${pesoRealSub}%</strong> da sub<br>
-                                        <strong>${pesoRealTotal}%</strong> do total
-                                    </div>
-                                    <div style="text-align: center; margin: 10px 0;">
-                                        <small style="color: #666;">Média: </small>
-                                        <strong style="color: #9b59b6; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>
-                                    </div>
-                                    ${notasHTML}
-                                    <button class="btn btn-info btn-small" style="width: 100%; margin-top: 10px;" onclick="abrirModalNotasConjugada(${index}, ${subIndex}, ${avalIndex})">📝 Gerenciar Notas</button>
-                                </div>
-                            `;
-                        });
-                        avaliacoesHTML += '</div>';
-
-                        subMateriasHTML += `
-                            <div class="sub-materia-card">
-                                <div class="sub-materia-header">
-                                    <div>
-                                        <h4>${sub.nome}</h4>
-                                        <span class="peso-badge">${sub.peso}% do total</span>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <small style="color: #666;">Média: </small>
-                                        <strong style="color: #9b59b6; font-size: 1.4rem;">${mediaSub !== null ? mediaSub : '-'}</strong>
-                                    </div>
-                                </div>
-                                ${avaliacoesHTML}
+                    avaliacoesHTML += `
+                        <div class="avaliacao-card">
+                            <div class="avaliacao-header">
+                                <h5>${aval.nome}</h5>
+                                <span class="peso-badge">${aval.peso}%</span>
                             </div>
-                        `;
-                    });
-                    subMateriasHTML += '</div>';
-                    conteudoHTML = subMateriasHTML;
-                }
+                            <div style="text-align: center; margin: 10px 0;">
+                                <small style="color: #666;">Média: </small>
+                                <strong style="color: #667eea; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>
+                            </div>
+                            ${notasHTML}
+                            <button class="btn btn-info btn-small" style="width: 100%; margin-top: 10px;" onclick="abrirModalNotas(${index}, ${avalIndex})">📝 Gerenciar Notas</button>
+                        </div>
+                    `;
+                });
 
                 div.innerHTML = `
                     <div class="materia-header">
@@ -1073,7 +814,6 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn btn-warning btn-small" onclick="editarMateria(${index})">✏️ Editar</button>
                             <button class="btn btn-danger btn-small" onclick="excluirMateria(${index})">🗑️ Excluir</button>
                         </div>
                     </div>
@@ -1085,200 +825,77 @@
                         </div>
                     ` : ''}
                     
-                    ${conteudoHTML}
+                    <div>${avaliacoesHTML}</div>
                 `;
 
                 lista.appendChild(div);
             });
-
-            renderizarMediaGeral();
         }
 
-        // ========== SALVAR MATÉRIA ==========
         function salvarMateria() {
-            const tipo = document.querySelector('input[name="tipo-materia"]:checked').value;
+            const tipoPeriodo = document.querySelector('input[name="tipo-periodo"]:checked').value;
+            const nome = document.getElementById('materia-nome').value.trim();
+            const peso = parseFloat(document.getElementById('materia-peso').value);
 
-            if (tipo === 'individual') {
-                const nome = document.getElementById('materia-nome').value.trim();
-                const peso = parseFloat(document.getElementById('materia-peso').value);
-
-                if (!nome || !peso) {
-                    alert('⚠️ Preencha nome e peso da matéria!');
-                    return;
-                }
-
-                const avaliacoes = [];
-                const avaliacoesEls = document.querySelectorAll('#avaliacoes-individuais-lista .avaliacao-form-item');
-                
-                avaliacoesEls.forEach(el => {
-                    const nomeAval = el.querySelector('.avaliacao-ind-nome').value.trim();
-                    const pesoAval = parseFloat(el.querySelector('.avaliacao-ind-peso').value);
-                    const provasAval = parseInt(el.querySelector('.avaliacao-ind-provas').value);
-
-                    if (nomeAval && pesoAval && provasAval) {
-                        avaliacoes.push({
-                            nome: nomeAval,
-                            peso: pesoAval,
-                            quantidadeProvas: provasAval,
-                            notas: Array(provasAval).fill(null)
-                        });
-                    }
-                });
-
-                if (avaliacoes.length === 0) {
-                    alert('⚠️ Adicione pelo menos uma avaliação!');
-                    return;
-                }
-
-                const somaPesos = avaliacoes.reduce((acc, a) => acc + a.peso, 0);
-                if (Math.abs(somaPesos - 100) > 0.1) {
-                    if (!confirm(`⚠️ A soma dos pesos das avaliações é ${somaPesos}%, não 100%. Deseja continuar mesmo assim?`)) {
-                        return;
-                    }
-                }
-
-                if (indexEdicao !== null) {
-                    materias[indexEdicao].nome = nome;
-                    materias[indexEdicao].peso = peso;
-                    materias[indexEdicao].avaliacoes = avaliacoes;
-                } else {
-                    materias.push({ tipo: 'individual', nome, peso, avaliacoes });
-                }
-
-            } else if (tipo === 'conjugada') {
-                const nome = document.getElementById('materia-nome-conjugada').value.trim();
-                const peso = parseFloat(document.getElementById('materia-peso-conjugada').value);
-
-                if (!nome || !peso) {
-                    alert('⚠️ Preencha nome e peso da matéria!');
-                    return;
-                }
-
-                const subMaterias = [];
-                const subEls = document.querySelectorAll('#sub-materias-lista .sub-materia-form-item');
-
-                subEls.forEach(subEl => {
-                    const nomeSub = subEl.querySelector('.sub-nome').value.trim();
-                    const pesoSub = parseFloat(subEl.querySelector('.sub-peso').value);
-
-                    if (!nomeSub || !pesoSub) return;
-
-                    const avaliacoes = [];
-                    const avalEls = subEl.querySelectorAll('.avaliacao-form-item');
-
-                    avalEls.forEach(avalEl => {
-                        const nomeAval = avalEl.querySelector('.avaliacao-sub-nome').value.trim();
-                        const pesoAval = parseFloat(avalEl.querySelector('.avaliacao-sub-peso').value);
-                        const provasAval = parseInt(avalEl.querySelector('.avaliacao-sub-provas').value);
-
-                        if (nomeAval && pesoAval && provasAval) {
-                            avaliacoes.push({
-                                nome: nomeAval,
-                                peso: pesoAval,
-                                quantidadeProvas: provasAval,
-                                notas: Array(provasAval).fill(null)
-                            });
-                        }
-                    });
-
-                    if (avaliacoes.length > 0) {
-                        subMaterias.push({
-                            nome: nomeSub,
-                            peso: pesoSub,
-                            avaliacoes
-                        });
-                    }
-                });
-
-                if (subMaterias.length === 0) {
-                    alert('⚠️ Adicione pelo menos uma sub-matéria com avaliações!');
-                    return;
-                }
-
-                const somaPesosSub = subMaterias.reduce((acc, s) => acc + s.peso, 0);
-                if (Math.abs(somaPesosSub - 100) > 0.1) {
-                    if (!confirm(`⚠️ A soma dos pesos das sub-matérias é ${somaPesosSub}%, não 100%. Deseja continuar?`)) {
-                        return;
-                    }
-                }
-
-                if (indexEdicao !== null) {
-                    materias[indexEdicao].nome = nome;
-                    materias[indexEdicao].peso = peso;
-                    materias[indexEdicao].subMaterias = subMaterias;
-                } else {
-                    materias.push({ tipo: 'conjugada', nome, peso, subMaterias });
-                }
+            if (!nome || !peso) {
+                alert('Preencha nome e peso da matéria!');
+                return;
             }
 
+            const avaliacoes = [];
+            const avaliacoesEls = document.querySelectorAll('#avaliacoes-lista .avaliacao-card');
+            
+            avaliacoesEls.forEach(el => {
+                const nomeAval = el.querySelector('.avaliacao-nome').value.trim();
+                const pesoAval = parseFloat(el.querySelector('.avaliacao-peso').value);
+                const provasAval = parseInt(el.querySelector('.avaliacao-provas').value);
+
+                if (nomeAval && pesoAval && provasAval) {
+                    avaliacoes.push({
+                        nome: nomeAval,
+                        peso: pesoAval,
+                        quantidadeProvas: provasAval,
+                        notas: Array(provasAval).fill(null)
+                    });
+                }
+            });
+
+            if (avaliacoes.length === 0) {
+                alert('Adicione pelo menos uma avaliação!');
+                return;
+            }
+
+            materias.push({ tipoPeriodo, nome, peso, avaliacoes });
             salvarDados();
             fecharModalMateria();
             renderizarMaterias();
         }
 
-        // ========== MODALS ==========
         function abrirModalAdicionar() {
-            indexEdicao = null;
-            document.getElementById('modal-materia-titulo').textContent = '➕ Adicionar Matéria';
-            document.querySelector('input[name="tipo-materia"][value="individual"]').checked = true;
-            mudarTipoMateria();
+            document.getElementById('modal-materia-titulo').textContent = 'Adicionar Matéria';
+            document.querySelector('input[name="tipo-periodo"][value="bimestral"]').checked = true;
+            mudarTipoPeriodo();
             
             document.getElementById('materia-nome').value = '';
             document.getElementById('materia-peso').value = '100';
-            document.getElementById('materia-nome-conjugada').value = '';
-            document.getElementById('materia-peso-conjugada').value = '100';
+            document.getElementById('avaliacoes-lista').innerHTML = '';
+            contadorAvaliacoes = 0;
             
-            document.getElementById('avaliacoes-individuais-lista').innerHTML = '';
-            document.getElementById('sub-materias-lista').innerHTML = '';
-            contadorAvaliacoesInd = 0;
-            contadorSubMaterias = 0;
-            
-            adicionarAvaliacaoIndividual();
+            adicionarAvaliacao();
             
             document.getElementById('modal-materia').classList.add('show');
         }
 
-        function editarMateria(index) {
-            // Implementar edição (similar ao adicionar, mas preenchendo dados existentes)
-            alert('🚧 Função de edição será implementada em breve!');
-        }
-
         function fecharModalMateria() {
             document.getElementById('modal-materia').classList.remove('show');
-            indexEdicao = null;
         }
 
-        function abrirModalNotasIndividual(indexMateria, indexAvaliacao) {
+        function abrirModalNotas(indexMateria, indexAvaliacao) {
             indexNotas = { materia: indexMateria, avaliacao: indexAvaliacao };
             const avaliacao = materias[indexMateria].avaliacoes[indexAvaliacao];
             
             document.getElementById('modal-notas-titulo').textContent = 
-                `📝 ${materias[indexMateria].nome} - ${avaliacao.nome}`;
-            
-            const container = document.getElementById('notas-inputs');
-            container.innerHTML = '';
-
-            for (let i = 0; i < avaliacao.quantidadeProvas; i++) {
-                const notaAtual = avaliacao.notas[i] !== null ? avaliacao.notas[i] : '';
-                container.innerHTML += `
-                    <div class="input-group">
-                        <label for="nota-${i}">Prova ${i + 1}:</label>
-                        <input type="number" id="nota-${i}" step="0.1" min="0" max="10" 
-                               value="${notaAtual}" placeholder="Ex: 8.5">
-                    </div>
-                `;
-            }
-
-            document.getElementById('modal-notas').classList.add('show');
-        }
-
-        function abrirModalNotasConjugada(indexMateria, indexSub, indexAvaliacao) {
-            indexNotas = { materia: indexMateria, sub: indexSub, avaliacao: indexAvaliacao };
-            const sub = materias[indexMateria].subMaterias[indexSub];
-            const avaliacao = sub.avaliacoes[indexAvaliacao];
-            
-            document.getElementById('modal-notas-titulo').textContent = 
-                `📝 ${sub.nome} - ${avaliacao.nome}`;
+                `${materias[indexMateria].nome} - ${avaliacao.nome}`;
             
             const container = document.getElementById('notas-inputs');
             container.innerHTML = '';
@@ -1305,14 +922,8 @@
         function salvarNotas() {
             if (!indexNotas) return;
 
-            const { materia, sub, avaliacao } = indexNotas;
-            let avalObj;
-
-            if (sub !== undefined) {
-                avalObj = materias[materia].subMaterias[sub].avaliacoes[avaliacao];
-            } else {
-                avalObj = materias[materia].avaliacoes[avaliacao];
-            }
+            const { materia, avaliacao } = indexNotas;
+            const avalObj = materias[materia].avaliacoes[avaliacao];
 
             const notas = [];
             for (let i = 0; i < avalObj.quantidadeProvas; i++) {
@@ -1322,7 +933,7 @@
                 } else {
                     const nota = parseFloat(valor);
                     if (isNaN(nota) || nota < 0 || nota > 10) {
-                        alert(`⚠️ A nota ${i + 1} deve estar entre 0 e 10!`);
+                        alert(`A nota ${i + 1} deve estar entre 0 e 10!`);
                         return;
                     }
                     notas.push(nota);
@@ -1339,10 +950,6 @@
             indexParaExcluir = index;
             document.getElementById('modal-mensagem').innerHTML = 
                 `Deseja realmente excluir <strong>"${materias[index].nome}"</strong>?`;
-            abrirModal();
-        }
-
-        function abrirModal() {
             document.getElementById('modal-confirmar').classList.add('show');
         }
 
@@ -1360,8 +967,74 @@
             fecharModal();
         }
 
+        function gerarBoletimFinal() {
+            const conteudo = document.getElementById('boletim-conteudo');
+            
+            let html = `
+                <div class="boletim-final">
+                    <h3>${config.instituicao}</h3>
+                    <p>Período: ${config.semestre}</p>
+                    <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+                    
+                    <table class="boletim-table">
+                        <thead>
+                            <tr>
+                                <th>Matéria</th>
+                                <th>Tipo</th>
+                                <th>Média</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            let totalAprovado = 0, totalPF = 0, totalReprovado = 0;
+
+            materias.forEach(materia => {
+                const media = calcularMediaMateria(materia);
+                const status = media ? obterStatus(media) : 'cursando';
+                const statusTexto = media ? obterTextoStatus(status) : 'Cursando';
+                const tipo = materia.tipoPeriodo === 'bimestral' ? 'Bimestral' : 'Modular';
+                const mediaTxt = media ? media : '-';
+
+                if (status === 'aprovado') totalAprovado++;
+                if (status === 'pf') totalPF++;
+                if (status === 'reprovado') totalReprovado++;
+
+                html += `
+                    <tr>
+                        <td><strong>${materia.nome}</strong></td>
+                        <td>${tipo}</td>
+                        <td><strong>${mediaTxt}</strong></td>
+                        <td>${statusTexto}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h4>Resumo Final</h4>
+                        <p>Total de Matérias: ${materias.length}</p>
+                        <p style="color: #51cf66;"><strong>Aprovadas: ${totalAprovado}</strong></p>
+                        <p style="color: #ffa94d;"><strong>Em PF: ${totalPF}</strong></p>
+                        <p style="color: #ff6b6b;"><strong>Reprovadas: ${totalReprovado}</strong></p>
+                    </div>
+                </div>
+            `;
+
+            conteudo.innerHTML = html;
+            mostrarTela('tela-boletim-final');
+        }
+
+        function imprimirBoletim() {
+            window.print();
+        }
+
         function limparTudo() {
-            if (confirm('⚠️ Tem certeza? Isso apagará TODOS os dados!')) {
+            if (confirm('Tem certeza? Isso apagará TODOS os dados!')) {
                 localStorage.removeItem('boletimAcademico');
                 location.reload();
             }

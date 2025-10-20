@@ -84,6 +84,13 @@
             border-color: #667eea;
         }
 
+        .input-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
         .btn {
             padding: 12px 24px;
             border: none;
@@ -160,6 +167,34 @@
             border-left: 4px solid #2196f3;
         }
 
+        .tipo-badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-individual {
+            background: #3498db;
+        }
+
+        .badge-conjugada {
+            background: #9b59b6;
+        }
+
+        .badge-modular {
+            background: #e67e22;
+        }
+
         .materia-item {
             background: #f8f9fa;
             padding: 20px;
@@ -178,20 +213,29 @@
             background: #fff5f5;
         }
 
+        .materia-item.conjugada {
+            border-left-color: #9b59b6;
+        }
+
+        .materia-item.modular {
+            border-left-color: #e67e22;
+        }
+
         .materia-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 15px;
         }
 
         .materia-header h3 {
             color: #667eea;
+            margin-bottom: 5px;
         }
 
         .materia-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin: 15px 0;
         }
@@ -211,35 +255,91 @@
         }
 
         .info-item .value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #333;
         }
 
+        .sub-materias {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #9b59b6;
+        }
+
+        .sub-materia-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #9b59b6;
+        }
+
+        .sub-materia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sub-materia-header h4 {
+            color: #9b59b6;
+            font-size: 1rem;
+        }
+
+        .modulos-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #e67e22;
+        }
+
+        .modulo-item {
+            background: #fff9f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #e67e22;
+        }
+
+        .modulo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modulo-header h4 {
+            color: #e67e22;
+            font-size: 1rem;
+        }
+
         .notas-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            margin: 10px 0;
         }
 
         .nota-item {
             background: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 8px;
+            border-radius: 6px;
             text-align: center;
             border: 2px solid #e9ecef;
         }
 
         .nota-item label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .nota-item .nota-valor {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #667eea;
         }
@@ -279,6 +379,8 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            overflow-y: auto;
+            padding: 20px;
         }
 
         .modal-overlay.show {
@@ -289,11 +391,12 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin: auto;
         }
 
         .modal-content h3 {
@@ -344,6 +447,84 @@
             font-weight: bold;
         }
 
+        .divisor-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .divisor-container input {
+            text-align: center;
+        }
+
+        .divisor-container span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .tipo-radio {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .tipo-radio label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tipo-radio label:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .tipo-radio input[type="radio"]:checked + span {
+            font-weight: bold;
+        }
+
+        .tipo-radio label:has(input:checked) {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+
+        #conjugadas-container,
+        #modulos-container-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #9b59b6;
+        }
+
+        #modulos-container-form {
+            border-color: #e67e22;
+        }
+
+        .sub-materia-form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #9b59b6;
+        }
+
+        .modulo-form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #e67e22;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.5rem;
@@ -362,6 +543,12 @@
                 gap: 10px;
             }
             .materia-info {
+                grid-template-columns: 1fr;
+            }
+            .tipo-radio {
+                flex-direction: column;
+            }
+            .divisor-container {
                 grid-template-columns: 1fr;
             }
         }
@@ -429,18 +616,72 @@
             <h3 id="modal-materia-titulo">➕ Adicionar Matéria</h3>
             
             <div class="input-group">
-                <label for="materia-nome">📚 Nome da Matéria:</label>
-                <input type="text" id="materia-nome" placeholder="Ex: Anatomia">
+                <label>📋 Tipo de Matéria:</label>
+                <div class="tipo-radio">
+                    <label>
+                        <input type="radio" name="tipo-materia" value="individual" checked onchange="mudarTipoMateria()">
+                        <span>Individual</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="tipo-materia" value="conjugada" onchange="mudarTipoMateria()">
+                        <span>Conjugada</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="tipo-materia" value="modular" onchange="mudarTipoMateria()">
+                        <span>Modular</span>
+                    </label>
+                </div>
+                <small id="tipo-descricao">Matéria individual com uma única nota</small>
             </div>
 
-            <div class="input-group">
-                <label for="materia-peso">⚖️ Peso da Matéria:</label>
-                <input type="number" id="materia-peso" step="0.1" min="0.1" value="1" placeholder="Ex: 1.0">
+            <div id="individual-container">
+                <div class="input-group">
+                    <label for="materia-nome">📚 Nome da Matéria:</label>
+                    <input type="text" id="materia-nome" placeholder="Ex: Anatomia">
+                </div>
+
+                <div class="input-group">
+                    <label for="materia-peso">⚖️ Peso da Matéria:</label>
+                    <input type="number" id="materia-peso" step="0.1" min="0.1" value="1" placeholder="Ex: 1.0">
+                </div>
+
+                <div class="input-group">
+                    <label for="materia-provas">📝 Quantidade de Provas:</label>
+                    <input type="number" id="materia-provas" min="1" max="10" value="3" placeholder="Ex: 3">
+                </div>
             </div>
 
-            <div class="input-group">
-                <label for="materia-provas">📝 Quantidade de Provas/Avaliações:</label>
-                <input type="number" id="materia-provas" min="1" max="10" value="3" placeholder="Ex: 3">
+            <div id="conjugadas-container" class="hidden">
+                <h4 style="margin-bottom: 15px;">Sub-matérias Conjugadas</h4>
+                <div class="input-group">
+                    <label>⚖️ Divisão de Peso:</label>
+                    <div class="divisor-container">
+                        <input type="number" id="peso-total" step="0.1" min="0.1" value="1" placeholder="Peso total">
+                        <span>÷</span>
+                        <input type="number" id="qtd-conjugadas" min="2" max="5" value="2" placeholder="Quantidade" onchange="gerarConjugadas()">
+                    </div>
+                    <small>O peso será dividido igualmente entre as sub-matérias</small>
+                </div>
+                <div id="conjugadas-lista"></div>
+                <button type="button" class="btn btn-secondary btn-small" onclick="gerarConjugadas()">Gerar Sub-matérias</button>
+            </div>
+
+            <div id="modulos-container-form" class="hidden">
+                <h4 style="margin-bottom: 15px;">Módulos da Matéria</h4>
+                <div class="input-group">
+                    <label for="materia-nome-modular">📚 Nome da Matéria Principal:</label>
+                    <input type="text" id="materia-nome-modular" placeholder="Ex: Medicina Integral">
+                </div>
+                <div class="input-group">
+                    <label for="materia-peso-modular">⚖️ Peso Total da Matéria:</label>
+                    <input type="number" id="materia-peso-modular" step="0.1" min="0.1" value="1">
+                </div>
+                <div class="input-group">
+                    <label for="qtd-modulos">🔢 Quantidade de Módulos:</label>
+                    <input type="number" id="qtd-modulos" min="2" max="6" value="2" onchange="gerarModulos()">
+                </div>
+                <div id="modulos-lista"></div>
+                <button type="button" class="btn btn-secondary btn-small" onclick="gerarModulos()">Gerar Módulos</button>
             </div>
 
             <div class="modal-buttons">
@@ -454,9 +695,7 @@
     <div id="modal-notas" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-notas-titulo">📝 Gerenciar Notas</h3>
-            
             <div id="notas-inputs"></div>
-
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="fecharModalNotas()">Cancelar</button>
                 <button class="btn btn-primary" onclick="salvarNotas()">Salvar Notas</button>
@@ -548,12 +787,124 @@
             mostrarTela('tela-config');
         }
 
-        function calcularMedia(materia) {
-            if (!materia.notas || materia.notas.length === 0) return null;
-            const notasValidas = materia.notas.filter(n => n !== null && n !== '');
+        function mudarTipoMateria() {
+            const tipo = document.querySelector('input[name="tipo-materia"]:checked').value;
+            
+            document.getElementById('individual-container').classList.add('hidden');
+            document.getElementById('conjugadas-container').classList.add('hidden');
+            document.getElementById('modulos-container-form').classList.add('hidden');
+
+            const descricoes = {
+                individual: 'Matéria individual com uma única média',
+                conjugada: 'Matérias que dividem o mesmo peso (Ex: Anatomia A + Anatomia B)',
+                modular: 'Matéria dividida em módulos bimestrais/trimestrais'
+            };
+
+            document.getElementById('tipo-descricao').textContent = descricoes[tipo];
+
+            if (tipo === 'individual') {
+                document.getElementById('individual-container').classList.remove('hidden');
+            } else if (tipo === 'conjugada') {
+                document.getElementById('conjugadas-container').classList.remove('hidden');
+            } else if (tipo === 'modular') {
+                document.getElementById('modulos-container-form').classList.remove('hidden');
+            }
+        }
+
+        function gerarConjugadas() {
+            const qtd = parseInt(document.getElementById('qtd-conjugadas').value);
+            const pesoTotal = parseFloat(document.getElementById('peso-total').value);
+            const lista = document.getElementById('conjugadas-lista');
+            
+            lista.innerHTML = '';
+            
+            for (let i = 0; i < qtd; i++) {
+                const div = document.createElement('div');
+                div.className = 'sub-materia-form';
+                div.innerHTML = `
+                    <h5 style="margin-bottom: 10px; color: #9b59b6;">Sub-matéria ${i + 1}</h5>
+                    <div class="input-group">
+                        <label>📚 Nome:</label>
+                        <input type="text" class="conjugada-nome" placeholder="Ex: Anatomia A">
+                    </div>
+                    <div class="input-group">
+                        <label>📝 Quantidade de Provas:</label>
+                        <input type="number" class="conjugada-provas" min="1" max="10" value="3">
+                    </div>
+                    <div class="info-box" style="margin-top: 10px;">
+                        Peso: <strong>${(pesoTotal / qtd).toFixed(2)}</strong>
+                    </div>
+                `;
+                lista.appendChild(div);
+            }
+        }
+
+        function gerarModulos() {
+            const qtd = parseInt(document.getElementById('qtd-modulos').value);
+            const lista = document.getElementById('modulos-lista');
+            
+            lista.innerHTML = '';
+            
+            for (let i = 0; i < qtd; i++) {
+                const div = document.createElement('div');
+                div.className = 'modulo-form';
+                div.innerHTML = `
+                    <h5 style="margin-bottom: 10px; color: #e67e22;">Módulo ${i + 1}</h5>
+                    <div class="input-group">
+                        <label>📚 Nome do Módulo:</label>
+                        <input type="text" class="modulo-nome" placeholder="Ex: 1º Bimestre">
+                    </div>
+                    <div class="input-group">
+                        <label>⚖️ Peso do Módulo:</label>
+                        <input type="number" class="modulo-peso" step="0.1" min="0.1" value="1">
+                    </div>
+                    <div class="input-group">
+                        <label>📝 Quantidade de Provas:</label>
+                        <input type="number" class="modulo-provas" min="1" max="10" value="3">
+                    </div>
+                `;
+                lista.appendChild(div);
+            }
+        }
+
+        function calcularMedia(notas) {
+            if (!notas || notas.length === 0) return null;
+            const notasValidas = notas.filter(n => n !== null && n !== '');
             if (notasValidas.length === 0) return null;
             const soma = notasValidas.reduce((acc, nota) => acc + parseFloat(nota), 0);
             return (soma / notasValidas.length).toFixed(2);
+        }
+
+        function calcularMediaConjugada(subMaterias) {
+            let somaMedias = 0;
+            let count = 0;
+
+            subMaterias.forEach(sub => {
+                const media = calcularMedia(sub.notas);
+                if (media !== null) {
+                    somaMedias += parseFloat(media);
+                    count++;
+                }
+            });
+
+            if (count === 0) return null;
+            return (somaMedias / count).toFixed(2);
+        }
+
+        function calcularMediaModular(modulos, pesoTotal) {
+            let somaMediasPonderadas = 0;
+            let somaPesos = 0;
+
+            modulos.forEach(mod => {
+                const media = calcularMedia(mod.notas);
+                if (media !== null) {
+                    somaMediasPonderadas += parseFloat(media) * mod.peso;
+                    somaPesos += mod.peso;
+                }
+            });
+
+            if (somaPesos === 0) return null;
+            return (somaMediasPonderadas / somaPesos).toFixed(2);
         }
 
         function calcularMediaGeral() {
@@ -564,7 +915,16 @@
             let countComNotas = 0;
 
             materias.forEach(materia => {
-                const media = calcularMedia(materia);
+                let media = null;
+
+                if (materia.tipo === 'individual') {
+                    media = calcularMedia(materia.notas);
+                } else if (materia.tipo === 'conjugada') {
+                    media = calcularMediaConjugada(materia.subMaterias);
+                } else if (materia.tipo === 'modular') {
+                    media = calcularMediaModular(materia.modulos, materia.peso);
+                }
+
                 if (media !== null) {
                     somaMedias += parseFloat(media) * materia.peso;
                     somaPesos += materia.peso;
@@ -607,10 +967,184 @@
             }
 
             materias.forEach((materia, index) => {
-                const media = calcularMedia(materia);
+                const div = document.createElement('div');
+                
+                let media = null;
                 let statusClass = '';
                 let statusBadge = '';
+                let conteudoHTML = '';
 
+                if (materia.tipo === 'individual') {
+                    media = calcularMedia(materia.notas);
+                    div.className = 'materia-item';
+                    
+                    let notasHtml = '';
+                    if (materia.notas && materia.notas.length > 0) {
+                        notasHtml = '<div class="notas-container">';
+                        materia.notas.forEach((nota, i) => {
+                            const notaValor = nota !== null && nota !== '' ? parseFloat(nota).toFixed(1) : '-';
+                            notasHtml += `
+                                <div class="nota-item">
+                                    <label>P${i + 1}</label>
+                                    <div class="nota-valor">${notaValor}</div>
+                                </div>
+                            `;
+                        });
+                        notasHtml += '</div>';
+                    }
+
+                    conteudoHTML = `
+                        <div class="materia-info">
+                            <div class="info-item">
+                                <label>Peso da Matéria</label>
+                                <div class="value">${materia.peso}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Quantidade de Provas</label>
+                                <div class="value">${materia.quantidadeProvas}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Média Final</label>
+                                <div class="value">${media !== null ? media : '-'}</div>
+                            </div>
+                        </div>
+                        ${notasHtml}
+                    `;
+
+                } else if (materia.tipo === 'conjugada') {
+                    media = calcularMediaConjugada(materia.subMaterias);
+                    div.className = 'materia-item conjugada';
+
+                    let subMateriasHTML = '<div class="sub-materias"><h4 style="margin-bottom: 15px; color: #9b59b6;">Sub-matérias:</h4>';
+                    materia.subMaterias.forEach((sub, subIndex) => {
+                        const mediaSub = calcularMedia(sub.notas);
+                        let notasHtml = '';
+                        if (sub.notas && sub.notas.length > 0) {
+                            notasHtml = '<div class="notas-container">';
+                            sub.notas.forEach((nota, i) => {
+                                const notaValor = nota !== null && nota !== '' ? parseFloat(nota).toFixed(1) : '-';
+                                notasHtml += `
+                                    <div class="nota-item">
+                                        <label>P${i + 1}</label>
+                                        <div class="nota-valor">${notaValor}</div>
+                                    </div>
+                                `;
+                            });
+                            notasHtml += '</div>';
+                        }
+
+                        subMateriasHTML += `
+                            <div class="sub-materia-item">
+                                <div class="sub-materia-header">
+                                    <h4>${sub.nome}</h4>
+                                    <button class="btn btn-success btn-small" onclick="abrirModalNotasSubMateria(${index}, ${subIndex})">📝 Notas</button>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Peso</label>
+                                        <div class="value">${sub.peso.toFixed(2)}</div>
+                                    </div>
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Provas</label>
+                                        <div class="value">${sub.quantidadeProvas}</div>
+                                    </div>
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Média</label>
+                                        <div class="value">${mediaSub !== null ? mediaSub : '-'}</div>
+                                    </div>
+                                </div>
+                                ${notasHtml}
+                            </div>
+                        `;
+                    });
+                    subMateriasHTML += '</div>';
+
+                    conteudoHTML = `
+                        <div class="materia-info">
+                            <div class="info-item">
+                                <label>Peso Total</label>
+                                <div class="value">${materia.peso}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Sub-matérias</label>
+                                <div class="value">${materia.subMaterias.length}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Média Conjugada</label>
+                                <div class="value">${media !== null ? media : '-'}</div>
+                            </div>
+                        </div>
+                        ${subMateriasHTML}
+                    `;
+
+                } else if (materia.tipo === 'modular') {
+                    media = calcularMediaModular(materia.modulos, materia.peso);
+                    div.className = 'materia-item modular';
+
+                    let modulosHTML = '<div class="modulos-container"><h4 style="margin-bottom: 15px; color: #e67e22;">Módulos:</h4>';
+                    materia.modulos.forEach((mod, modIndex) => {
+                        const mediaMod = calcularMedia(mod.notas);
+                        let notasHtml = '';
+                        if (mod.notas && mod.notas.length > 0) {
+                            notasHtml = '<div class="notas-container">';
+                            mod.notas.forEach((nota, i) => {
+                                const notaValor = nota !== null && nota !== '' ? parseFloat(nota).toFixed(1) : '-';
+                                notasHtml += `
+                                    <div class="nota-item">
+                                        <label>P${i + 1}</label>
+                                        <div class="nota-valor">${notaValor}</div>
+                                    </div>
+                                `;
+                            });
+                            notasHtml += '</div>';
+                        }
+
+                        modulosHTML += `
+                            <div class="modulo-item">
+                                <div class="modulo-header">
+                                    <h4>${mod.nome}</h4>
+                                    <button class="btn btn-success btn-small" onclick="abrirModalNotasModulo(${index}, ${modIndex})">📝 Notas</button>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Peso</label>
+                                        <div class="value">${mod.peso}</div>
+                                    </div>
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Provas</label>
+                                        <div class="value">${mod.quantidadeProvas}</div>
+                                    </div>
+                                    <div class="info-item" style="flex: 1;">
+                                        <label>Média</label>
+                                        <div class="value">${mediaMod !== null ? mediaMod : '-'}</div>
+                                    </div>
+                                </div>
+                                ${notasHtml}
+                            </div>
+                        `;
+                    });
+                    modulosHTML += '</div>';
+
+                    conteudoHTML = `
+                        <div class="materia-info">
+                            <div class="info-item">
+                                <label>Peso Total</label>
+                                <div class="value">${materia.peso}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Módulos</label>
+                                <div class="value">${materia.modulos.length}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Média Modular</label>
+                                <div class="value">${media !== null ? media : '-'}</div>
+                            </div>
+                        </div>
+                        ${modulosHTML}
+                    `;
+                }
+
+                // Status badges
                 if (media !== null) {
                     if (parseFloat(media) >= config.mediaAprovacao) {
                         statusClass = 'aprovado';
@@ -623,54 +1157,33 @@
                     statusBadge = '<span class="status-badge status-cursando">📚 Cursando</span>';
                 }
 
-                const div = document.createElement('div');
-                div.className = `materia-item ${statusClass}`;
-                
-                let notasHtml = '';
-                if (materia.notas && materia.notas.length > 0) {
-                    notasHtml = '<div class="notas-container">';
-                    materia.notas.forEach((nota, i) => {
-                        const notaValor = nota !== null && nota !== '' ? parseFloat(nota).toFixed(1) : '-';
-                        notasHtml += `
-                            <div class="nota-item">
-                                <label>Prova ${i + 1}</label>
-                                <div class="nota-valor">${notaValor}</div>
-                            </div>
-                        `;
-                    });
-                    notasHtml += '</div>';
-                }
+                div.className += ' ' + statusClass;
+
+                // Badges de tipo
+                const tipoBadges = {
+                    individual: '<span class="badge badge-individual">Individual</span>',
+                    conjugada: '<span class="badge badge-conjugada">Conjugada</span>',
+                    modular: '<span class="badge badge-modular">Modular</span>'
+                };
 
                 div.innerHTML = `
                     <div class="materia-header">
                         <div>
                             <h3>${materia.nome}</h3>
-                            ${statusBadge}
+                            <div class="tipo-badges">
+                                ${tipoBadges[materia.tipo]}
+                                ${statusBadge}
+                            </div>
                         </div>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn btn-success btn-small" onclick="abrirModalNotas(${index})">📝 Notas</button>
+                            ${materia.tipo === 'individual' ? `<button class="btn btn-success btn-small" onclick="abrirModalNotas(${index})">📝 Notas</button>` : ''}
                             <button class="btn btn-warning btn-small" onclick="editarMateria(${index})">✏️ Editar</button>
                             <button class="btn btn-danger btn-small" onclick="excluirMateria(${index})">🗑️ Excluir</button>
                         </div>
                     </div>
-
-                    <div class="materia-info">
-                        <div class="info-item">
-                            <label>Peso da Matéria</label>
-                            <div class="value">${materia.peso}</div>
-                        </div>
-                        <div class="info-item">
-                            <label>Quantidade de Provas</label>
-                            <div class="value">${materia.quantidadeProvas}</div>
-                        </div>
-                        <div class="info-item">
-                            <label>Média Final</label>
-                            <div class="value">${media !== null ? media : '-'}</div>
-                        </div>
-                    </div>
-
-                    ${notasHtml}
+                    ${conteudoHTML}
                 `;
+                
                 lista.appendChild(div);
             });
 
@@ -680,9 +1193,18 @@
         function abrirModalAdicionar() {
             indexEdicao = null;
             document.getElementById('modal-materia-titulo').textContent = '➕ Adicionar Matéria';
+            document.querySelector('input[name="tipo-materia"][value="individual"]').checked = true;
+            mudarTipoMateria();
+            
             document.getElementById('materia-nome').value = '';
             document.getElementById('materia-peso').value = '1';
             document.getElementById('materia-provas').value = '3';
+            document.getElementById('peso-total').value = '1';
+            document.getElementById('qtd-conjugadas').value = '2';
+            document.getElementById('materia-nome-modular').value = '';
+            document.getElementById('materia-peso-modular').value = '1';
+            document.getElementById('qtd-modulos').value = '2';
+            
             document.getElementById('modal-materia').classList.add('show');
         }
 
@@ -690,9 +1212,41 @@
             indexEdicao = index;
             const materia = materias[index];
             document.getElementById('modal-materia-titulo').textContent = '✏️ Editar Matéria';
-            document.getElementById('materia-nome').value = materia.nome;
-            document.getElementById('materia-peso').value = materia.peso;
-            document.getElementById('materia-provas').value = materia.quantidadeProvas;
+            
+            document.querySelector(`input[name="tipo-materia"][value="${materia.tipo}"]`).checked = true;
+            mudarTipoMateria();
+
+            if (materia.tipo === 'individual') {
+                document.getElementById('materia-nome').value = materia.nome;
+                document.getElementById('materia-peso').value = materia.peso;
+                document.getElementById('materia-provas').value = materia.quantidadeProvas;
+            } else if (materia.tipo === 'conjugada') {
+                document.getElementById('peso-total').value = materia.peso;
+                document.getElementById('qtd-conjugadas').value = materia.subMaterias.length;
+                gerarConjugadas();
+                
+                materia.subMaterias.forEach((sub, i) => {
+                    const nomes = document.querySelectorAll('.conjugada-nome');
+                    const provas = document.querySelectorAll('.conjugada-provas');
+                    if (nomes[i]) nomes[i].value = sub.nome;
+                    if (provas[i]) provas[i].value = sub.quantidadeProvas;
+                });
+            } else if (materia.tipo === 'modular') {
+                document.getElementById('materia-nome-modular').value = materia.nome;
+                document.getElementById('materia-peso-modular').value = materia.peso;
+                document.getElementById('qtd-modulos').value = materia.modulos.length;
+                gerarModulos();
+                
+                materia.modulos.forEach((mod, i) => {
+                    const nomes = document.querySelectorAll('.modulo-nome');
+                    const pesos = document.querySelectorAll('.modulo-peso');
+                    const provas = document.querySelectorAll('.modulo-provas');
+                    if (nomes[i]) nomes[i].value = mod.nome;
+                    if (pesos[i]) pesos[i].value = mod.peso;
+                    if (provas[i]) provas[i].value = mod.quantidadeProvas;
+                });
+            }
+
             document.getElementById('modal-materia').classList.add('show');
         }
 
@@ -702,51 +1256,157 @@
         }
 
         function salvarMateria() {
-            const nome = document.getElementById('materia-nome').value.trim();
-            const peso = parseFloat(document.getElementById('materia-peso').value);
-            const quantidadeProvas = parseInt(document.getElementById('materia-provas').value);
+            const tipo = document.querySelector('input[name="tipo-materia"]:checked').value;
 
-            if (!nome || !peso || !quantidadeProvas) {
-                alert('⚠️ Preencha todos os campos!');
-                return;
-            }
+            if (tipo === 'individual') {
+                const nome = document.getElementById('materia-nome').value.trim();
+                const peso = parseFloat(document.getElementById('materia-peso').value);
+                const quantidadeProvas = parseInt(document.getElementById('materia-provas').value);
 
-            if (peso <= 0) {
-                alert('⚠️ O peso deve ser maior que zero!');
-                return;
-            }
-
-            if (quantidadeProvas < 1 || quantidadeProvas > 10) {
-                alert('⚠️ A quantidade de provas deve estar entre 1 e 10!');
-                return;
-            }
-
-            if (indexEdicao !== null) {
-                // Editando matéria existente
-                materias[indexEdicao].nome = nome;
-                materias[indexEdicao].peso = peso;
-                
-                // Ajustar array de notas se quantidade mudou
-                const notasAtuais = materias[indexEdicao].notas || [];
-                if (quantidadeProvas > materias[indexEdicao].quantidadeProvas) {
-                    // Adicionar notas vazias
-                    for (let i = notasAtuais.length; i < quantidadeProvas; i++) {
-                        notasAtuais.push(null);
-                    }
-                } else if (quantidadeProvas < materias[indexEdicao].quantidadeProvas) {
-                    // Remover notas excedentes
-                    notasAtuais.splice(quantidadeProvas);
+                if (!nome || !peso || !quantidadeProvas) {
+                    alert('⚠️ Preencha todos os campos!');
+                    return;
                 }
-                materias[indexEdicao].notas = notasAtuais;
-                materias[indexEdicao].quantidadeProvas = quantidadeProvas;
-            } else {
-                // Adicionando nova matéria
-                materias.push({
-                    nome,
-                    peso,
-                    quantidadeProvas,
-                    notas: Array(quantidadeProvas).fill(null)
-                });
+
+                if (indexEdicao !== null) {
+                    materias[indexEdicao].nome = nome;
+                    materias[indexEdicao].peso = peso;
+                    const notasAtuais = materias[indexEdicao].notas || [];
+                    if (quantidadeProvas > materias[indexEdicao].quantidadeProvas) {
+                        for (let i = notasAtuais.length; i < quantidadeProvas; i++) {
+                            notasAtuais.push(null);
+                        }
+                    } else if (quantidadeProvas < materias[indexEdicao].quantidadeProvas) {
+                        notasAtuais.splice(quantidadeProvas);
+                    }
+                    materias[indexEdicao].notas = notasAtuais;
+                    materias[indexEdicao].quantidadeProvas = quantidadeProvas;
+                } else {
+                    materias.push({
+                        tipo: 'individual',
+                        nome,
+                        peso,
+                        quantidadeProvas,
+                        notas: Array(quantidadeProvas).fill(null)
+                    });
+                }
+
+            } else if (tipo === 'conjugada') {
+                const pesoTotal = parseFloat(document.getElementById('peso-total').value);
+                const qtd = parseInt(document.getElementById('qtd-conjugadas').value);
+                const nomes = document.querySelectorAll('.conjugada-nome');
+                const provas = document.querySelectorAll('.conjugada-provas');
+
+                if (!pesoTotal || qtd < 2) {
+                    alert('⚠️ Configure peso total e quantidade de sub-matérias!');
+                    return;
+                }
+
+                const subMaterias = [];
+                const pesoPorSub = pesoTotal / qtd;
+
+                for (let i = 0; i < qtd; i++) {
+                    const nome = nomes[i].value.trim();
+                    const qtdProvas = parseInt(provas[i].value);
+                    
+                    if (!nome || !qtdProvas) {
+                        alert(`⚠️ Preencha todos os dados da sub-matéria ${i + 1}!`);
+                        return;
+                    }
+
+                    let notasAtuais = [];
+                    if (indexEdicao !== null && materias[indexEdicao].subMaterias[i]) {
+                        notasAtuais = materias[indexEdicao].subMaterias[i].notas || [];
+                    }
+
+                    if (qtdProvas > notasAtuais.length) {
+                        for (let j = notasAtuais.length; j < qtdProvas; j++) {
+                            notasAtuais.push(null);
+                        }
+                    } else {
+                        notasAtuais.splice(qtdProvas);
+                    }
+
+                    subMaterias.push({
+                        nome,
+                        peso: pesoPorSub,
+                        quantidadeProvas: qtdProvas,
+                        notas: notasAtuais
+                    });
+                }
+
+                const nomeConjugada = subMaterias.map(s => s.nome).join(' + ');
+
+                if (indexEdicao !== null) {
+                    materias[indexEdicao].nome = nomeConjugada;
+                    materias[indexEdicao].peso = pesoTotal;
+                    materias[indexEdicao].subMaterias = subMaterias;
+                } else {
+                    materias.push({
+                        tipo: 'conjugada',
+                        nome: nomeConjugada,
+                        peso: pesoTotal,
+                        subMaterias
+                    });
+                }
+
+            } else if (tipo === 'modular') {
+                const nome = document.getElementById('materia-nome-modular').value.trim();
+                const pesoTotal = parseFloat(document.getElementById('materia-peso-modular').value);
+                const qtd = parseInt(document.getElementById('qtd-modulos').value);
+                const nomesMod = document.querySelectorAll('.modulo-nome');
+                const pesosMod = document.querySelectorAll('.modulo-peso');
+                const provasMod = document.querySelectorAll('.modulo-provas');
+
+                if (!nome || !pesoTotal || qtd < 2) {
+                    alert('⚠️ Preencha nome, peso total e quantidade de módulos!');
+                    return;
+                }
+
+                const modulos = [];
+                for (let i = 0; i < qtd; i++) {
+                    const nomeMod = nomesMod[i].value.trim();
+                    const pesoMod = parseFloat(pesosMod[i].value);
+                    const qtdProvas = parseInt(provasMod[i].value);
+                    
+                    if (!nomeMod || !pesoMod || !qtdProvas) {
+                        alert(`⚠️ Preencha todos os dados do módulo ${i + 1}!`);
+                        return;
+                    }
+
+                    let notasAtuais = [];
+                    if (indexEdicao !== null && materias[indexEdicao].modulos[i]) {
+                        notasAtuais = materias[indexEdicao].modulos[i].notas || [];
+                    }
+
+                    if (qtdProvas > notasAtuais.length) {
+                        for (let j = notasAtuais.length; j < qtdProvas; j++) {
+                            notasAtuais.push(null);
+                        }
+                    } else {
+                        notasAtuais.splice(qtdProvas);
+                    }
+
+                    modulos.push({
+                        nome: nomeMod,
+                        peso: pesoMod,
+                        quantidadeProvas: qtdProvas,
+                        notas: notasAtuais
+                    });
+                }
+
+                if (indexEdicao !== null) {
+                    materias[indexEdicao].nome = nome;
+                    materias[indexEdicao].peso = pesoTotal;
+                    materias[indexEdicao].modulos = modulos;
+                } else {
+                    materias.push({
+                        tipo: 'modular',
+                        nome,
+                        peso: pesoTotal,
+                        modulos
+                    });
+                }
             }
 
             salvarDados();
@@ -776,6 +1436,50 @@
             document.getElementById('modal-notas').classList.add('show');
         }
 
+        function abrirModalNotasSubMateria(indexMateria, indexSub) {
+            indexNotas = { materia: indexMateria, sub: indexSub };
+            const subMateria = materias[indexMateria].subMaterias[indexSub];
+            document.getElementById('modal-notas-titulo').textContent = `📝 Notas - ${subMateria.nome}`;
+            
+            const container = document.getElementById('notas-inputs');
+            container.innerHTML = '';
+
+            for (let i = 0; i < subMateria.quantidadeProvas; i++) {
+                const notaAtual = subMateria.notas && subMateria.notas[i] !== null ? subMateria.notas[i] : '';
+                container.innerHTML += `
+                    <div class="input-group">
+                        <label for="nota-${i}">Prova ${i + 1}:</label>
+                        <input type="number" id="nota-${i}" step="0.1" min="0" max="10" 
+                               value="${notaAtual}" placeholder="Ex: 8.5">
+                    </div>
+                `;
+            }
+
+            document.getElementById('modal-notas').classList.add('show');
+        }
+
+        function abrirModalNotasModulo(indexMateria, indexMod) {
+            indexNotas = { materia: indexMateria, modulo: indexMod };
+            const modulo = materias[indexMateria].modulos[indexMod];
+            document.getElementById('modal-notas-titulo').textContent = `📝 Notas - ${modulo.nome}`;
+            
+            const container = document.getElementById('notas-inputs');
+            container.innerHTML = '';
+
+            for (let i = 0; i < modulo.quantidadeProvas; i++) {
+                const notaAtual = modulo.notas && modulo.notas[i] !== null ? modulo.notas[i] : '';
+                container.innerHTML += `
+                    <div class="input-group">
+                        <label for="nota-${i}">Prova ${i + 1}:</label>
+                        <input type="number" id="nota-${i}" step="0.1" min="0" max="10" 
+                               value="${notaAtual}" placeholder="Ex: 8.5">
+                    </div>
+                `;
+            }
+
+            document.getElementById('modal-notas').classList.add('show');
+        }
+
         function fecharModalNotas() {
             document.getElementById('modal-notas').classList.remove('show');
             indexNotas = null;
@@ -784,26 +1488,76 @@
         function salvarNotas() {
             if (indexNotas === null) return;
 
-            const materia = materias[indexNotas];
-            const notas = [];
+            if (typeof indexNotas === 'number') {
+                // Matéria individual
+                const materia = materias[indexNotas];
+                const notas = [];
 
-            for (let i = 0; i < materia.quantidadeProvas; i++) {
-                const input = document.getElementById(`nota-${i}`);
-                const valor = input.value.trim();
-                
-                if (valor === '') {
-                    notas.push(null);
-                } else {
-                    const nota = parseFloat(valor);
-                    if (isNaN(nota) || nota < 0 || nota > 10) {
-                        alert(`⚠️ A nota da Prova ${i + 1} deve estar entre 0 e 10!`);
-                        return;
+                for (let i = 0; i < materia.quantidadeProvas; i++) {
+                    const input = document.getElementById(`nota-${i}`);
+                    const valor = input.value.trim();
+                    
+                    if (valor === '') {
+                        notas.push(null);
+                    } else {
+                        const nota = parseFloat(valor);
+                        if (isNaN(nota) || nota < 0 || nota > 10) {
+                            alert(`⚠️ A nota da Prova ${i + 1} deve estar entre 0 e 10!`);
+                            return;
+                        }
+                        notas.push(nota);
                     }
-                    notas.push(nota);
                 }
+
+                materias[indexNotas].notas = notas;
+
+            } else if (indexNotas.sub !== undefined) {
+                // Sub-matéria conjugada
+                const subMateria = materias[indexNotas.materia].subMaterias[indexNotas.sub];
+                const notas = [];
+
+                for (let i = 0; i < subMateria.quantidadeProvas; i++) {
+                    const input = document.getElementById(`nota-${i}`);
+                    const valor = input.value.trim();
+                    
+                    if (valor === '') {
+                        notas.push(null);
+                    } else {
+                        const nota = parseFloat(valor);
+                        if (isNaN(nota) || nota < 0 || nota > 10) {
+                            alert(`⚠️ A nota da Prova ${i + 1} deve estar entre 0 e 10!`);
+                            return;
+                        }
+                        notas.push(nota);
+                    }
+                }
+
+                materias[indexNotas.materia].subMaterias[indexNotas.sub].notas = notas;
+
+            } else if (indexNotas.modulo !== undefined) {
+                // Módulo
+                const modulo = materias[indexNotas.materia].modulos[indexNotas.modulo];
+                const notas = [];
+
+                for (let i = 0; i < modulo.quantidadeProvas; i++) {
+                    const input = document.getElementById(`nota-${i}`);
+                    const valor = input.value.trim();
+                    
+                    if (valor === '') {
+                        notas.push(null);
+                    } else {
+                        const nota = parseFloat(valor);
+                        if (isNaN(nota) || nota < 0 || nota > 10) {
+                            alert(`⚠️ A nota da Prova ${i + 1} deve estar entre 0 e 10!`);
+                            return;
+                        }
+                        notas.push(nota);
+                    }
+                }
+
+                materias[indexNotas.materia].modulos[indexNotas.modulo].notas = notas;
             }
 
-            materias[indexNotas].notas = notas;
             salvarDados();
             fecharModalNotas();
             renderizarMaterias();
@@ -812,7 +1566,7 @@
         function excluirMateria(index) {
             indexParaExcluir = index;
             document.getElementById('modal-mensagem').innerHTML = 
-                `Deseja realmente excluir a matéria <strong>"${materias[index].nome}"</strong> e todas as suas notas?`;
+                `Deseja realmente excluir <strong>"${materias[index].nome}"</strong> e todas as suas notas?`;
             abrirModal();
         }
 
@@ -835,7 +1589,7 @@
         }
 
         function limparTudo() {
-            if (confirm('⚠️ Tem certeza? Isso apagará TODOS os dados do boletim (matérias, notas e configurações)!')) {
+            if (confirm('⚠️ Tem certeza? Isso apagará TODOS os dados do boletim!')) {
                 localStorage.removeItem('boletimAcademico');
                 location.reload();
             }

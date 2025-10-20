@@ -1571,133 +1571,160 @@
         }
 
         function calcularPlanoMateria(indexMateria) {
-            const materia = materias[indexMateria];
-            const meta = config.mediaAprovacao;
-            let html = `
-                <h4>${materia.nome}</h4>
-                <p><strong>Meta:</strong> ${meta.toFixed(1)} para passar</p>
-                <hr>
-            `;
+    const materia = materias[indexMateria];
+    const meta = config.mediaAprovacao;
+    let html = `
+        <h4>${materia.nome}</h4>
+        <p><strong>Meta:</strong> ${meta.toFixed(1)} para passar</p>
+        <hr>
+    `;
 
-            if (materia.tipo === 'individual') {
-                let pontosConquistados = 0;
-                let pesoTotal = 0;
-                let avaliacoesComNota = [];
-                let avaliacoesSemNota = [];
+    if (materia.tipo === 'individual') {
+        let pontosConquistados = 0;
+        let avaliacoesComNota = [];
+        let avaliacoesSemNota = [];
 
-                materia.avaliacoes.forEach((aval, idx) => {
-                    const media = calcularMediaAvaliacao(aval.notas);
-                    const pesoDec = aval.peso / 100;
+        materia.avaliacoes.forEach((aval, idx) => {
+            const media = calcularMediaAvaliacao(aval.notas);
+            const pesoDec = aval.peso / 100;
 
-                    if (media !== null) {
-                        pontosConquistados += media * pesoDec;
-                        avaliacoesComNota.push({
-                            nome: aval.nome,
-                            nota: media,
-                            peso: aval.peso,
-                            pontos: (media * pesoDec).toFixed(2)
-                        });
-                    } else {
-                        avaliacoesSemNota.push({
-                            nome: aval.nome,
-                            peso: aval.peso,
-                            pesoDec: pesoDec,
-                            index: idx
-                        });
-                    }
-                    pesoTotal += pesoDec;
+            if (media !== null) {
+                pontosConquistados += media * pesoDec;
+                avaliacoesComNota.push({
+                    nome: aval.nome,
+                    nota: media,
+                    peso: aval.peso,
+                    pontos: (media * pesoDec).toFixed(2)
                 });
-
-                html += '<div class="plano-item"><strong>✅ Notas Preenchidas:</strong><br>';
-                if (avaliacoesComNota.length > 0) {
-                    avaliacoesComNota.forEach(aval => {
-                        html += `${aval.nome}: <strong>${aval.nota.toFixed(2)}</strong> (${aval.peso}%) = <strong>${aval.pontos}</strong> pontos<br>`;
-                    });
-                    html += `<br><strong>Total conquistado: ${pontosConquistados.toFixed(2)}</strong>`;
-                } else {
-                    html += 'Nenhuma nota preenchida ainda';
-                }
-                html += '</div>';
-
-                html += '<div class="plano-faltando"><strong>❌ Notas Necessárias:</strong><br>';
-                if (avaliacoesSemNota.length > 0) {
-                    const faltam = Math.max(0, meta - pontosConquistados);
-                    avaliacoesSemNota.forEach(aval => {
-                        const notaNecessaria = faltam / aval.pesoDec;
-                        const notaNecessariaLimitada = Math.min(10, Math.max(0, notaNecessaria));
-                        const status = notaNecessaria <= 10 ? '✓' : '⚠️ Impossível!';
-                        html += `${aval.nome} (${aval.peso}%): <strong>${notaNecessariaLimitada.toFixed(2)}</strong> ${status}<br>`;
-                    });
-                } else {
-                    const mediaFinal = pontosConquistados.toFixed(2);
-                    const status = mediaFinal >= meta ? '✅ Aprovado!' : '❌ Reprovado!';
-                    html += `Todas as notas foram preenchidas!<br>Média final: <strong>${mediaFinal}</strong> ${status}`;
-                }
-                html += '</div>';
-
-            } else if (materia.tipo === 'conjugada') {
-                let pontosConquistados = 0;
-                html += '<strong>Por Sub-matéria:</strong><br>';
-
-                materia.subMaterias.forEach((sub, subIdx) => {
-                    html += `<div class="plano-item" style="margin: 15px 0;"><strong>${sub.nome} (${sub.peso}%)</strong><br>`;
-                    
-                    let pontosSubConquistados = 0;
-                    let avaliacoesComNota = [];
-                    let avaliacoesSemNota = [];
-
-                    sub.avaliacoes.forEach((aval, avalIdx) => {
-                        const media = calcularMediaAvaliacao(aval.notas);
-                        const pesoDec = aval.peso / 100;
-                        const pesoRelativoDec = pesoDec * (sub.peso / 100);
-
-                        if (media !== null) {
-                            pontosSubConquistados += media * pesoRelativoDec;
-                            avaliacoesComNota.push({
-                                nome: aval.nome,
-                                nota: media,
-                                peso: aval.peso,
-                                pontos: (media * pesoRelativoDec).toFixed(2)
-                            });
-                        } else {
-                            avaliacoesSemNota.push({
-                                nome: aval.nome,
-                                peso: aval.peso,
-                                pesoRelativoDec: pesoRelativoDec,
-                                pesoDec: pesoDec
-                            });
-                        }
-                    });
-
-                    pontosConquistados += pontosSubConquistados;
-
-                    html += '<small style="color: #666;">Notas preenchidas:</small><br>';
-                    if (avaliacoesComNota.length > 0) {
-                        avaliacoesComNota.forEach(aval => {
-                            html += `&nbsp;&nbsp;${aval.nome}: <strong>${aval.nota.toFixed(2)}</strong> = ${aval.pontos}<br>`;
-                        });
-                    } else {
-                        html += '&nbsp;&nbsp;<em>Nenhuma</em><br>';
-                    }
-
-                    if (avaliacoesSemNota.length > 0) {
-                        html += '<small style="color: #ff6b00;">Notas necessárias:</small><br>';
-                        const faltam = Math.max(0, meta - pontosConquistados);
-                        avaliacoesSemNota.forEach(aval => {
-                            const notaNecessaria = faltam / aval.pesoRelativoDec;
-                            const notaNecessariaLimitada = Math.min(10, Math.max(0, notaNecessaria));
-                            const status = notaNecessaria <= 10 ? '✓' : '⚠️';
-                            html += `&nbsp;&nbsp;${aval.nome} (${aval.peso}%): <strong>${notaNecessariaLimitada.toFixed(2)}</strong> ${status}<br>`;
-                        });
-                    }
-                    html += '</div>';
+            } else {
+                avaliacoesSemNota.push({
+                    nome: aval.nome,
+                    peso: aval.peso,
+                    pesoDec: pesoDec
                 });
-
-                html += `<div class="plano-item"><strong>Total conquistado: ${pontosConquistados.toFixed(2)}</strong></div>`;
             }
+        });
 
-            return html;
+        html += '<div class="plano-item"><strong>✅ Notas Preenchidas:</strong><br>';
+        if (avaliacoesComNota.length > 0) {
+            avaliacoesComNota.forEach(aval => {
+                html += `${aval.nome}: <strong>${aval.nota.toFixed(2)}</strong> (${aval.peso}%) = <strong>${aval.pontos}</strong> pontos<br>`;
+            });
+            html += `<br><strong>Total conquistado: ${pontosConquistados.toFixed(2)}</strong>`;
+        } else {
+            html += 'Nenhuma nota preenchida ainda';
         }
+        html += '</div>';
+
+        html += '<div class="plano-faltando"><strong>❌ Notas Necessárias:</strong><br>';
+        if (avaliacoesSemNota.length > 0) {
+            const faltam = Math.max(0, meta - pontosConquistados);
+            const pesoTotalFaltante = avaliacoesSemNota.reduce((acc, a) => acc + a.pesoDec, 0);
+            
+            avaliacoesSemNota.forEach(aval => {
+                const proporcao = aval.pesoDec / pesoTotalFaltante;
+                const pontosNecessarios = faltam * proporcao;
+                const notaNecessaria = pontosNecessarios / aval.pesoDec;
+                const notaNecessariaLimitada = Math.min(10, Math.max(0, notaNecessaria));
+                const status = notaNecessaria <= 10 ? '✓' : '⚠️ Impossível!';
+                html += `${aval.nome} (${aval.peso}%): <strong>${notaNecessariaLimitada.toFixed(2)}</strong> ${status}<br>`;
+            });
+        } else {
+            const status = pontosConquistados >= meta ? '✅ Aprovado!' : '❌ Reprovado!';
+            html += `Todas as notas foram preenchidas!<br>Média final: <strong>${pontosConquistados.toFixed(2)}</strong> ${status}`;
+        }
+        html += '</div>';
+
+    } else if (materia.tipo === 'conjugada') {
+        let pontosConquistadosGeral = 0;
+        let todasAvaliacoesSemNota = [];
+        
+        html += '<strong>📋 Análise por Sub-matéria:</strong><br>';
+
+        materia.subMaterias.forEach((sub, subIdx) => {
+            html += `<div class="plano-item" style="margin: 15px 0;"><strong>${sub.nome} (${sub.peso}%)</strong><br>`;
+            
+            let pontosSubConquistados = 0;
+            let avaliacoesComNota = [];
+
+            sub.avaliacoes.forEach((aval, avalIdx) => {
+                const media = calcularMediaAvaliacao(aval.notas);
+                const pesoDec = aval.peso / 100;
+                const pesoRelativoDec = pesoDec * (sub.peso / 100);
+
+                if (media !== null) {
+                    const pontos = media * pesoRelativoDec;
+                    pontosSubConquistados += pontos;
+                    avaliacoesComNota.push({
+                        nome: aval.nome,
+                        nota: media,
+                        peso: aval.peso,
+                        pontos: pontos.toFixed(2)
+                    });
+                } else {
+                    todasAvaliacoesSemNota.push({
+                        nome: aval.nome,
+                        peso: aval.peso,
+                        pesoRelativoDec: pesoRelativoDec,
+                        subNome: sub.nome
+                    });
+                }
+            });
+
+            pontosConquistadosGeral += pontosSubConquistados;
+
+            html += '<small style="color: #666;">✅ Notas preenchidas:</small><br>';
+            if (avaliacoesComNota.length > 0) {
+                avaliacoesComNota.forEach(aval => {
+                    html += `&nbsp;&nbsp;${aval.nome}: <strong>${aval.nota.toFixed(2)}</strong> = ${aval.pontos}<br>`;
+                });
+                html += `&nbsp;&nbsp;<strong>Subtotal: ${pontosSubConquistados.toFixed(2)}</strong><br>`;
+            } else {
+                html += '&nbsp;&nbsp;<em>Nenhuma</em><br>';
+            }
+            html += '</div>';
+        });
+
+        html += `<div class="plano-item"><strong>📊 Total conquistado: ${pontosConquistadosGeral.toFixed(2)}</strong></div>`;
+        
+        if (todasAvaliacoesSemNota.length > 0) {
+            const faltam = Math.max(0, meta - pontosConquistadosGeral);
+            const pesoTotalFaltante = todasAvaliacoesSemNota.reduce((acc, a) => acc + a.pesoRelativoDec, 0);
+            
+            html += '<div class="plano-faltando"><strong>🎯 Plano de Notas:</strong><br><br>';
+            
+            if (faltam <= 0) {
+                html += `<strong style="color: #51cf66;">✅ Meta já atingida! (${pontosConquistadosGeral.toFixed(2)} pontos)</strong><br>`;
+            } else {
+                html += `<em>Faltam <strong>${faltam.toFixed(2)}</strong> pontos para ${meta.toFixed(1)}</em><br><br>`;
+                
+                html += '<strong>📌 Opção 1: Distribuição Proporcional</strong><br>';
+                todasAvaliacoesSemNota.forEach(aval => {
+                    const proporcao = aval.pesoRelativoDec / pesoTotalFaltante;
+                    const pontosNecessarios = faltam * proporcao;
+                    const notaNecessaria = pontosNecessarios / aval.pesoRelativoDec;
+                    const notaNecessariaLimitada = Math.min(10, Math.max(0, notaNecessaria));
+                    const status = notaNecessaria <= 10 ? '✅' : '⚠️ Impossível';
+                    const pesoPercent = (aval.pesoRelativoDec * 100).toFixed(1);
+                    html += `&nbsp;&nbsp;• <strong>${aval.subNome}</strong> - ${aval.nome} (${pesoPercent}%): <strong>${notaNecessariaLimitada.toFixed(2)}</strong> ${status}<br>`;
+                });
+                
+                html += '<br><strong>📌 Opção 2: Notas Iguais</strong><br>';
+                const notaIgual = faltam / pesoTotalFaltante;
+                const notaIgualLimitada = Math.min(10, Math.max(0, notaIgual));
+                const statusIgual = notaIgual <= 10 ? '✅' : '⚠️ Impossível';
+                html += `&nbsp;&nbsp;Tirar <strong>${notaIgualLimitada.toFixed(2)}</strong> em todas ${statusIgual}<br>`;
+            }
+            
+            html += '</div>';
+        } else {
+            const status = pontosConquistadosGeral >= meta ? '✅ Aprovado!' : '❌ Reprovado!';
+            html += `<div class="plano-item"><strong>Média final: ${pontosConquistadosGeral.toFixed(2)}</strong> ${status}</div>`;
+        }
+    }
+
+    return html;
+}
 
         function abrirModalPlano(indexMateria) {
             document.getElementById('modal-plano-titulo').textContent = `📊 Plano de Notas - ${materias[indexMateria].nome}`;

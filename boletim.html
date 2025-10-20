@@ -1008,16 +1008,16 @@
         div.style.cssText = 'background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
         div.innerHTML = `
             <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
-                <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
                        placeholder="Nome (ex: Somativa)" 
                        value="${comp.nome || ''}" 
                        onchange="componentesTemp[${index}].nome = this.value">
-                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
                        placeholder="Peso %" 
                        value="${comp.peso || ''}" 
                        onchange="componentesTemp[${index}].peso = parseFloat(this.value)"
                        min="0" max="100" step="0.1">
-                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" 
+                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
                        placeholder="Nº Avaliações" 
                        value="${comp.numAvaliacoes || 1}" 
                        onchange="componentesTemp[${index}].numAvaliacoes = parseInt(this.value)"
@@ -1090,47 +1090,50 @@
         }
 
         function renderizarComponentesSub(sIndex) {
-            const container = document.getElementById(`componentes-sub-${sIndex}`);
-            if (!container) return;
-            container.innerHTML = '';
+    const container = document.getElementById(`componentes-sub-${sIndex}`);
+    if (!container) return;
+    container.innerHTML = '';
 
-            const componentes = submateriasTemp[sIndex]?.componentes || [];
-            const pesoSub = parseFloat(submateriasTemp[sIndex]?.peso) || 0;
-            
-            componentes.forEach((comp, cIndex) => {
-                const div = document.createElement('div');
-                div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px;';
-                
-                let pesoExibido = comp.peso;
-                let pesoInfo = '';
-                
-                if (modoPeso === 'interno' && comp.peso && pesoSub) {
-                    const pesoFinal = (comp.peso * pesoSub / 100).toFixed(1);
-                    pesoInfo = `<small style="color: #666; display: block; margin-top: 4px;">→ Contribuição final: ${pesoFinal}%</small>`;
-                }
-                
-                div.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;">
-                        <input type="text" class="input-group" placeholder="Nome (ex: Somativa)" 
-                               value="${comp.nome || ''}" 
-                               onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
-                        <div>
-                            <input type="number" class="input-group" placeholder="${modoPeso === 'interno' ? 'Peso %' : 'Contr. %'}" 
-                                   value="${pesoExibido || ''}" 
-                                   onchange="atualizarPesoComponente(${sIndex}, ${cIndex}, this.value)"
-                                   min="0" max="100" step="0.1">
-                            ${pesoInfo}
-                        </div>
-                        <input type="number" class="input-group" placeholder="Nº Aval" 
-                               value="${comp.numAvaliacoes || 1}" 
-                               onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
-                               min="1" max="10">
-                        <button class="btn btn-danger" onclick="removerComponenteSub(${sIndex}, ${cIndex})">×</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+    const componentes = submateriasTemp[sIndex]?.componentes || [];
+    const pesoSub = parseFloat(submateriasTemp[sIndex]?.peso) || 0;
+    
+    componentes.forEach((comp, cIndex) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px;';
+        
+        let pesoExibido = comp.peso;
+        let pesoInfo = '';
+        
+        if (modoPeso === 'interno' && comp.peso && pesoSub) {
+            const pesoFinal = (comp.peso * pesoSub / 100).toFixed(1);
+            pesoInfo = `<small style="color: #666; display: block; margin-top: 4px;">→ Contribuição final: ${pesoFinal}%</small>`;
         }
+        
+        div.innerHTML = `
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center;">
+                <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
+                       placeholder="Nome (ex: Somativa)" 
+                       value="${comp.nome || ''}" 
+                       onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].nome = this.value">
+                <div>
+                    <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
+                           placeholder="${modoPeso === 'interno' ? 'Peso %' : 'Contr. %'}" 
+                           value="${pesoExibido || ''}" 
+                           onchange="atualizarPesoComponente(${sIndex}, ${cIndex}, this.value)"
+                           min="0" max="100" step="0.1">
+                    ${pesoInfo}
+                </div>
+                <input type="number" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;" 
+                       placeholder="Nº Aval" 
+                       value="${comp.numAvaliacoes || 1}" 
+                       onchange="submateriasTemp[${sIndex}].componentes[${cIndex}].numAvaliacoes = parseInt(this.value)"
+                       min="1" max="10">
+                <button class="btn btn-danger" onclick="removerComponenteSub(${sIndex}, ${cIndex})">×</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
 
         function atualizarPesoComponente(sIndex, cIndex, valor) {
             const pesoDigitado = parseFloat(valor) || 0;
@@ -1771,109 +1774,188 @@
         function gerarCombinacoesCombinadas(materia, mIndex) {
     const mediaAlvo = config.mediaAprovacao;
     const combinacoes = [];
+    
     const componentesFaltando = [];
+    
+    if (materia.tipo === 'individual') {
+        materia.componentes.forEach((comp, cIdx) => {
+            const notas1 = comp.notas1Bim || [];
+            const notas2 = comp.notas2Bim || [];
+            const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+            const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
             
-            if (materia.tipo === 'individual') {
-                materia.componentes.forEach((comp, cIdx) => {
-                    const notas1 = comp.notas1Bim || [];
-                    const notas2 = comp.notas2Bim || [];
-                    const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
-                    const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
-                    
-                    if (materia.usaBimestres) {
-                        if (validas1.length < comp.numAvaliacoes) {
-                            const faltam = comp.numAvaliacoes - validas1.length;
-                            componentesFaltando.push({ 
-                                tipo: 'individual', 
-                                compIdx: cIdx, 
-                                bim: '1bim', 
-                                comp,
-                                notasExistentes: [...validas1],
-                                faltam: faltam
-                            });
-                        }
-                        if (validas2.length < comp.numAvaliacoes) {
-                            const faltam = comp.numAvaliacoes - validas2.length;
-                            componentesFaltando.push({ 
-                                tipo: 'individual', 
-                                compIdx: cIdx, 
-                                bim: '2bim', 
-                                comp,
-                                notasExistentes: [...validas2],
-                                faltam: faltam
-                            });
-                        }
-                    } else {
-                        if (validas1.length < comp.numAvaliacoes) {
-                            const faltam = comp.numAvaliacoes - validas1.length;
-                            componentesFaltando.push({ 
-                                tipo: 'individual', 
-                                compIdx: cIdx, 
-                                bim: '1bim', 
-                                comp,
-                                notasExistentes: [...validas1],
-                                faltam: faltam
-                            });
-                        }
-                    }
-                });
-            } else {
-                materia.submateria.forEach((sub, sIdx) => {
-                    sub.componentes.forEach((comp, cIdx) => {
-                        const notas1 = comp.notas1Bim || [];
-                        const notas2 = comp.notas2Bim || [];
-                        const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
-                        const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
-                        
-                        if (materia.usaBimestres) {
-                            if (validas1.length < comp.numAvaliacoes) {
-                                const faltam = comp.numAvaliacoes - validas1.length;
-                                componentesFaltando.push({ 
-                                    tipo: 'conjugada', 
-                                    subIdx: sIdx, 
-                                    compIdx: cIdx, 
-                                    bim: '1bim', 
-                                    comp, 
-                                    sub,
-                                    notasExistentes: [...validas1],
-                                    faltam: faltam
-                                });
-                            }
-                            if (validas2.length < comp.numAvaliacoes) {
-                                const faltam = comp.numAvaliacoes - validas2.length;
-                                componentesFaltando.push({ 
-                                    tipo: 'conjugada', 
-                                    subIdx: sIdx, 
-                                    compIdx: cIdx, 
-                                    bim: '2bim', 
-                                    comp, 
-                                    sub,
-                                    notasExistentes: [...validas2],
-                                    faltam: faltam
-                                });
-                            }
-                        } else {
-                            if (validas1.length < comp.numAvaliacoes) {
-                                const faltam = comp.numAvaliacoes - validas1.length;
-                                componentesFaltando.push({ 
-                                    tipo: 'conjugada', 
-                                    subIdx: sIdx, 
-                                    compIdx: cIdx, 
-                                    bim: '1bim', 
-                                    comp, 
-                                    sub,
-                                    notasExistentes: [...validas1],
-                                    faltam: faltam
-                                });
-                            }
-                        }
+            if (materia.usaBimestres) {
+                if (validas1.length < comp.numAvaliacoes) {
+                    const faltam = comp.numAvaliacoes - validas1.length;
+                    componentesFaltando.push({ 
+                        tipo: 'individual', 
+                        compIdx: cIdx, 
+                        bim: '1bim', 
+                        comp,
+                        notasExistentes: [...validas1],
+                        faltam: faltam
                     });
-                });
+                }
+                if (validas2.length < comp.numAvaliacoes) {
+                    const faltam = comp.numAvaliacoes - validas2.length;
+                    componentesFaltando.push({ 
+                        tipo: 'individual', 
+                        compIdx: cIdx, 
+                        bim: '2bim', 
+                        comp,
+                        notasExistentes: [...validas2],
+                        faltam: faltam
+                    });
+                }
+            } else {
+                if (validas1.length < comp.numAvaliacoes) {
+                    const faltam = comp.numAvaliacoes - validas1.length;
+                    componentesFaltando.push({ 
+                        tipo: 'individual', 
+                        compIdx: cIdx, 
+                        bim: '1bim', 
+                        comp,
+                        notasExistentes: [...validas1],
+                        faltam: faltam
+                    });
+                }
             }
-            
-           if (componentesFaltando.length === 0) {
+        });
+    } else {
+        materia.submateria.forEach((sub, sIdx) => {
+            sub.componentes.forEach((comp, cIdx) => {
+                const notas1 = comp.notas1Bim || [];
+                const notas2 = comp.notas2Bim || [];
+                const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                
+                if (materia.usaBimestres) {
+                    if (validas1.length < comp.numAvaliacoes) {
+                        const faltam = comp.numAvaliacoes - validas1.length;
+                        componentesFaltando.push({ 
+                            tipo: 'conjugada', 
+                            subIdx: sIdx, 
+                            compIdx: cIdx, 
+                            bim: '1bim', 
+                            comp, 
+                            sub,
+                            notasExistentes: [...validas1],
+                            faltam: faltam
+                        });
+                    }
+                    if (validas2.length < comp.numAvaliacoes) {
+                        const faltam = comp.numAvaliacoes - validas2.length;
+                        componentesFaltando.push({ 
+                            tipo: 'conjugada', 
+                            subIdx: sIdx, 
+                            compIdx: cIdx, 
+                            bim: '2bim', 
+                            comp, 
+                            sub,
+                            notasExistentes: [...validas2],
+                            faltam: faltam
+                        });
+                    }
+                } else {
+                    if (validas1.length < comp.numAvaliacoes) {
+                        const faltam = comp.numAvaliacoes - validas1.length;
+                        componentesFaltando.push({ 
+                            tipo: 'conjugada', 
+                            subIdx: sIdx, 
+                            compIdx: cIdx, 
+                            bim: '1bim', 
+                            comp, 
+                            sub,
+                            notasExistentes: [...validas1],
+                            faltam: faltam
+                        });
+                    }
+                }
+            });
+        });
+    }
+    
+    if (componentesFaltando.length === 0) {
         return [];
     }
+    
+    // PROTEÇÃO: Limitar complexidade
+    if (componentesFaltando.length > 3) {
+        console.warn('Muitos componentes faltando. Desabilitando cálculo automático.');
+        return [];
+    }
+    
+    function gerarCombinacoes(indiceAtual, notasNovas) {
+        if (combinacoes.length >= 10) {
+            return;
+        }
+        
+        if (indiceAtual === componentesFaltando.length) {
+            const materiaCopia = JSON.parse(JSON.stringify(materia));
+            
+            notasNovas.forEach((notasItem, idx) => {
+                const item = componentesFaltando[idx];
+                const todasAsNotas = [...item.notasExistentes, ...notasItem];
+                
+                if (item.tipo === 'individual') {
+                    if (item.bim === '1bim') {
+                        materiaCopia.componentes[item.compIdx].notas1Bim = todasAsNotas;
+                    } else {
+                        materiaCopia.componentes[item.compIdx].notas2Bim = todasAsNotas;
+                    }
+                } else {
+                    if (item.bim === '1bim') {
+                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas1Bim = todasAsNotas;
+                    } else {
+                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas2Bim = todasAsNotas;
+                    }
+                }
+            });
+            
+            const mediaFinal = calcularMediaFinal(materiaCopia);
+            
+            if (mediaFinal !== null && Math.abs(mediaFinal - mediaAlvo) < 0.05) {
+                const notasFinais = notasNovas.flat().map(n => n.toFixed(1));
+                combinacoes.push({
+                    notas: notasFinais,
+                    mediaFinal: mediaFinal.toFixed(2),
+                    componentes: componentesFaltando
+                });
+            }
+            return;
+        }
+        
+        const faltam = componentesFaltando[indiceAtual].faltam;
+        const opcoes = [];
+        
+        function gerarOpcoes(profundidade, notasAtuais) {
+            if (profundidade === faltam) {
+                opcoes.push([...notasAtuais]);
+                return;
+            }
+            // Incremento de 1.0 para reduzir complexidade
+            for (let nota = 0; nota <= 10; nota += 1.0) {
+                gerarOpcoes(profundidade + 1, [...notasAtuais, nota]);
+            }
+        }
+        
+        gerarOpcoes(0, []);
+        
+        for (let i = 0; i < opcoes.length && combinacoes.length < 10; i++) {
+            gerarCombinacoes(indiceAtual + 1, [...notasNovas, opcoes[i]]);
+        }
+    }
+    
+    gerarCombinacoes(0, []);
+    
+    combinacoes.sort((a, b) => {
+        const somaA = a.notas.reduce((s, n) => s + parseFloat(n), 0);
+        const somaB = b.notas.reduce((s, n) => s + parseFloat(n), 0);
+        return somaA - somaB;
+    });
+    
+    return combinacoes.slice(0, 10);
+}
             
             function gerarCombinacoes(indiceAtual, notasNovas) {
                 if (indiceAtual === componentesFaltando.length) {

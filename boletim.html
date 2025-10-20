@@ -297,6 +297,45 @@
             color: #ff6b00;
         }
 
+        .resultado-ponderado {
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            border-left: 3px solid #4dabf7;
+            font-family: 'Courier New', monospace;
+        }
+
+        .resultado-ponderado strong {
+            color: #1971c2;
+            font-weight: bold;
+        }
+
+        .media-ponderada-final {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .media-ponderada-final .valor {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .calculo-detalhado {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
         .notas-list {
             display: flex;
             flex-wrap: wrap;
@@ -545,6 +584,21 @@
                 <input type="text" id="semestre" placeholder="Ex: 3º Semestre - 2024/2">
             </div>
 
+            <div class="input-group">
+                <label>⚖️ Modo de Exibição de Pesos:</label>
+                <div class="tipo-radio">
+                    <label>
+                        <input type="radio" name="modo-peso" value="relativo" checked>
+                        <span>Relativo (mostra % do total)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="modo-peso" value="absoluto">
+                        <span>Absoluto (mostra % da matéria)</span>
+                    </label>
+                </div>
+                <small>Relativo: mostra quanto cada avaliação impacta no resultado final. Absoluto: mostra apenas o peso dentro da matéria.</small>
+            </div>
+
             <div class="flex-buttons">
                 <button class="btn btn-primary" onclick="iniciarBoletim()">Continuar →</button>
             </div>
@@ -689,7 +743,7 @@
     </div>
 
     <script>
-        let config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '' };
+        let config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
         let materias = [];
         let indexParaExcluir = null;
         let indexNotas = null;
@@ -738,13 +792,14 @@
             const media = parseFloat(document.getElementById('media-aprovacao').value);
             const mediaPF = parseFloat(document.getElementById('media-pf').value);
             const semestre = document.getElementById('semestre').value.trim();
+            const modoPeso = document.querySelector('input[name="modo-peso"]:checked').value;
 
             if (!instituicao || !media || !semestre) {
                 alert('Preencha todos os campos!');
                 return;
             }
 
-            config = { instituicao, mediaAprovacao: media, mediaPF, semestre };
+            config = { instituicao, mediaAprovacao: media, mediaPF, semestre, modoPeso };
             salvarDados();
             
             document.getElementById('info-instituicao').textContent = config.instituicao;
@@ -893,45 +948,48 @@
             return notasValidas.reduce((acc, n) => acc + parseFloat(n), 0) / notasValidas.length;
         }
 
-        function calcularMediaMateria(materia) {
+        function calcularResultadoPonderado(materia) {
             if (materia.tipo === 'individual') {
-                let somaMediasPonderadas = 0;
-                let somaPesos = 0;
+                let somaPonderada = 0;
+                let totalPeso = 0;
 
                 materia.avaliacoes.forEach(aval => {
                     const media = calcularMediaAvaliacao(aval.notas);
                     if (media !== null) {
-                        somaMediasPonderadas += media * aval.peso;
-                        somaPesos += aval.peso;
+                        const pesoDec = aval.peso / 100;
+                        somaPonderada += media * pesoDec;
+                        totalPeso += pesoDec;
                     }
                 });
 
-                return somaPesos > 0 ? (somaMediasPonderadas / somaPesos).toFixed(2) : null;
+                return totalPeso > 0 ? somaPonderada : null;
 
             } else if (materia.tipo === 'conjugada') {
-                let somaMediasPonderadas = 0;
-                let somaPesos = 0;
+                let somaPonderada = 0;
+                let totalPeso = 0;
 
                 materia.subMaterias.forEach(sub => {
-                    let somaAvalPonderadas = 0;
-                    let somaPesosAval = 0;
+                    let somaSubPonderada = 0;
+                    let totalSubPeso = 0;
 
                     sub.avaliacoes.forEach(aval => {
                         const media = calcularMediaAvaliacao(aval.notas);
                         if (media !== null) {
-                            somaAvalPonderadas += media * aval.peso;
-                            somaPesosAval += aval.peso;
+                            const pesoDec = aval.peso / 100;
+                            somaSubPonderada += media * pesoDec;
+                            totalSubPeso += pesoDec;
                         }
                     });
 
-                    if (somaPesosAval > 0) {
-                        const mediaSub = somaAvalPonderadas / somaPesosAval;
-                        somaMediasPonderadas += mediaSub * sub.peso;
-                        somaPesos += sub.peso;
+                    if (totalSubPeso > 0) {
+                        const mediaSubNormalizada = somaSubPonderada;
+                        const pesoSubDec = sub.peso / 100;
+                        somaPonderada += mediaSubNormalizada * pesoSubDec;
+                        totalPeso += pesoSubDec;
                     }
                 });
 
-                return somaPesos > 0 ? (somaMediasPonderadas / somaPesos).toFixed(2) : null;
+                return totalPeso > 0 ? somaPonderada : null;
             }
 
             return null;
@@ -1044,15 +1102,24 @@
                                 notasHTML += '</div>';
                             }
 
+                            let pesoHTML = '';
+                            if (config.modoPeso === 'relativo') {
+                                pesoHTML = `<div class="peso-relativo">
+                                    <strong>${aval.peso}%</strong> de ${sub.nome} (${sub.peso}%) = <strong>${pesoRelativo}%</strong> do total
+                                </div>`;
+                            } else {
+                                pesoHTML = `<div class="peso-relativo" style="background: #e8f4fd; border-left-color: #2196f3;">
+                                    <strong>${aval.peso}%</strong> de ${sub.nome}
+                                </div>`;
+                            }
+
                             avaliacoesHTML += `
                                 <div class="avaliacao-card">
                                     <div class="avaliacao-header">
                                         <h5>${aval.nome}</h5>
                                         <span class="peso-badge">${aval.peso}%</span>
                                     </div>
-                                    <div class="peso-relativo">
-                                        <strong>${aval.peso}%</strong> de ${sub.nome} (${sub.peso}%) = <strong>${pesoRelativo}%</strong> do total
-                                    </div>
+                                    ${pesoHTML}
                                     <div style="text-align: center; margin: 10px 0;">
                                         <small style="color: #666;">Média: </small>
                                         <strong style="color: #9b59b6; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>

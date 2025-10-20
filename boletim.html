@@ -1439,7 +1439,7 @@
             
             html += '</div>';
             
-            const media = calcularMediaComponente(notas);
+            const media = calcularMediaComponente(notas, comp.numAvaliacoes);
             if (media !== null) {
                 const contribuicao = media * (comp.peso / 100);
                 html += `<div class="media-badge">Média: <strong>${media.toFixed(2)}</strong> → Contribui: <strong style="color: #667eea;">${contribuicao.toFixed(2)}</strong> pontos</div>`;
@@ -1535,12 +1535,19 @@
             renderizarNotasUnicaTela();
         }
 
-        function calcularMediaComponente(notas) {
-            if (!Array.isArray(notas)) return null;
-            const validas = notas.filter(n => n !== null && n !== undefined && !isNaN(n));
-            if (validas.length === 0) return null;
-            return validas.reduce((a, b) => a + b, 0) / validas.length;
-        }
+        function calcularMediaComponente(notas, numAvaliacoes) {
+    if (!Array.isArray(notas)) return null;
+    
+    if (numAvaliacoes === undefined) {
+        numAvaliacoes = notas.length;
+    }
+    
+    const validas = notas.filter(n => n !== null && n !== undefined && !isNaN(n));
+    if (validas.length === 0 && numAvaliacoes === 0) return null;
+    
+    const soma = validas.reduce((a, b) => a + b, 0);
+    return soma / numAvaliacoes;
+}
 
         function calcularMediaSubmateria(materia, sIndex, bimestre) {
             const sub = materia.submateria[sIndex];
@@ -1551,7 +1558,7 @@
             
             sub.componentes.forEach(comp => {
                 const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                const media = calcularMediaComponente(notas);
+                const media = calcularMediaComponente(notas, comp.numAvaliacoes);;
                 if (media !== null) {
                     temNotas = true;
                     soma += media * (parseFloat(comp.peso) / 100);
@@ -1568,7 +1575,7 @@
             if (materia.tipo === 'individual') {
                 materia.componentes.forEach(comp => {
                     const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                    const media = calcularMediaComponente(notas);
+                    const media = calcularMediaComponente(notas, comp.numAvaliacoes);
                     if (media !== null) {
                         temNotas = true;
                         soma += media * (parseFloat(comp.peso) / 100);
@@ -1968,7 +1975,7 @@ function atualizarPanoramaMateria() {
             materia.componentes.forEach((comp, idx) => {
                 if (idx !== cIndex) {
                     const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                    const media = calcularMediaComponente(notas);
+                    const media = calcularMediaComponente(notas, comp.numAvaliacoes);
                     if (media !== null) {
                         somaOutros += media * (comp.peso / 100);
                     }
@@ -1989,7 +1996,7 @@ function atualizarPanoramaMateria() {
             sub.componentes.forEach((comp, idx) => {
                 if (idx !== cIndex) {
                     const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                    const media = calcularMediaComponente(notas);
+                    const media = calcularMediaComponente(notas, comp.numAvaliacoes);;
                     if (media !== null) {
                         somaOutrosComponentes += media * (comp.peso / 100);
                     }

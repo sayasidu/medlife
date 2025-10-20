@@ -761,7 +761,7 @@
             if (dados) {
                 try {
                     const parsed = JSON.parse(dados);
-                    config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '' };
+                    config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
                     materias = parsed.materias || [];
                     
                     if (config.instituicao) {
@@ -769,10 +769,18 @@
                         document.getElementById('media-aprovacao').value = config.mediaAprovacao;
                         document.getElementById('media-pf').value = config.mediaPF || 4.0;
                         document.getElementById('semestre').value = config.semestre;
+                        
+                        const modoInput = document.querySelector(`input[name="modo-peso"][value="${config.modoPeso || 'relativo'}"]`);
+                        if (modoInput) {
+                            modoInput.checked = true;
+                        }
                     }
+                    
+                    console.log('Dados carregados:', { config, materias });
                 } catch (e) {
                     console.error('Erro ao carregar dados:', e);
                     materias = [];
+                    config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
                 }
             }
         }
@@ -995,6 +1003,10 @@
             return null;
         }
 
+        function calcularMediaMateria(materia) {
+            return calcularResultadoPonderado(materia);
+        }
+
         function obterStatus(media) {
             const mediaNum = parseFloat(media);
             if (mediaNum >= config.mediaAprovacao) {
@@ -1042,8 +1054,18 @@
 
                 if (materia.tipo === 'individual') {
                     let avaliacoesHTML = '<div class="avaliacoes-container">';
+                    let somaPonderada = 0;
+                    let totalPeso = 0;
+
                     materia.avaliacoes.forEach((aval, avalIndex) => {
                         const mediaAval = calcularMediaAvaliacao(aval.notas);
+                        const pesoDec = (aval.peso / 100).toFixed(4);
+                        const resultadoPonderado = mediaAval !== null ? (mediaAval * parseFloat(pesoDec)).toFixed(2) : null;
+                        
+                        if (mediaAval !== null) {
+                            somaPonderada += parseFloat(resultadoPonderado);
+                            totalPeso += parseFloat(pesoDec);
+                        }
                         
                         let notasHTML = '';
                         if (aval.notas && aval.notas.length > 0) {
@@ -1052,6 +1074,13 @@
                                 notasHTML += `<div class="nota-badge">P${i+1}: <strong>${nota !== null ? parseFloat(nota).toFixed(1) : '-'}</strong></div>`;
                             });
                             notasHTML += '</div>';
+                        }
+
+                        let calculoHTML = '';
+                        if (mediaAval !== null) {
+                            calculoHTML = `<div class="resultado-ponderado">
+                                ${mediaAval.toFixed(2)} × ${pesoDec} = <strong>${resultadoPonderado}</strong>
+                            </div>`;
                         }
 
                         avaliacoesHTML += `
@@ -1065,33 +1094,42 @@
                                     <strong style="color: #667eea; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>
                                 </div>
                                 ${notasHTML}
+                                ${calculoHTML}
                                 <button class="btn btn-info btn-small" style="width: 100%; margin-top: 10px;" onclick="abrirModalNotasIndividual(${index}, ${avalIndex})">📝 Gerenciar Notas</button>
                             </div>
                         `;
                     });
                     avaliacoesHTML += '</div>';
+                    
+                    if (somaPonderada > 0) {
+                        avaliacoesHTML += `
+                            <div class="calculo-detalhado">
+                                <strong>Cálculo da Média Final:</strong><br>
+                                Soma dos resultados ponderados = <strong>${somaPonderada.toFixed(2)}</strong>
+                            </div>
+                        `;
+                    }
+                    
                     conteudoHTML = avaliacoesHTML;
 
                 } else if (materia.tipo === 'conjugada') {
                     let subMateriasHTML = '<div class="sub-materias-container">';
+                    let somaPonderadaTotal = 0;
+
                     materia.subMaterias.forEach((sub, subIndex) => {
                         let somaAvalPonderadas = 0;
-                        let somaPesosAval = 0;
-                        
-                        sub.avaliacoes.forEach(aval => {
-                            const media = calcularMediaAvaliacao(aval.notas);
-                            if (media !== null) {
-                                somaAvalPonderadas += media * aval.peso;
-                                somaPesosAval += aval.peso;
-                            }
-                        });
-                        
-                        const mediaSub = somaPesosAval > 0 ? (somaAvalPonderadas / somaPesosAval).toFixed(2) : null;
-
                         let avaliacoesHTML = '<div class="avaliacoes-container">';
+                        
                         sub.avaliacoes.forEach((aval, avalIndex) => {
                             const mediaAval = calcularMediaAvaliacao(aval.notas);
-                            const pesoRelativo = ((aval.peso / 100) * (sub.peso / 100) * 100).toFixed(1);
+                            const pesoRelativoPercent = ((aval.peso / 100) * (sub.peso / 100) * 100).toFixed(1);
+                            const pesoRelativoDec = ((aval.peso / 100) * (sub.peso / 100)).toFixed(4);
+                            const resultadoPonderado = mediaAval !== null ? (mediaAval * parseFloat(pesoRelativoDec)).toFixed(2) : null;
+                            
+                            if (mediaAval !== null) {
+                                somaAvalPonderadas += parseFloat(resultadoPonderado);
+                                somaPonderadaTotal += parseFloat(resultadoPonderado);
+                            }
                             
                             let notasHTML = '';
                             if (aval.notas && aval.notas.length > 0) {
@@ -1105,11 +1143,18 @@
                             let pesoHTML = '';
                             if (config.modoPeso === 'relativo') {
                                 pesoHTML = `<div class="peso-relativo">
-                                    <strong>${aval.peso}%</strong> de ${sub.nome} (${sub.peso}%) = <strong>${pesoRelativo}%</strong> do total
+                                    <strong>${aval.peso}%</strong> de ${sub.nome} (${sub.peso}%) = <strong>${pesoRelativoPercent}%</strong> do total
                                 </div>`;
                             } else {
                                 pesoHTML = `<div class="peso-relativo" style="background: #e8f4fd; border-left-color: #2196f3;">
                                     <strong>${aval.peso}%</strong> de ${sub.nome}
+                                </div>`;
+                            }
+
+                            let calculoHTML = '';
+                            if (mediaAval !== null) {
+                                calculoHTML = `<div class="resultado-ponderado">
+                                    ${mediaAval.toFixed(2)} × ${pesoRelativoDec} = <strong>${resultadoPonderado}</strong>
                                 </div>`;
                             }
 
@@ -1125,6 +1170,7 @@
                                         <strong style="color: #9b59b6; font-size: 1.3rem;">${mediaAval !== null ? mediaAval.toFixed(2) : '-'}</strong>
                                     </div>
                                     ${notasHTML}
+                                    ${calculoHTML}
                                     <button class="btn btn-info btn-small" style="width: 100%; margin-top: 10px;" onclick="abrirModalNotasConjugada(${index}, ${subIndex}, ${avalIndex})">📝 Gerenciar Notas</button>
                                 </div>
                             `;
@@ -1139,14 +1185,20 @@
                                         <span class="peso-badge">${sub.peso}% do total</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <small style="color: #666;">Média: </small>
-                                        <strong style="color: #f39c12; font-size: 1.4rem;">${mediaSub !== null ? mediaSub : '-'}</strong>
+                                        <small style="color: #666;">Subtotal: </small>
+                                        <strong style="color: #f39c12; font-size: 1.4rem;">${somaAvalPonderadas.toFixed(2)}</strong>
                                     </div>
                                 </div>
                                 ${avaliacoesHTML}
                             </div>
                         `;
                     });
+                    subMateriasHTML += `
+                        <div class="calculo-detalhado" style="margin-top: 20px;">
+                            <strong>Cálculo da Média Final:</strong><br>
+                            Soma de todos os resultados ponderados = <strong>${somaPonderadaTotal.toFixed(2)}</strong>
+                        </div>
+                    `;
                     subMateriasHTML += '</div>';
                     conteudoHTML = subMateriasHTML;
                 }

@@ -1761,23 +1761,23 @@
         return [];
     }
     
-    function gerarCombinacoes(faltando, notasAtuais = []) {
-        if (faltando.length === 0) {
+    function gerarCombinacoes(indiceAtual, notasAtuais) {
+        if (indiceAtual === componentesFaltando.length) {
             const materiaCopia = JSON.parse(JSON.stringify(materia));
             
             notasAtuais.forEach((nota, idx) => {
-                const comp = faltando[idx];
-                if (comp.tipo === 'individual') {
-                    if (comp.bim === '1bim') {
-                        materiaCopia.componentes[comp.compIdx].notas1Bim = [nota];
+                const item = componentesFaltando[idx];
+                if (item.tipo === 'individual') {
+                    if (item.bim === '1bim') {
+                        materiaCopia.componentes[item.compIdx].notas1Bim = [nota];
                     } else {
-                        materiaCopia.componentes[comp.compIdx].notas2Bim = [nota];
+                        materiaCopia.componentes[item.compIdx].notas2Bim = [nota];
                     }
                 } else {
-                    if (comp.bim === '1bim') {
-                        materiaCopia.submateria[comp.subIdx].componentes[comp.compIdx].notas1Bim = [nota];
+                    if (item.bim === '1bim') {
+                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas1Bim = [nota];
                     } else {
-                        materiaCopia.submateria[comp.subIdx].componentes[comp.compIdx].notas2Bim = [nota];
+                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas2Bim = [nota];
                     }
                 }
             });
@@ -1788,18 +1788,18 @@
                 combinacoes.push({
                     notas: notasAtuais.map(n => n.toFixed(1)),
                     mediaFinal: mediaFinal.toFixed(2),
-                    componentes: faltando
+                    componentes: componentesFaltando
                 });
             }
             return;
         }
         
         for (let nota = 0; nota <= 10; nota += 0.5) {
-            gerarCombinacoes(faltando.slice(1), [...notasAtuais, nota]);
+            gerarCombinacoes(indiceAtual + 1, [...notasAtuais, nota]);
         }
     }
     
-    gerarCombinacoes(componentesFaltando);
+    gerarCombinacoes(0, []);
     
     combinacoes.sort((a, b) => {
         const somaA = a.notas.reduce((s, n) => s + parseFloat(n), 0);

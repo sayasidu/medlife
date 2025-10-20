@@ -304,6 +304,31 @@
             color: inherit;
         }
 
+        .perspectiva-tempo-real {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: white;
+        }
+
+        .perspectiva-tempo-real strong {
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        .perspectiva-tempo-real.sem-dados {
+            background: #e8f4f8;
+            border-left-color: #2196f3;
+            color: #2c3e50;
+        }
+
+        .perspectiva-tempo-real.sem-dados strong {
+            color: #667eea;
+        }
+
         .tipo-option {
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -330,10 +355,6 @@
             margin-top: 10px;
             font-size: 0.9rem;
             border-left: 3px solid #ffc107;
-        }
-
-        .peso-info strong {
-            color: #856404;
         }
 
         .peso-info.ok {
@@ -1333,6 +1354,7 @@
             }
             
             conteudoHtml += renderizarPerspectiva(materia, mIndex);
+            conteudoHtml += renderizarPerspectivTempoReal(materia, mIndex);
             conteudoHtml += '</div>';
             
             div.innerHTML = headerHtml + conteudoHtml;
@@ -1418,6 +1440,7 @@
             }
             
             conteudoHtml += renderizarPerspectiva(materia, mIndex);
+            conteudoHtml += renderizarPerspectivTempoReal(materia, mIndex);
             conteudoHtml += '</div>';
             
             div.innerHTML = headerHtml + conteudoHtml;
@@ -1510,6 +1533,35 @@
             return '';
         }
 
+        function renderizarPerspectivTempoReal(materia, mIndex) {
+            const temNotasFaltando = verificarNotasFaltando(materia);
+            
+            if (!temNotasFaltando) {
+                return '';
+            }
+            
+            const sugestoesNotas = calcularNotasNecessariasDetalhadas(materia);
+            
+            if (sugestoesNotas.length === 0) {
+                return '';
+            }
+            
+            let html = '<div class="perspectiva-tempo-real sem-dados">';
+            html += '<strong>⏱️ Perspectiva em Tempo Real:</strong><br>';
+            html += '<small style="display: block; margin-top: 8px;">';
+            
+            sugestoesNotas.forEach((sug, idx) => {
+                html += `<div style="margin-top: ${idx > 0 ? '10px' : '0'}; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">`;
+                html += `<strong>${sug.componente}:</strong> ${sug.mensagem}`;
+                html += `</div>`;
+            });
+            
+            html += '</small>';
+            html += '</div>';
+            
+            return html;
+        }
+
         function atualizarNota(mIndex, sIndex, cIndex, nIndex, valor, tipo) {
             const nota = valor.trim() === '' ? null : parseFloat(valor);
             
@@ -1536,18 +1588,18 @@
         }
 
         function calcularMediaComponente(notas, numAvaliacoes) {
-    if (!Array.isArray(notas)) return null;
-    
-    if (numAvaliacoes === undefined) {
-        numAvaliacoes = notas.length;
-    }
-    
-    const validas = notas.filter(n => n !== null && n !== undefined && !isNaN(n));
-    if (validas.length === 0 && numAvaliacoes === 0) return null;
-    
-    const soma = validas.reduce((a, b) => a + b, 0);
-    return soma / numAvaliacoes;
-}
+            if (!Array.isArray(notas)) return null;
+            
+            if (numAvaliacoes === undefined) {
+                numAvaliacoes = notas.length;
+            }
+            
+            const validas = notas.filter(n => n !== null && n !== undefined && !isNaN(n));
+            if (validas.length === 0 && numAvaliacoes === 0) return null;
+            
+            const soma = validas.reduce((a, b) => a + b, 0);
+            return soma / numAvaliacoes;
+        }
 
         function calcularMediaSubmateria(materia, sIndex, bimestre) {
             const sub = materia.submateria[sIndex];
@@ -1558,7 +1610,7 @@
             
             sub.componentes.forEach(comp => {
                 const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                const media = calcularMediaComponente(notas, comp.numAvaliacoes);;
+                const media = calcularMediaComponente(notas, comp.numAvaliacoes);
                 if (media !== null) {
                     temNotas = true;
                     soma += media * (parseFloat(comp.peso) / 100);
@@ -1662,26 +1714,24 @@
             resumo.appendChild(table);
         }
 
-        // FUNÇÃO MELHORADA: GERAR PANORAMA COM SELETOR
         function gerarPanoramaGeral() {
-    const panoramaSection = document.getElementById('panorama-geral');
-    const select = document.getElementById('select-materia-panorama');
-    
-    // Popula o select
-    select.innerHTML = '<option value="">-- Escolha uma matéria --</option>';
-    
-    let temMateriasIncompletas = false;  // ✅ CORRIGIDO AQUI
-    
-    materias.forEach((materia, mIndex) => {
-        const temNotasFaltando = verificarNotasFaltando(materia);
-        if (temNotasFaltando) {
-            temMateriasIncompletas = true;
-            const option = document.createElement('option');
-            option.value = mIndex;
-            option.textContent = materia.nome;
-            select.appendChild(option);
-        }
-    });
+            const panoramaSection = document.getElementById('panorama-geral');
+            const select = document.getElementById('select-materia-panorama');
+            
+            select.innerHTML = '<option value="">-- Escolha uma matéria --</option>';
+            
+            let temMateriasIncompletas = false;
+            
+            materias.forEach((materia, mIndex) => {
+                const temNotasFaltando = verificarNotasFaltando(materia);
+                if (temNotasFaltando) {
+                    temMateriasIncompletas = true;
+                    const option = document.createElement('option');
+                    option.value = mIndex;
+                    option.textContent = materia.nome;
+                    select.appendChild(option);
+                }
+            });
 
             if (temMateriasIncompletas) {
                 panoramaSection.style.display = 'block';
@@ -1714,176 +1764,249 @@
             }
         }
 
+        // FUNÇÃO CORRIGIDA: Gera combinações mantendo notas já lançadas
         function gerarCombinacoesCombinadas(materia, mIndex) {
-    const mediaAlvo = config.mediaAprovacao;
-    const combinacoes = [];
-    
-    const componentesFaltando = [];
-    
-    if (materia.tipo === 'individual') {
-        materia.componentes.forEach((comp, cIdx) => {
-            const notas1 = comp.notas1Bim || [];
-            const notas2 = comp.notas2Bim || [];
-            const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
-            const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+            const mediaAlvo = config.mediaAprovacao;
+            const combinacoes = [];
             
-            if (materia.usaBimestres) {
-                if (validas1.length < comp.numAvaliacoes) {
-                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '1bim', comp });
-                }
-                if (validas2.length < comp.numAvaliacoes) {
-                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '2bim', comp });
-                }
+            const componentesFaltando = [];
+            
+            if (materia.tipo === 'individual') {
+                materia.componentes.forEach((comp, cIdx) => {
+                    const notas1 = comp.notas1Bim || [];
+                    const notas2 = comp.notas2Bim || [];
+                    const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                    const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                    
+                    if (materia.usaBimestres) {
+                        if (validas1.length < comp.numAvaliacoes) {
+                            const faltam = comp.numAvaliacoes - validas1.length;
+                            componentesFaltando.push({ 
+                                tipo: 'individual', 
+                                compIdx: cIdx, 
+                                bim: '1bim', 
+                                comp,
+                                notasExistentes: [...validas1],
+                                faltam: faltam
+                            });
+                        }
+                        if (validas2.length < comp.numAvaliacoes) {
+                            const faltam = comp.numAvaliacoes - validas2.length;
+                            componentesFaltando.push({ 
+                                tipo: 'individual', 
+                                compIdx: cIdx, 
+                                bim: '2bim', 
+                                comp,
+                                notasExistentes: [...validas2],
+                                faltam: faltam
+                            });
+                        }
+                    } else {
+                        if (validas1.length < comp.numAvaliacoes) {
+                            const faltam = comp.numAvaliacoes - validas1.length;
+                            componentesFaltando.push({ 
+                                tipo: 'individual', 
+                                compIdx: cIdx, 
+                                bim: '1bim', 
+                                comp,
+                                notasExistentes: [...validas1],
+                                faltam: faltam
+                            });
+                        }
+                    }
+                });
             } else {
-                if (validas1.length < comp.numAvaliacoes) {
-                    componentesFaltando.push({ tipo: 'individual', compIdx: cIdx, bim: '1bim', comp });
-                }
-            }
-        });
-    } else {
-        materia.submateria.forEach((sub, sIdx) => {
-            sub.componentes.forEach((comp, cIdx) => {
-                const notas1 = comp.notas1Bim || [];
-                const notas2 = comp.notas2Bim || [];
-                const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
-                const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
-                
-                if (materia.usaBimestres) {
-                    if (validas1.length < comp.numAvaliacoes) {
-                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '1bim', comp, sub });
-                    }
-                    if (validas2.length < comp.numAvaliacoes) {
-                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '2bim', comp, sub });
-                    }
-                } else {
-                    if (validas1.length < comp.numAvaliacoes) {
-                        componentesFaltando.push({ tipo: 'conjugada', subIdx: sIdx, compIdx: cIdx, bim: '1bim', comp, sub });
-                    }
-                }
-            });
-        });
-    }
-    
-    if (componentesFaltando.length === 0) {
-        return [];
-    }
-    
-    function gerarCombinacoes(indiceAtual, notasAtuais) {
-        if (indiceAtual === componentesFaltando.length) {
-            const materiaCopia = JSON.parse(JSON.stringify(materia));
-            
-            notasAtuais.forEach((nota, idx) => {
-                const item = componentesFaltando[idx];
-                if (item.tipo === 'individual') {
-                    if (item.bim === '1bim') {
-                        materiaCopia.componentes[item.compIdx].notas1Bim = [nota];
-                    } else {
-                        materiaCopia.componentes[item.compIdx].notas2Bim = [nota];
-                    }
-                } else {
-                    if (item.bim === '1bim') {
-                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas1Bim = [nota];
-                    } else {
-                        materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas2Bim = [nota];
-                    }
-                }
-            });
-            
-            const mediaFinal = calcularMediaFinal(materiaCopia);
-            
-            if (mediaFinal !== null && Math.abs(mediaFinal - mediaAlvo) < 0.05) {
-                combinacoes.push({
-                    notas: notasAtuais.map(n => n.toFixed(1)),
-                    mediaFinal: mediaFinal.toFixed(2),
-                    componentes: componentesFaltando
+                materia.submateria.forEach((sub, sIdx) => {
+                    sub.componentes.forEach((comp, cIdx) => {
+                        const notas1 = comp.notas1Bim || [];
+                        const notas2 = comp.notas2Bim || [];
+                        const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
+                        
+                        if (materia.usaBimestres) {
+                            if (validas1.length < comp.numAvaliacoes) {
+                                const faltam = comp.numAvaliacoes - validas1.length;
+                                componentesFaltando.push({ 
+                                    tipo: 'conjugada', 
+                                    subIdx: sIdx, 
+                                    compIdx: cIdx, 
+                                    bim: '1bim', 
+                                    comp, 
+                                    sub,
+                                    notasExistentes: [...validas1],
+                                    faltam: faltam
+                                });
+                            }
+                            if (validas2.length < comp.numAvaliacoes) {
+                                const faltam = comp.numAvaliacoes - validas2.length;
+                                componentesFaltando.push({ 
+                                    tipo: 'conjugada', 
+                                    subIdx: sIdx, 
+                                    compIdx: cIdx, 
+                                    bim: '2bim', 
+                                    comp, 
+                                    sub,
+                                    notasExistentes: [...validas2],
+                                    faltam: faltam
+                                });
+                            }
+                        } else {
+                            if (validas1.length < comp.numAvaliacoes) {
+                                const faltam = comp.numAvaliacoes - validas1.length;
+                                componentesFaltando.push({ 
+                                    tipo: 'conjugada', 
+                                    subIdx: sIdx, 
+                                    compIdx: cIdx, 
+                                    bim: '1bim', 
+                                    comp, 
+                                    sub,
+                                    notasExistentes: [...validas1],
+                                    faltam: faltam
+                                });
+                            }
+                        }
+                    });
                 });
             }
-            return;
-        }
-        
-        for (let nota = 0; nota <= 10; nota += 0.5) {
-            gerarCombinacoes(indiceAtual + 1, [...notasAtuais, nota]);
-        }
-    }
-    
-    gerarCombinacoes(0, []);
-    
-    combinacoes.sort((a, b) => {
-        const somaA = a.notas.reduce((s, n) => s + parseFloat(n), 0);
-        const somaB = b.notas.reduce((s, n) => s + parseFloat(n), 0);
-        return somaA - somaB;
-    });
-    
-    return combinacoes.slice(0, 10);
-}
-
-function renderizarCombinacoesPanorama(materia, mIndex) {
-    const combinacoes = gerarCombinacoesCombinadas(materia, mIndex);
-    const panoramaConteudo = document.getElementById('panorama-conteudo');
-    
-    if (combinacoes.length === 0) {
-        panoramaConteudo.innerHTML = `
-            <div class="panorama-item">
-                <p style="text-align: center; color: #666;">
-                    ✅ Todas as avaliações foram lançadas!
-                </p>
-            </div>
-        `;
-        return;
-    }
-    
-    panoramaConteudo.innerHTML = '';
-    
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'panorama-item';
-    
-    let html = `<h4>🎯 ${materia.nome}</h4>
-                <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
-                    Combinações para atingir média <strong>${config.mediaAprovacao.toFixed(1)}</strong>:
-                </p>`;
-    
-    combinacoes.forEach((combo, idx) => {
-        html += `<div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${idx === 0 ? '#27ae60' : '#667eea'};">`;
-        
-        combo.componentes.forEach((comp, compIdx) => {
-            const label = comp.tipo === 'individual' 
-                ? `${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`
-                : `${comp.sub.nome} → ${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`;
             
-            html += `<div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.95rem;">
-                        <span>${label}:</span>
-                        <strong style="color: #667eea;">${combo.notas[compIdx]}</strong>
-                    </div>`;
-        });
-        
-        html += `<div style="border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 10px; text-align: right; color: #27ae60; font-weight: bold;">
-                    📊 Média Final: ${combo.mediaFinal}
-                 </div>
-                 ${idx === 0 ? '<div style="margin-top: 8px; font-size: 0.85rem; color: #27ae60;">✨ Opção mais fácil</div>' : ''}
-            </div>`;
-    });
-    
-    itemDiv.innerHTML = html;
-    panoramaConteudo.appendChild(itemDiv);
-}
+            if (componentesFaltando.length === 0) {
+                return [];
+            }
+            
+            function gerarCombinacoes(indiceAtual, notasNovas) {
+                if (indiceAtual === componentesFaltando.length) {
+                    const materiaCopia = JSON.parse(JSON.stringify(materia));
+                    
+                    notasNovas.forEach((notasItem, idx) => {
+                        const item = componentesFaltando[idx];
+                        const todasAsNotas = [...item.notasExistentes, ...notasItem];
+                        
+                        if (item.tipo === 'individual') {
+                            if (item.bim === '1bim') {
+                                materiaCopia.componentes[item.compIdx].notas1Bim = todasAsNotas;
+                            } else {
+                                materiaCopia.componentes[item.compIdx].notas2Bim = todasAsNotas;
+                            }
+                        } else {
+                            if (item.bim === '1bim') {
+                                materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas1Bim = todasAsNotas;
+                            } else {
+                                materiaCopia.submateria[item.subIdx].componentes[item.compIdx].notas2Bim = todasAsNotas;
+                            }
+                        }
+                    });
+                    
+                    const mediaFinal = calcularMediaFinal(materiaCopia);
+                    
+                    if (mediaFinal !== null && Math.abs(mediaFinal - mediaAlvo) < 0.05) {
+                        const notasFinais = notasNovas.flat().map(n => n.toFixed(1));
+                        combinacoes.push({
+                            notas: notasFinais,
+                            mediaFinal: mediaFinal.toFixed(2),
+                            componentes: componentesFaltando
+                        });
+                    }
+                    return;
+                }
+                
+                const faltam = componentesFaltando[indiceAtual].faltam;
+                const opcoes = [];
+                
+                function gerarOpcoes(profundidade, notasAtuais) {
+                    if (profundidade === faltam) {
+                        opcoes.push([...notasAtuais]);
+                        return;
+                    }
+                    for (let nota = 0; nota <= 10; nota += 0.5) {
+                        gerarOpcoes(profundidade + 1, [...notasAtuais, nota]);
+                    }
+                }
+                
+                gerarOpcoes(0, []);
+                
+                opcoes.forEach(opsItem => {
+                    gerarCombinacoes(indiceAtual + 1, [...notasNovas, opsItem]);
+                });
+            }
+            
+            gerarCombinacoes(0, []);
+            
+            combinacoes.sort((a, b) => {
+                const somaA = a.notas.reduce((s, n) => s + parseFloat(n), 0);
+                const somaB = b.notas.reduce((s, n) => s + parseFloat(n), 0);
+                return somaA - somaB;
+            });
+            
+            return combinacoes.slice(0, 10);
+        }
 
-function atualizarPanoramaMateria() {
-    const select = document.getElementById('select-materia-panorama');
-    const mIndex = parseInt(select.value);
-    
-    if (isNaN(mIndex) || mIndex < 0) {
-        document.getElementById('panorama-conteudo').innerHTML = '';
-        return;
-    }
-    
-    const materia = materias[mIndex];
-    if (!materia) {
-        document.getElementById('panorama-conteudo').innerHTML = '';
-        return;
-    }
-    
-    renderizarCombinacoesPanorama(materia, mIndex);
-}
+        function renderizarCombinacoesPanorama(materia, mIndex) {
+            const combinacoes = gerarCombinacoesCombinadas(materia, mIndex);
+            const panoramaConteudo = document.getElementById('panorama-conteudo');
+            
+            if (combinacoes.length === 0) {
+                panoramaConteudo.innerHTML = `
+                    <div class="panorama-item">
+                        <p style="text-align: center; color: #666;">
+                            ✅ Todas as avaliações foram lançadas!
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            panoramaConteudo.innerHTML = '';
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'panorama-item';
+            
+            let html = `<h4>🎯 ${materia.nome}</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
+                            Combinações para atingir média <strong>${config.mediaAprovacao.toFixed(1)}</strong>:
+                        </p>`;
+            
+            combinacoes.forEach((combo, idx) => {
+                html += `<div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${idx === 0 ? '#27ae60' : '#667eea'};">`;
+                
+                combo.componentes.forEach((comp, compIdx) => {
+                    const label = comp.tipo === 'individual' 
+                        ? `${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`
+                        : `${comp.sub.nome} → ${comp.comp.nome} (${comp.bim === '1bim' ? '1º Bim' : '2º Bim'})`;
+                    
+                    html += `<div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.95rem;">
+                                <span>${label}:</span>
+                                <strong style="color: #667eea;">${combo.notas[compIdx]}</strong>
+                            </div>`;
+                });
+                
+                html += `<div style="border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 10px; text-align: right; color: #27ae60; font-weight: bold;">
+                            📊 Média Final: ${combo.mediaFinal}
+                         </div>
+                         ${idx === 0 ? '<div style="margin-top: 8px; font-size: 0.85rem; color: #27ae60;">✨ Opção mais fácil</div>' : ''}
+                </div>`;
+            });
+            
+            itemDiv.innerHTML = html;
+            panoramaConteudo.appendChild(itemDiv);
+        }
+
+        function atualizarPanoramaMateria() {
+            const select = document.getElementById('select-materia-panorama');
+            const mIndex = parseInt(select.value);
+            
+            if (isNaN(mIndex) || mIndex < 0) {
+                document.getElementById('panorama-conteudo').innerHTML = '';
+                return;
+            }
+            
+            const materia = materias[mIndex];
+            if (!materia) {
+                document.getElementById('panorama-conteudo').innerHTML = '';
+                return;
+            }
+            
+            renderizarCombinacoesPanorama(materia, mIndex);
+        }
         
         function calcularNotasNecessariasDetalhadas(materia) {
             const sugestoes = [];
@@ -1891,7 +2014,6 @@ function atualizarPanoramaMateria() {
 
             if (materia.tipo === 'individual') {
                 if (materia.usaBimestres) {
-                    // Analisa 1º Bimestre
                     materia.componentes.forEach((comp, cIndex) => {
                         const notas1 = comp.notas1Bim || [];
                         const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
@@ -1903,7 +2025,6 @@ function atualizarPanoramaMateria() {
                         }
                     });
                     
-                    // Analisa 2º Bimestre
                     materia.componentes.forEach((comp, cIndex) => {
                         const notas2 = comp.notas2Bim || [];
                         const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
@@ -1915,7 +2036,6 @@ function atualizarPanoramaMateria() {
                         }
                     });
                 } else {
-                    // Modular
                     materia.componentes.forEach((comp, cIndex) => {
                         const notas1 = comp.notas1Bim || [];
                         const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
@@ -1928,11 +2048,9 @@ function atualizarPanoramaMateria() {
                     });
                 }
             } else {
-                // Conjugada
                 materia.submateria.forEach((sub, sIndex) => {
                     sub.componentes.forEach((comp, cIndex) => {
                         if (materia.usaBimestres) {
-                            // 1º Bimestre
                             const notas1 = comp.notas1Bim || [];
                             const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
                             const faltam1 = comp.numAvaliacoes - validas1.length;
@@ -1942,7 +2060,6 @@ function atualizarPanoramaMateria() {
                                 sugestoes.push(criarSugestao(`${sub.nome} → ${comp.nome}`, '1º Bimestre', notaNecessaria, faltam1));
                             }
                             
-                            // 2º Bimestre
                             const notas2 = comp.notas2Bim || [];
                             const validas2 = notas2.filter(n => n !== null && n !== undefined && !isNaN(n));
                             const faltam2 = comp.numAvaliacoes - validas2.length;
@@ -1952,7 +2069,6 @@ function atualizarPanoramaMateria() {
                                 sugestoes.push(criarSugestao(`${sub.nome} → ${comp.nome}`, '2º Bimestre', notaNecessaria, faltam2));
                             }
                         } else {
-                            // Modular
                             const notas1 = comp.notas1Bim || [];
                             const validas1 = notas1.filter(n => n !== null && n !== undefined && !isNaN(n));
                             const faltam1 = comp.numAvaliacoes - validas1.length;
@@ -1996,7 +2112,7 @@ function atualizarPanoramaMateria() {
             sub.componentes.forEach((comp, idx) => {
                 if (idx !== cIndex) {
                     const notas = bimestre === '1bim' ? comp.notas1Bim : comp.notas2Bim;
-                    const media = calcularMediaComponente(notas, comp.numAvaliacoes);;
+                    const media = calcularMediaComponente(notas, comp.numAvaliacoes);
                     if (media !== null) {
                         somaOutrosComponentes += media * (comp.peso / 100);
                     }
@@ -2060,6 +2176,3 @@ function atualizarPanoramaMateria() {
                 'Isso apagará <strong>TODOS os dados</strong>!<br>Tem certeza?';
             abrirModal();
         }
-    </script>
-</body>
-</html>

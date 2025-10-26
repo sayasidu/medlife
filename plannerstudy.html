@@ -1219,6 +1219,13 @@
                         </svg>
                         Planejador de Estudos
                     </h1>
+                    <p id="headerUserInfo" style="display: none; font-size: 1rem; margin-bottom: 12px; font-weight: 600;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span id="headerUserName"></span> - <span id="headerUserCourse"></span>
+                    </p>
                     <p>Organize seu aprendizado de forma eficiente e moderna</p>
                     <div class="header-actions">
                         <button class="btn btn-ghost" onclick="window.location.href='/'">
@@ -1625,6 +1632,12 @@
                 this.loadData();
                 this.setupEventListeners();
                 this.loadTheme();
+
+                // Se o perfil não estiver configurado, iniciar na aba Profile
+                if (!this.data.profile || !this.data.profile.name) {
+                    this.switchTab('profile');
+                }
+
                 this.render();
                 this.showWelcomeMessage();
             }
@@ -1694,10 +1707,30 @@
                 try {
                     const saved = localStorage.getItem('studyPlannerData');
                     if (saved) {
-                        this.data = JSON.parse(saved);
+                        const loadedData = JSON.parse(saved);
+                        // Garantir que todas as propriedades necessárias existam
+                        this.data = {
+                            profile: loadedData.profile || {
+                                name: '',
+                                school: '',
+                                course: '',
+                                period: ''
+                            },
+                            subjects: loadedData.subjects || [],
+                            contents: loadedData.contents || [],
+                            studySessions: loadedData.studySessions || [],
+                            reviews: loadedData.reviews || [],
+                            settings: loadedData.settings || { theme: 'light' }
+                        };
                     } else {
                         // Initial sample data
                         this.data = {
+                            profile: {
+                                name: '',
+                                school: '',
+                                course: '',
+                                period: ''
+                            },
                             subjects: ['Matemática', 'Português', 'História', 'Biologia'],
                             contents: [
                                 {
@@ -1721,6 +1754,8 @@
                                     createdAt: new Date().toISOString()
                                 }
                             ],
+                            studySessions: [],
+                            reviews: [],
                             settings: {
                                 theme: 'light'
                             }
@@ -1801,6 +1836,9 @@
                 this.saveData();
                 this.renderProfile();
                 this.showToast('Perfil salvo com sucesso!', 'success');
+
+                // Após salvar o perfil pela primeira vez, redirecionar para Dashboard
+                this.switchTab('dashboard');
             }
 
             /**
@@ -2071,7 +2109,7 @@
                 const profile = this.data.profile;
                 const display = document.getElementById('profileDisplay');
 
-                if (profile.name) {
+                if (profile && profile.name) {
                     document.getElementById('profileName').value = profile.name;
                     document.getElementById('profileSchool').value = profile.school;
                     document.getElementById('profileCourse').value = profile.course;
@@ -2082,9 +2120,15 @@
                     document.getElementById('displayCourse').textContent = profile.course;
                     document.getElementById('displayPeriod').textContent = profile.period;
 
+                    // Atualizar header com nome e curso
+                    document.getElementById('headerUserName').textContent = profile.name;
+                    document.getElementById('headerUserCourse').textContent = profile.course;
+                    document.getElementById('headerUserInfo').style.display = 'block';
+
                     display.style.display = 'block';
                 } else {
                     display.style.display = 'none';
+                    document.getElementById('headerUserInfo').style.display = 'none';
                 }
             }
 

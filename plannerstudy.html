@@ -1273,6 +1273,13 @@
     <div class="container">
         <!-- Tabs -->
         <nav class="tabs" role="tablist">
+            <button class="tab-btn" data-tab="profile" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Perfil
+            </button>
             <button class="tab-btn active" data-tab="dashboard" role="tab" aria-selected="true">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="7" height="7"></rect>
@@ -1288,6 +1295,13 @@
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
                 Adicionar Conteúdo
+            </button>
+            <button class="tab-btn" data-tab="study" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Sessão de Estudo
             </button>
             <button class="tab-btn" data-tab="review" role="tab" aria-selected="false">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1305,6 +1319,54 @@
                 Estatísticas
             </button>
         </nav>
+
+        <!-- Profile Screen -->
+        <div id="profile" class="screen">
+            <div class="card">
+                <h2>Configurar Perfil</h2>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="profileName">Nome *</label>
+                        <input type="text" id="profileName" placeholder="Digite seu nome" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileSchool">Universidade/Escola *</label>
+                        <input type="text" id="profileSchool" placeholder="Digite sua universidade ou escola" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileCourse">Curso *</label>
+                            <input type="text" id="profileCourse" placeholder="Digite seu curso" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profilePeriod">Semestre/Bimestre *</label>
+                            <input type="text" id="profilePeriod" placeholder="Ex: 3º Semestre" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Salvar Perfil
+                    </button>
+                </form>
+                <div id="profileDisplay" class="mt-4" style="display: none;">
+                    <h3 style="margin-bottom: 16px;">Meu Perfil</h3>
+                    <div style="background: var(--bg); padding: 20px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                        <p style="margin-bottom: 8px;"><strong>Nome:</strong> <span id="displayName"></span></p>
+                        <p style="margin-bottom: 8px;"><strong>Universidade/Escola:</strong> <span id="displaySchool"></span></p>
+                        <p style="margin-bottom: 8px;"><strong>Curso:</strong> <span id="displayCourse"></span></p>
+                        <p><strong>Semestre/Bimestre:</strong> <span id="displayPeriod"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Dashboard Screen -->
         <div id="dashboard" class="screen active">
@@ -1440,10 +1502,55 @@
             </div>
         </div>
 
+        <!-- Study Session Screen -->
+        <div id="study" class="screen">
+            <div class="card">
+                <h2>Iniciar Sessão de Estudo</h2>
+                <form id="studySessionForm">
+                    <div class="form-group">
+                        <label for="studyContent">Conteúdo *</label>
+                        <select id="studyContent" required>
+                            <option value="">Selecione um conteúdo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studyDate">Data *</label>
+                            <input type="date" id="studyDate" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="studyStartTime">Hora de Início *</label>
+                            <input type="time" id="studyStartTime" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studyEndTime">Hora de Término *</label>
+                        <input type="time" id="studyEndTime" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Registrar Sessão
+                    </button>
+                </form>
+
+                <div id="studySessionsList" class="mt-4"></div>
+            </div>
+        </div>
+
         <!-- Review Screen -->
         <div id="review" class="screen">
             <div class="card">
-                <h2>Conteúdos para Revisar</h2>
+                <h2>Revisões Espaçadas</h2>
+                <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                    Sistema de revisões espaçadas: 24 horas, 7 dias, 30 dias e 30 dias
+                </p>
                 <div id="reviewList"></div>
             </div>
         </div>
@@ -1490,8 +1597,16 @@
         class StudyPlannerApp {
             constructor() {
                 this.data = {
+                    profile: {
+                        name: '',
+                        school: '',
+                        course: '',
+                        period: ''
+                    },
                     subjects: [],
                     contents: [],
+                    studySessions: [],
+                    reviews: [],
                     settings: {
                         theme: 'light'
                     }
@@ -1523,8 +1638,10 @@
                     btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
                 });
 
-                // Form submission
+                // Form submissions
+                document.getElementById('profileForm').addEventListener('submit', (e) => this.handleProfileSubmit(e));
                 document.getElementById('contentForm').addEventListener('submit', (e) => this.handleAddContent(e));
+                document.getElementById('studySessionForm').addEventListener('submit', (e) => this.handleStudySession(e));
 
                 // Search input
                 document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -1564,6 +1681,10 @@
                         this.addSubject();
                     }
                 });
+
+                // Set today's date by default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('studyDate').value = today;
             }
 
             /**
@@ -1667,6 +1788,132 @@
             }
 
             /**
+             * Handle profile form submission
+             */
+            handleProfileSubmit(e) {
+                e.preventDefault();
+
+                this.data.profile.name = document.getElementById('profileName').value.trim();
+                this.data.profile.school = document.getElementById('profileSchool').value.trim();
+                this.data.profile.course = document.getElementById('profileCourse').value.trim();
+                this.data.profile.period = document.getElementById('profilePeriod').value.trim();
+
+                this.saveData();
+                this.renderProfile();
+                this.showToast('Perfil salvo com sucesso!', 'success');
+            }
+
+            /**
+             * Handle study session form submission
+             */
+            handleStudySession(e) {
+                e.preventDefault();
+
+                const contentId = parseInt(document.getElementById('studyContent').value);
+                const date = document.getElementById('studyDate').value;
+                const startTime = document.getElementById('studyStartTime').value;
+                const endTime = document.getElementById('studyEndTime').value;
+
+                if (!contentId) {
+                    this.showToast('Selecione um conteúdo', 'warning');
+                    return;
+                }
+
+                const content = this.data.contents.find(c => c.id === contentId);
+                if (!content) {
+                    this.showToast('Conteúdo não encontrado', 'error');
+                    return;
+                }
+
+                // Calculate duration
+                const start = new Date(`${date}T${startTime}`);
+                const end = new Date(`${date}T${endTime}`);
+                const durationMinutes = Math.round((end - start) / 1000 / 60);
+
+                if (durationMinutes <= 0) {
+                    this.showToast('Hora de término deve ser após hora de início', 'warning');
+                    return;
+                }
+
+                const session = {
+                    id: Date.now(),
+                    contentId,
+                    contentTitle: content.title,
+                    subject: content.subject,
+                    date,
+                    startTime,
+                    endTime,
+                    duration: durationMinutes,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.data.studySessions.push(session);
+
+                // Create spaced repetition schedule
+                this.createReviewSchedule(contentId, date);
+
+                e.target.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('studyDate').value = today;
+
+                this.saveData();
+                this.render();
+                this.showToast(`Sessão de ${durationMinutes} minutos registrada!`, 'success');
+            }
+
+            /**
+             * Create spaced repetition schedule
+             */
+            createReviewSchedule(contentId, studyDate) {
+                const content = this.data.contents.find(c => c.id === contentId);
+                if (!content) return;
+
+                const baseDate = new Date(studyDate);
+                const intervals = [1, 7, 30, 60]; // days: 24hrs, 7 days, 30 days, 30 days (60 total)
+
+                intervals.forEach((days, index) => {
+                    const reviewDate = new Date(baseDate);
+                    reviewDate.setDate(reviewDate.getDate() + days);
+
+                    const existingReview = this.data.reviews.find(r =>
+                        r.contentId === contentId &&
+                        r.reviewNumber === index + 1 &&
+                        r.scheduledDate === reviewDate.toISOString().split('T')[0]
+                    );
+
+                    if (!existingReview) {
+                        this.data.reviews.push({
+                            id: Date.now() + index,
+                            contentId,
+                            contentTitle: content.title,
+                            subject: content.subject,
+                            reviewNumber: index + 1,
+                            scheduledDate: reviewDate.toISOString().split('T')[0],
+                            completed: false,
+                            type: null,
+                            completedAt: null
+                        });
+                    }
+                });
+            }
+
+            /**
+             * Complete a review
+             */
+            completeReview(reviewId, type) {
+                const review = this.data.reviews.find(r => r.id === reviewId);
+                if (!review) return;
+
+                review.completed = true;
+                review.type = type;
+                review.completedAt = new Date().toISOString();
+
+                this.saveData();
+                this.renderReview();
+                this.showToast(`Revisão registrada como ${type}!`, 'success');
+            }
+
+            /**
              * Handle add content form submission
              */
             handleAddContent(e) {
@@ -1759,6 +2006,13 @@
                 // Render specific tab content
                 if (tabName === 'stats') {
                     this.renderStats();
+                } else if (tabName === 'study') {
+                    this.renderStudySessions();
+                    this.updateSelects();
+                } else if (tabName === 'review') {
+                    this.renderReview();
+                } else if (tabName === 'profile') {
+                    this.renderProfile();
                 }
             }
 
@@ -1801,11 +2055,72 @@
              * Render all components
              */
             render() {
+                this.renderProfile();
                 this.renderSubjects();
                 this.renderContents();
                 this.renderReview();
+                this.renderStudySessions();
                 this.updateSelects();
                 this.updateHeaderStats();
+            }
+
+            /**
+             * Render profile
+             */
+            renderProfile() {
+                const profile = this.data.profile;
+                const display = document.getElementById('profileDisplay');
+
+                if (profile.name) {
+                    document.getElementById('profileName').value = profile.name;
+                    document.getElementById('profileSchool').value = profile.school;
+                    document.getElementById('profileCourse').value = profile.course;
+                    document.getElementById('profilePeriod').value = profile.period;
+
+                    document.getElementById('displayName').textContent = profile.name;
+                    document.getElementById('displaySchool').textContent = profile.school;
+                    document.getElementById('displayCourse').textContent = profile.course;
+                    document.getElementById('displayPeriod').textContent = profile.period;
+
+                    display.style.display = 'block';
+                } else {
+                    display.style.display = 'none';
+                }
+            }
+
+            /**
+             * Render study sessions
+             */
+            renderStudySessions() {
+                const list = document.getElementById('studySessionsList');
+
+                if (this.data.studySessions.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--text-secondary); margin-top: 24px;">Nenhuma sessão registrada ainda</p>';
+                    return;
+                }
+
+                const sessions = [...this.data.studySessions].reverse();
+
+                list.innerHTML = `
+                    <h3 style="margin-top: 24px; margin-bottom: 16px;">Histórico de Sessões</h3>
+                    ${sessions.map(session => `
+                        <div class="content-item" style="margin-bottom: 16px;">
+                            <div class="content-header">
+                                <div style="flex: 1;">
+                                    <h4 class="content-title" style="font-size: 1.1rem;">${this.escapeHtml(session.contentTitle)}</h4>
+                                    <div class="badges">
+                                        <span class="badge badge-subject">${this.escapeHtml(session.subject)}</span>
+                                        <span class="badge badge-time">${session.duration} min</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="color: var(--text-secondary); margin-top: 12px;">
+                                <strong>Data:</strong> ${new Date(session.date).toLocaleDateString('pt-BR')}<br>
+                                <strong>Horário:</strong> ${session.startTime} - ${session.endTime}
+                            </p>
+                        </div>
+                    `).join('')}
+                `;
             }
 
             /**
@@ -1928,57 +2243,138 @@
              */
             renderReview() {
                 const list = document.getElementById('reviewList');
-                const notCompleted = this.data.contents.filter(c => !c.completed);
 
-                if (notCompleted.length === 0) {
+                if (this.data.reviews.length === 0) {
                     list.innerHTML = `
-                        <div class="success-message">
-                            <h2>🎉 Parabéns!</h2>
-                            <p>Você completou todo o conteúdo!</p>
-                            <p style="margin-top: 8px; opacity: 0.9;">Continue assim e adicione mais conteúdos para estudar.</p>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <p>Nenhuma revisão agendada</p>
+                            <p>Registre uma sessão de estudo para criar revisões espaçadas automáticas</p>
                         </div>
                     `;
                     return;
                 }
 
-                const difficultyLabels = {
-                    easy: 'Fácil',
-                    medium: 'Médio',
-                    hard: 'Difícil'
+                const today = new Date().toISOString().split('T')[0];
+                const reviewLabels = {
+                    1: '24 horas',
+                    2: '7 dias',
+                    3: '30 dias',
+                    4: '60 dias (30 dias)'
                 };
 
-                list.innerHTML = notCompleted.map(content => `
-                    <article class="content-item">
+                const typeLabels = {
+                    flashcard: 'Flashcard',
+                    simulado: 'Simulado',
+                    outro: 'Outro'
+                };
+
+                // Group reviews
+                const pending = this.data.reviews.filter(r => !r.completed && r.scheduledDate <= today);
+                const upcoming = this.data.reviews.filter(r => !r.completed && r.scheduledDate > today);
+                const completed = this.data.reviews.filter(r => r.completed);
+
+                let html = '';
+
+                if (pending.length > 0) {
+                    html += `<h3 style="margin-bottom: 16px; color: var(--danger);">⚠️ Revisões Pendentes</h3>`;
+                    html += pending.map(review => this.renderReviewItem(review, reviewLabels, typeLabels, true)).join('');
+                }
+
+                if (upcoming.length > 0) {
+                    html += `<h3 style="margin-top: 32px; margin-bottom: 16px;">📅 Próximas Revisões</h3>`;
+                    html += upcoming.map(review => this.renderReviewItem(review, reviewLabels, typeLabels, false)).join('');
+                }
+
+                if (completed.length > 0) {
+                    html += `<h3 style="margin-top: 32px; margin-bottom: 16px;">✓ Revisões Concluídas</h3>`;
+                    html += completed.map(review => this.renderCompletedReviewItem(review, reviewLabels, typeLabels)).join('');
+                }
+
+                list.innerHTML = html;
+            }
+
+            /**
+             * Render a single review item
+             */
+            renderReviewItem(review, reviewLabels, typeLabels, isPending) {
+                const date = new Date(review.scheduledDate);
+                const dateStr = date.toLocaleDateString('pt-BR');
+
+                return `
+                    <article class="content-item" style="border-left-color: ${isPending ? 'var(--danger)' : 'var(--primary)'}">
                         <div class="content-header">
                             <div style="flex: 1;">
-                                <h3 class="content-title">${this.escapeHtml(content.title)}</h3>
+                                <h3 class="content-title">${this.escapeHtml(review.contentTitle)}</h3>
                                 <div class="badges">
-                                    <span class="badge badge-subject">${this.escapeHtml(content.subject)}</span>
-                                    <span class="badge badge-difficulty-${content.difficulty}">
-                                        ${difficultyLabels[content.difficulty]}
+                                    <span class="badge badge-subject">${this.escapeHtml(review.subject)}</span>
+                                    <span class="badge" style="background: rgba(124, 58, 237, 0.1); color: var(--secondary); border: 1px solid rgba(124, 58, 237, 0.2);">
+                                        Revisão ${review.reviewNumber} - ${reviewLabels[review.reviewNumber]}
                                     </span>
                                     <span class="badge badge-time">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <polyline points="12 6 12 12 16 14"></polyline>
-                                        </svg>
-                                        ${content.time} min
+                                        📅 ${dateStr}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        ${content.desc ? `<p class="content-text">${this.escapeHtml(content.desc)}</p>` : ''}
-                        <button
-                            class="btn btn-success"
-                            onclick="app.toggleComplete(${content.id})"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            Marcar como Revisado
-                        </button>
+                        <p style="color: var(--text-secondary); margin: 12px 0;">
+                            Escolha o método de revisão:
+                        </p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button
+                                class="btn btn-success btn-small"
+                                onclick="app.completeReview(${review.id}, 'flashcard')"
+                            >
+                                🎴 Flashcard
+                            </button>
+                            <button
+                                class="btn btn-success btn-small"
+                                onclick="app.completeReview(${review.id}, 'simulado')"
+                            >
+                                📝 Simulado
+                            </button>
+                            <button
+                                class="btn btn-success btn-small"
+                                onclick="app.completeReview(${review.id}, 'outro')"
+                            >
+                                📚 Outro
+                            </button>
+                        </div>
                     </article>
-                `).join('');
+                `;
+            }
+
+            /**
+             * Render a completed review item
+             */
+            renderCompletedReviewItem(review, reviewLabels, typeLabels) {
+                const date = new Date(review.scheduledDate);
+                const dateStr = date.toLocaleDateString('pt-BR');
+                const completedDate = new Date(review.completedAt);
+                const completedStr = completedDate.toLocaleDateString('pt-BR');
+
+                return `
+                    <article class="content-item" style="border-left-color: var(--success); opacity: 0.8;">
+                        <div class="content-header">
+                            <div style="flex: 1;">
+                                <h3 class="content-title">${this.escapeHtml(review.contentTitle)}</h3>
+                                <div class="badges">
+                                    <span class="badge badge-subject">${this.escapeHtml(review.subject)}</span>
+                                    <span class="badge" style="background: rgba(124, 58, 237, 0.1); color: var(--secondary); border: 1px solid rgba(124, 58, 237, 0.2);">
+                                        Revisão ${review.reviewNumber} - ${reviewLabels[review.reviewNumber]}
+                                    </span>
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2);">
+                                        ✓ ${typeLabels[review.type]}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-secondary); margin-top: 12px; font-size: 0.9rem;">
+                            <strong>Agendada para:</strong> ${dateStr} |
+                            <strong>Concluída em:</strong> ${completedStr}
+                        </p>
+                    </article>
+                `;
             }
 
             /**
@@ -1988,12 +2384,22 @@
                 const total = this.data.contents.length;
                 const completed = this.data.contents.filter(c => c.completed).length;
                 const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-                const totalTime = this.data.contents.reduce((sum, c) => sum + c.time, 0);
+
+                // Calculate actual study time from sessions
+                const totalStudyTime = this.data.studySessions.reduce((sum, s) => sum + s.duration, 0);
+                const totalStudyHours = Math.round(totalStudyTime / 60);
+                const totalStudyMinutes = totalStudyTime % 60;
+
+                // Calculate total reviews
+                const totalReviews = this.data.reviews.length;
+                const completedReviews = this.data.reviews.filter(r => r.completed).length;
 
                 document.getElementById('statTotal').textContent = total;
                 document.getElementById('statCompleted').textContent = completed;
                 document.getElementById('statRate').textContent = rate + '%';
-                document.getElementById('statTime').textContent = Math.round(totalTime / 60) + 'h';
+                document.getElementById('statTime').textContent = totalStudyHours > 0
+                    ? `${totalStudyHours}h ${totalStudyMinutes}min`
+                    : `${totalStudyMinutes}min`;
 
                 // Subject distribution chart
                 const subjectStats = {};
@@ -2053,6 +2459,10 @@
                 const select = document.getElementById('contentSubject');
                 select.innerHTML = '<option value="">Selecione uma disciplina</option>' +
                     this.data.subjects.map(s => `<option value="${this.escapeHtml(s)}">${this.escapeHtml(s)}</option>`).join('');
+
+                const studySelect = document.getElementById('studyContent');
+                studySelect.innerHTML = '<option value="">Selecione um conteúdo</option>' +
+                    this.data.contents.map(c => `<option value="${c.id}">${this.escapeHtml(c.subject)} - ${this.escapeHtml(c.title)}</option>`).join('');
             }
 
             /**

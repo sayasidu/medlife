@@ -1171,6 +1171,17 @@
             }
         }
 
+        /* ===== REVIEW OPTIONS ===== */
+        .review-option:has(input:checked) {
+            border-color: var(--primary) !important;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05)) !important;
+        }
+
+        .review-option:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
         /* ===== UTILITIES ===== */
         .text-center {
             text-align: center;
@@ -1467,35 +1478,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="contentDesc">Descrição</label>
-                        <textarea
-                            id="contentDesc"
-                            placeholder="Descreva o conteúdo que você irá estudar..."
-                            rows="5"
-                        ></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="contentDifficulty">Dificuldade</label>
-                            <select id="contentDifficulty">
-                                <option value="easy">Fácil</option>
-                                <option value="medium" selected>Médio</option>
-                                <option value="hard">Difícil</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="contentTime">Tempo de Estudo (min)</label>
-                            <input
-                                type="number"
-                                id="contentTime"
-                                placeholder="Minutos"
-                                value="30"
-                                min="5"
-                                max="480"
-                            />
-                        </div>
+                        <label for="contentDifficulty">Nível de Dificuldade *</label>
+                        <select id="contentDifficulty" required>
+                            <option value="easy">Fácil</option>
+                            <option value="medium" selected>Médio</option>
+                            <option value="hard">Difícil</option>
+                        </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-full">
@@ -1536,6 +1524,35 @@
                     <div class="form-group">
                         <label for="studyEndTime">Hora de Término *</label>
                         <input type="time" id="studyEndTime" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="enableSpacedReview" style="width: auto; cursor: pointer;" />
+                            <span>Desejo fazer revisões espaçadas</span>
+                        </label>
+                    </div>
+
+                    <div id="spacedReviewOptions" style="display: none; margin-top: -8px;">
+                        <div class="form-group">
+                            <label style="margin-bottom: 12px;">Escolha o intervalo de revisões:</label>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; padding: 12px; background: var(--bg); border-radius: var(--radius); border: 2px solid var(--border); transition: all var(--transition);" class="review-option">
+                                    <input type="radio" name="reviewInterval" value="option1" style="width: auto; cursor: pointer; margin-top: 4px;" checked />
+                                    <div>
+                                        <strong>Opção 1:</strong> 24 horas, 7 dias, 30 dias, 90 dias
+                                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px;">Ideal para conteúdos que você precisa fixar a longo prazo</div>
+                                    </div>
+                                </label>
+                                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; padding: 12px; background: var(--bg); border-radius: var(--radius); border: 2px solid var(--border); transition: all var(--transition);" class="review-option">
+                                    <input type="radio" name="reviewInterval" value="option2" style="width: auto; cursor: pointer; margin-top: 4px;" />
+                                    <div>
+                                        <strong>Opção 2:</strong> 24 horas, 3 dias, 7 dias, 30 dias, 90 dias
+                                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px;">Revisões mais frequentes no início para melhor fixação</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-full">
@@ -1698,6 +1715,12 @@
                 // Set today's date by default
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('studyDate').value = today;
+
+                // Toggle spaced review options
+                document.getElementById('enableSpacedReview').addEventListener('change', (e) => {
+                    const options = document.getElementById('spacedReviewOptions');
+                    options.style.display = e.target.checked ? 'block' : 'none';
+                });
             }
 
             /**
@@ -1737,9 +1760,7 @@
                                     id: Date.now(),
                                     subject: 'Matemática',
                                     title: 'Equações do 2º Grau',
-                                    desc: 'Aprender a resolver equações quadráticas usando a fórmula de Bhaskara',
                                     difficulty: 'medium',
-                                    time: 45,
                                     completed: false,
                                     createdAt: new Date().toISOString()
                                 },
@@ -1747,9 +1768,7 @@
                                     id: Date.now() + 1,
                                     subject: 'Português',
                                     title: 'Análise Sintática',
-                                    desc: 'Estudar as classes de palavras e funções sintáticas',
                                     difficulty: 'hard',
-                                    time: 60,
                                     completed: false,
                                     createdAt: new Date().toISOString()
                                 }
@@ -1887,12 +1906,17 @@
 
                 this.data.studySessions.push(session);
 
-                // Create spaced repetition schedule
-                this.createReviewSchedule(contentId, date);
+                // Create spaced repetition schedule if enabled
+                const enableReview = document.getElementById('enableSpacedReview').checked;
+                if (enableReview) {
+                    const reviewOption = document.querySelector('input[name="reviewInterval"]:checked').value;
+                    this.createReviewSchedule(contentId, date, reviewOption);
+                }
 
                 e.target.reset();
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('studyDate').value = today;
+                document.getElementById('spacedReviewOptions').style.display = 'none';
 
                 this.saveData();
                 this.render();
@@ -1902,12 +1926,18 @@
             /**
              * Create spaced repetition schedule
              */
-            createReviewSchedule(contentId, studyDate) {
+            createReviewSchedule(contentId, studyDate, reviewOption = 'option1') {
                 const content = this.data.contents.find(c => c.id === contentId);
                 if (!content) return;
 
                 const baseDate = new Date(studyDate);
-                const intervals = [1, 7, 30, 60]; // days: 24hrs, 7 days, 30 days, 30 days (60 total)
+
+                // Define intervals based on selected option
+                // option1: 24 horas, 7 dias, 30 dias, 90 dias
+                // option2: 24 horas, 3 dias, 7 dias, 30 dias, 90 dias
+                const intervals = reviewOption === 'option1'
+                    ? [1, 7, 30, 90]
+                    : [1, 3, 7, 30, 90];
 
                 intervals.forEach((days, index) => {
                     const reviewDate = new Date(baseDate);
@@ -1959,9 +1989,7 @@
 
                 const subject = document.getElementById('contentSubject').value;
                 const title = document.getElementById('contentTitle').value.trim();
-                const desc = document.getElementById('contentDesc').value.trim();
                 const difficulty = document.getElementById('contentDifficulty').value;
-                const time = parseInt(document.getElementById('contentTime').value) || 30;
 
                 if (!subject) {
                     this.showToast('Selecione uma disciplina', 'warning');
@@ -1977,16 +2005,13 @@
                     id: Date.now(),
                     subject,
                     title,
-                    desc,
                     difficulty,
-                    time,
                     completed: false,
                     createdAt: new Date().toISOString()
                 };
 
                 this.data.contents.push(newContent);
                 e.target.reset();
-                document.getElementById('contentTime').value = '30';
                 this.saveData();
                 this.render();
                 this.switchTab('dashboard');
@@ -2236,13 +2261,6 @@
                                     <span class="badge badge-difficulty-${content.difficulty}">
                                         ${difficultyLabels[content.difficulty]}
                                     </span>
-                                    <span class="badge badge-time">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <polyline points="12 6 12 12 16 14"></polyline>
-                                        </svg>
-                                        ${content.time} min
-                                    </span>
                                 </div>
                             </div>
                             <div class="checkbox-wrapper">
@@ -2254,7 +2272,6 @@
                                 />
                             </div>
                         </div>
-                        ${content.desc ? `<p class="content-text">${this.escapeHtml(content.desc)}</p>` : ''}
                         <div class="content-actions">
                             <button
                                 class="btn ${content.completed ? 'btn-secondary' : 'btn-success'} btn-small"
@@ -2300,12 +2317,30 @@
                 }
 
                 const today = new Date().toISOString().split('T')[0];
-                const reviewLabels = {
-                    1: '24 horas',
-                    2: '7 dias',
-                    3: '30 dias',
-                    4: '60 dias (30 dias)'
-                };
+
+                // Dynamic review labels based on the actual schedule
+                const reviewLabels = {};
+                this.data.reviews.forEach(review => {
+                    if (!reviewLabels[review.reviewNumber]) {
+                        // Calculate days from first session
+                        const firstSession = this.data.studySessions.find(s => s.contentId === review.contentId);
+                        if (firstSession) {
+                            const baseDate = new Date(firstSession.date);
+                            const reviewDate = new Date(review.scheduledDate);
+                            const days = Math.round((reviewDate - baseDate) / (1000 * 60 * 60 * 24));
+                            reviewLabels[review.reviewNumber] = days === 1 ? '24 horas' : `${days} dias`;
+                        }
+                    }
+                });
+
+                // Fallback labels if calculation fails
+                if (Object.keys(reviewLabels).length === 0) {
+                    reviewLabels[1] = '24 horas';
+                    reviewLabels[2] = '3-7 dias';
+                    reviewLabels[3] = '7-30 dias';
+                    reviewLabels[4] = '30 dias';
+                    reviewLabels[5] = '90 dias';
+                }
 
                 const typeLabels = {
                     flashcard: 'Flashcard',

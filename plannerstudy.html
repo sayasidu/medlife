@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizador de Estudos - MedLife</title>
-
-    <!-- Favicon -->
+    <title>Planejador de Estudos - MedLife</title>
     <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-
-    <!-- Fonts -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,15 +27,6 @@
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        [data-theme="dark"] {
-            --text: #f9fafb;
-            --text-light: #d1d5db;
-            --bg: #111827;
-            --surface: #1f2937;
-            --border: #374151;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -50,7 +38,6 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
         }
 
         .container {
@@ -66,7 +53,6 @@
             padding: 60px 0;
             margin-bottom: 40px;
             box-shadow: var(--shadow);
-            position: relative;
         }
 
         .header-content {
@@ -86,34 +72,6 @@
             font-size: 1.1rem;
             opacity: 0.95;
             margin-bottom: 24px;
-        }
-
-        .header-actions {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1.3rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
         }
 
         .back-btn {
@@ -162,54 +120,6 @@
             font-weight: 700;
         }
 
-        /* ===== TOAST NOTIFICATIONS ===== */
-        .toast-container {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .toast {
-            background: var(--surface);
-            color: var(--text);
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 300px;
-            animation: slideInRight 0.3s ease;
-            border-left: 4px solid var(--primary);
-        }
-
-        .toast.success {
-            border-left-color: var(--green);
-        }
-
-        .toast.error {
-            border-left-color: var(--red);
-        }
-
-        .toast.warning {
-            border-left-color: var(--yellow);
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
         /* ===== TABS ===== */
         .tabs {
             display: flex;
@@ -219,10 +129,12 @@
             padding: 12px;
             border-radius: 16px;
             box-shadow: var(--shadow);
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             flex: 1;
+            min-width: 120px;
             padding: 14px 24px;
             border: none;
             background: transparent;
@@ -282,8 +194,6 @@
             font-size: 1rem;
             font-family: inherit;
             transition: all 0.3s;
-            background: var(--surface);
-            color: var(--text);
         }
 
         .form-group input:focus,
@@ -310,13 +220,7 @@
             font-size: 1rem;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -325,7 +229,7 @@
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
         }
@@ -336,7 +240,7 @@
             border: 2px solid var(--border);
         }
 
-        .btn-secondary:hover:not(:disabled) {
+        .btn-secondary:hover {
             background: var(--border);
         }
 
@@ -345,7 +249,7 @@
             color: white;
         }
 
-        .btn-success:hover:not(:disabled) {
+        .btn-success:hover {
             background: #059669;
             transform: translateY(-2px);
         }
@@ -355,7 +259,7 @@
             color: white;
         }
 
-        .btn-danger:hover:not(:disabled) {
+        .btn-danger:hover {
             background: #dc2626;
         }
 
@@ -370,32 +274,7 @@
             margin-top: 16px;
         }
 
-        /* ===== SEARCH BAR ===== */
-        .search-bar {
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 14px 16px 14px 44px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 1rem;
-            background: var(--surface);
-            color: var(--text);
-            transition: all 0.3s;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 12px center;
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        /* ===== PROFILE SCREEN ===== */
+        /* ===== SCREENS ===== */
         .screen {
             display: none;
         }
@@ -424,11 +303,6 @@
             margin-bottom: 20px;
             font-size: 0.95rem;
             color: #1e40af;
-        }
-
-        [data-theme="dark"] .info-box {
-            background: rgba(79, 70, 229, 0.1);
-            color: #a5b4fc;
         }
 
         /* ===== SUBJECT SIDEBAR ===== */
@@ -477,18 +351,10 @@
             transform: translateX(4px);
         }
 
-        [data-theme="dark"] .subject-item:hover {
-            background: rgba(79, 70, 229, 0.2);
-        }
-
         .subject-item.active {
             background: #e0e7ff;
             border-left-color: var(--primary);
             font-weight: 600;
-        }
-
-        [data-theme="dark"] .subject-item.active {
-            background: rgba(79, 70, 229, 0.2);
         }
 
         .subject-item-delete {
@@ -497,13 +363,13 @@
             color: var(--red);
             cursor: pointer;
             font-size: 1.2rem;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: all 0.3s;
+            padding: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .subject-item-delete:hover {
-            background: rgba(239, 68, 68, 0.1);
+        .subject-item:hover .subject-item-delete {
+            opacity: 1;
         }
 
         /* ===== CONTENT CARDS ===== */
@@ -525,7 +391,7 @@
         .content-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: flex-start;
             margin-bottom: 16px;
             flex-wrap: wrap;
             gap: 12px;
@@ -604,26 +470,14 @@
             background: #eff6ff;
         }
 
-        [data-theme="dark"] .review-box.pending {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
         .review-box.completed {
             background: #d1fae5;
             border-color: var(--green);
         }
 
-        [data-theme="dark"] .review-box.completed {
-            background: rgba(16, 185, 129, 0.1);
-        }
-
         .review-box.overdue {
             background: #fee2e2;
             border-color: var(--red);
-        }
-
-        [data-theme="dark"] .review-box.overdue {
-            background: rgba(239, 68, 68, 0.1);
         }
 
         .review-box:hover:not(.completed) {
@@ -689,7 +543,6 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            color: var(--text);
         }
 
         .modal-close {
@@ -701,60 +554,14 @@
             font-size: 28px;
             cursor: pointer;
             color: var(--text-light);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: all 0.3s;
+            transition: color 0.3s;
         }
 
         .modal-close:hover {
             color: var(--text);
-            background: var(--bg);
         }
 
-        .modal-method-btn {
-            width: 100%;
-            padding: 18px;
-            border: 2px solid var(--border);
-            background: var(--surface);
-            border-radius: 12px;
-            text-align: left;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: all 0.3s;
-            font-size: 1rem;
-            color: var(--text);
-        }
-
-        .modal-method-btn:hover {
-            border-color: var(--primary);
-            background: #f0f4ff;
-        }
-
-        [data-theme="dark"] .modal-method-btn:hover {
-            background: rgba(79, 70, 229, 0.1);
-        }
-
-        .modal-method-btn.selected {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .modal-method-title {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .modal-method-desc {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        /* ===== CHART ===== */
+        /* ===== STATS ===== */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -785,6 +592,7 @@
             background-clip: text;
         }
 
+        /* ===== CHART ===== */
         .chart-container {
             background: var(--surface);
             padding: 24px;
@@ -853,11 +661,21 @@
             margin-bottom: 20px;
         }
 
-        /* ===== DATA MANAGEMENT ===== */
-        .data-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
+        /* ===== SUCCESS MESSAGE ===== */
+        .success-message {
+            background: linear-gradient(135deg, var(--green), #059669);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-message h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: white;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -868,11 +686,6 @@
 
             .header h1 {
                 font-size: 1.8rem;
-            }
-
-            .header-actions {
-                top: 12px;
-                right: 12px;
             }
 
             .stats-grid {
@@ -903,906 +716,375 @@
                 padding: 24px;
             }
 
-            .modal-close {
-                top: 12px;
-                right: 12px;
-            }
-
-            .toast-container {
-                left: 12px;
-                right: 12px;
-            }
-
-            .toast {
-                min-width: auto;
-            }
-
-            .data-actions {
-                flex-direction: column;
-            }
-
             .tabs {
-                flex-direction: column;
+                gap: 8px;
+            }
+
+            .tab-btn {
+                min-width: 100px;
+                padding: 10px 16px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- TELA 1: PERFIL -->
-    <div id="screen-profile" class="screen active">
+    <div class="header">
         <div class="container">
-            <div class="header">
-                <div class="header-actions">
-                    <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema">
-                        <span id="theme-icon">🌙</span>
-                    </button>
+            <div class="header-content">
+                <div>
+                    <h1>📚 Organizador de Estudos</h1>
+                    <p>Organize seu aprendizado de forma eficiente</p>
+                    <button class="back-btn" onclick="location.href='/'">← Voltar</button>
                 </div>
-                <div class="header-content">
-                    <div>
-                        <h1>📚 Bem-vindo!</h1>
-                        <p>Configure suas informações para começar a organizar seus estudos</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p>Disciplinas</p>
+                        <div class="value" id="subjectCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <p>Conteúdos</p>
+                        <div class="value" id="contentCount">0</div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="card" style="max-width: 600px; margin: 0 auto;">
-                <h2>Suas Informações</h2>
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('addContent')">➕ Adicionar Conteúdo</button>
+            <button class="tab-btn" onclick="switchTab('review')">🔄 Revisões</button>
+            <button class="tab-btn" onclick="switchTab('stats')">📈 Estatísticas</button>
+        </div>
 
-                <form id="profile-form" onsubmit="startStudying(event)">
+        <!-- Dashboard Screen -->
+        <div id="dashboard" class="screen active">
+            <div class="main-grid">
+                <div class="sidebar">
+                    <div class="subject-list">
+                        <h3>Disciplinas</h3>
+                        <div id="subjectsList"></div>
+                        <div class="form-group" style="margin-top: 16px;">
+                            <input type="text" id="newSubject" placeholder="Nova disciplina..." />
+                        </div>
+                        <button class="btn btn-primary btn-full btn-small" onclick="addSubject()">Adicionar</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div id="contentList"></div>
+                    <div id="emptyState" class="empty-state">
+                        <p>Nenhum conteúdo adicionado ainda</p>
+                        <p>Comece clicando em "➕ Adicionar Conteúdo"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Content Screen -->
+        <div id="addContent" class="screen">
+            <div class="card">
+                <h2>Adicionar Novo Conteúdo</h2>
+                <form onsubmit="handleAddContent(event)">
                     <div class="form-group">
-                        <label for="name">👤 Seu Nome</label>
-                        <input type="text" id="name" placeholder="Ex: João Silva" required maxlength="50">
+                        <label>Disciplina *</label>
+                        <select id="contentSubject" required>
+                            <option value="">Selecione uma disciplina</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="university">🏫 Universidade</label>
-                        <input type="text" id="university" placeholder="Ex: USP, UFMG, PUC..." required maxlength="100">
+                        <label>Título *</label>
+                        <input type="text" id="contentTitle" placeholder="Digite o título" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="course">📖 Curso</label>
-                        <input type="text" id="course" placeholder="Ex: Medicina, Engenharia..." required maxlength="50">
+                        <label>Descrição</label>
+                        <textarea id="contentDesc" placeholder="Descrição do conteúdo" rows="4"></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label for="semester">📅 Semestre/Período</label>
-                        <input type="text" id="semester" placeholder="Ex: 3º semestre, 2º bimestre..." required maxlength="30">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dificuldade</label>
+                            <select id="contentDifficulty">
+                                <option value="easy">Fácil</option>
+                                <option value="medium" selected>Médio</option>
+                                <option value="hard">Difícil</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tempo de Estudo (min)</label>
+                            <input type="number" id="contentTime" placeholder="Minutos" value="30" />
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">Começar →</button>
+                    <button type="submit" class="btn btn-primary btn-full">Adicionar Conteúdo</button>
                 </form>
             </div>
         </div>
-    </div>
 
-    <!-- TELA 2: MAIN -->
-    <div id="screen-main" class="screen">
-        <div class="container">
-            <!-- Header -->
-            <div class="header">
-                <div class="header-actions">
-                    <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema">
-                        <span id="theme-icon-main">🌙</span>
-                    </button>
-                    <button class="icon-btn" onclick="openDataModal()" title="Gerenciar dados" aria-label="Gerenciar dados">
-                        ⚙️
-                    </button>
-                </div>
-                <div class="header-content">
-                    <div>
-                        <h1 id="profile-name">Bem-vindo!</h1>
-                        <p id="profile-info">Comece adicionando suas matérias</p>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <p>Matérias</p>
-                            <div class="value" id="stat-subjects">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <p>Conteúdos</p>
-                            <div class="value" id="stat-contents">0</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Review Screen -->
+        <div id="review" class="screen">
+            <div class="card">
+                <h2>Conteúdos para Revisar</h2>
+                <div id="reviewList"></div>
             </div>
-
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('subjects', event)" aria-label="Aba de matérias">📚 Matérias</button>
-                <button class="tab-btn" onclick="switchTab('contents', event)" aria-label="Aba de conteúdos">📝 Conteúdos</button>
-                <button class="tab-btn" onclick="switchTab('stats', event)" aria-label="Aba de estatísticas">📊 Estatísticas</button>
-            </div>
-
-            <!-- TAB 1: SUBJECTS -->
-            <div id="tab-subjects" class="tab-content active">
-                <div class="main-grid">
-                    <div class="sidebar">
-                        <div class="subject-list">
-                            <h3>Minhas Matérias</h3>
-                            <div id="subjects-list"></div>
-                            <button class="btn btn-primary btn-full" onclick="openAddSubjectModal()">➕ Adicionar Matéria</button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Gerenciar Matérias</h2>
-                        <div id="subjects-content">
-                            <div class="empty-state">
-                                <p>Nenhuma matéria cadastrada ainda</p>
-                                <p>Clique em "Adicionar Matéria" para começar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: CONTENTS -->
-            <div id="tab-contents" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2>Adicionar Conteúdo Estudado</h2>
-                    <button class="btn btn-success btn-full" onclick="openAddContentModal()">➕ Novo Conteúdo</button>
-                </div>
-
-                <div class="search-bar">
-                    <input type="text" id="content-search" placeholder="Buscar conteúdos..." oninput="filterContents()">
-                </div>
-
-                <div id="contents-list">
-                    <div class="empty-state">
-                        <p>Nenhum conteúdo adicionado ainda</p>
-                        <p>Adicione matérias primeiro e depois registre o que estudou</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: STATS -->
-            <div id="tab-stats" class="tab-content" style="display: none;">
-                <div class="stats-container" id="stats-boxes">
-                    <div class="stat-box">
-                        <h4>Total de Conteúdos</h4>
-                        <div class="value" id="total-contents">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <h4>Tempo Total</h4>
-                        <div class="value" id="total-time">0h</div>
-                    </div>
-                    <div class="stat-box">
-                        <h4>Concluídos</h4>
-                        <div class="value" id="total-completed">0</div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <h3>📈 Tempo de Estudo por Dia</h3>
-                    <div class="simple-bar" id="chart"></div>
-                </div>
-            </div>
-
-            <button class="btn btn-secondary" onclick="editProfile()">⬅️ Voltar ao Perfil</button>
         </div>
-    </div>
 
-    <!-- MODAL: Adicionar Matéria -->
-    <div id="modal-add-subject" class="modal" role="dialog" aria-labelledby="modal-subject-title">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('modal-add-subject')" aria-label="Fechar">&times;</button>
-            <div class="modal-header" id="modal-subject-title">
-                <span>➕</span>
-                <span>Nova Matéria</span>
-            </div>
-
-            <form id="subject-form" onsubmit="saveSubject(event)">
-                <div class="form-group">
-                    <label for="subject-name">📚 Nome da Matéria</label>
-                    <input type="text" id="subject-name" placeholder="Ex: Anatomia, Matemática..." required maxlength="50">
+        <!-- Stats Screen -->
+        <div id="stats" class="screen">
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h4>Total de Conteúdos</h4>
+                    <div class="value" id="statTotal">0</div>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-full">Adicionar Matéria</button>
-                <button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-add-subject')">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: Adicionar Conteúdo -->
-    <div id="modal-add-content" class="modal" role="dialog" aria-labelledby="modal-content-title">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('modal-add-content')" aria-label="Fechar">&times;</button>
-            <div class="modal-header" id="modal-content-title">
-                <span>📝</span>
-                <span>Novo Conteúdo</span>
-            </div>
-
-            <form id="content-form" onsubmit="saveContent(event)">
-                <div class="form-group">
-                    <label for="content-subject">📚 Matéria</label>
-                    <select id="content-subject" required></select>
+                <div class="stat-box">
+                    <h4>Completados</h4>
+                    <div class="value" id="statCompleted">0</div>
                 </div>
-
-                <div class="form-group">
-                    <label for="content-text">📖 O que você estudou?</label>
-                    <textarea id="content-text" placeholder="Descreva o conteúdo..." style="resize: vertical; min-height: 100px;" required maxlength="500"></textarea>
+                <div class="stat-box">
+                    <h4>Taxa de Conclusão</h4>
+                    <div class="value" id="statRate">0%</div>
                 </div>
-
-                <div class="form-group">
-                    <label for="content-difficulty">📊 Dificuldade</label>
-                    <select id="content-difficulty" required>
-                        <option value="easy">Fácil</option>
-                        <option value="medium" selected>Médio</option>
-                        <option value="hard">Difícil</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="content-start">⏰ Início do Estudo</label>
-                        <input type="time" id="content-start" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="content-end">⏰ Fim do Estudo</label>
-                        <input type="time" id="content-end" onchange="calculateStudyTime()" required>
-                    </div>
-                </div>
-
-                <div class="info-box" id="study-time-display">
-                    Horários preenchidos aparecerão aqui
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-full">Salvar Conteúdo</button>
-                <button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-add-content')">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: Review -->
-    <div id="modal-review" class="modal" role="dialog" aria-labelledby="modal-review-title">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('modal-review')" aria-label="Fechar">&times;</button>
-            <div class="modal-header" id="modal-review-title">
-                <span>🌙</span>
-                <span>Como você revisará?</span>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <button class="modal-method-btn" onclick="selectReviewMethod('summary')">
-                    <div class="modal-method-title">📚 Resumo</div>
-                    <div class="modal-method-desc">Revisar lendo um resumo do conteúdo</div>
-                </button>
-
-                <button class="modal-method-btn" onclick="selectReviewMethod('quiz')">
-                    <div class="modal-method-title">❓ Simulado</div>
-                    <div class="modal-method-desc">Fazer exercícios e registrar desempenho</div>
-                </button>
-
-                <button class="modal-method-btn" onclick="selectReviewMethod('diagram')">
-                    <div class="modal-method-title">📊 Diagrama</div>
-                    <div class="modal-method-desc">Revisar através de diagrama/mapa mental</div>
-                </button>
+            <div class="chart-container">
+                <h3>Conteúdos por Disciplina</h3>
+                <div class="simple-bar" id="chartContainer"></div>
             </div>
-
-            <div id="quiz-section" style="display: none; background: #eff6ff; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                <label for="quiz-questions">❓ Quantidade de questões</label>
-                <input type="number" id="quiz-questions" placeholder="Ex: 20" min="1" style="margin-bottom: 12px;">
-
-                <label for="quiz-correct">✅ Quantidade de acertos</label>
-                <input type="number" id="quiz-correct" placeholder="Ex: 18" min="0">
-            </div>
-
-            <button class="btn btn-primary btn-full" onclick="completeReview()">Confirmar Revisão</button>
-            <button class="btn btn-secondary btn-full" onclick="closeModal('modal-review')">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- MODAL: Data Management -->
-    <div id="modal-data" class="modal" role="dialog" aria-labelledby="modal-data-title">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('modal-data')" aria-label="Fechar">&times;</button>
-            <div class="modal-header" id="modal-data-title">
-                <span>⚙️</span>
-                <span>Gerenciar Dados</span>
-            </div>
-
-            <div class="info-box">
-                Exporte seus dados para fazer backup ou importe dados anteriores
-            </div>
-
-            <div class="data-actions">
-                <button class="btn btn-primary" onclick="exportData()" style="flex: 1;">
-                    📥 Exportar Dados
-                </button>
-                <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()" style="flex: 1;">
-                    📤 Importar Dados
-                </button>
-            </div>
-            <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
-
-            <hr style="margin: 24px 0; border: none; border-top: 2px solid var(--border);">
-
-            <button class="btn btn-danger btn-full" onclick="clearAllData()">
-                🗑️ Limpar Todos os Dados
-            </button>
         </div>
     </div>
 
     <script>
-        // ===== UTILITIES =====
-        function sanitizeHTML(str) {
-            const temp = document.createElement('div');
-            temp.textContent = str;
-            return temp.innerHTML;
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-
-            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
-            toast.innerHTML = `<span>${icon}</span><span>${sanitizeHTML(message)}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'slideInRight 0.3s ease reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // ===== THEME =====
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-
-            const icon = newTheme === 'dark' ? '☀️' : '🌙';
-            document.getElementById('theme-icon').textContent = icon;
-            const mainIcon = document.getElementById('theme-icon-main');
-            if (mainIcon) mainIcon.textContent = icon;
-
-            showToast(`Tema ${newTheme === 'dark' ? 'escuro' : 'claro'} ativado`, 'success');
-        }
-
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            const icon = savedTheme === 'dark' ? '☀️' : '🌙';
-            document.getElementById('theme-icon').textContent = icon;
-            const mainIcon = document.getElementById('theme-icon-main');
-            if (mainIcon) mainIcon.textContent = icon;
-        }
-
-        // ===== DATA MANAGEMENT =====
-        let data = {
-            profile: null,
+        // Dados
+        let appData = {
             subjects: [],
-            contents: []
+            contents: [],
+            reviews: []
         };
 
-        function saveData() {
-            try {
-                localStorage.setItem('studyOrganizerData', JSON.stringify(data));
-            } catch (e) {
-                showToast('Erro ao salvar dados: ' + e.message, 'error');
-            }
-        }
-
+        // Carregar dados do localStorage
         function loadData() {
-            try {
-                const saved = localStorage.getItem('studyOrganizerData');
-                if (saved) {
-                    data = JSON.parse(saved);
-                }
-            } catch (e) {
-                showToast('Erro ao carregar dados: ' + e.message, 'error');
+            const saved = localStorage.getItem('studyOrganizerData');
+            if (saved) {
+                appData = JSON.parse(saved);
+            } else {
+                // Dados de exemplo
+                appData = {
+                    subjects: ['Matemática', 'Português', 'História'],
+                    contents: [
+                        { id: 1, subject: 'Matemática', title: 'Equações do 2º Grau', desc: 'Aprenda a resolver equações', difficulty: 'medium', time: 45, completed: false },
+                        { id: 2, subject: 'Português', title: 'Análise Sintática', desc: 'Classes de palavras', difficulty: 'hard', time: 60, completed: false }
+                    ],
+                    reviews: []
+                };
             }
+            render();
         }
 
-        function exportData() {
-            try {
-                const dataStr = JSON.stringify(data, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `medlife-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                URL.revokeObjectURL(url);
-                showToast('Dados exportados com sucesso!', 'success');
-            } catch (e) {
-                showToast('Erro ao exportar dados: ' + e.message, 'error');
-            }
+        // Salvar dados
+        function saveData() {
+            localStorage.setItem('studyOrganizerData', JSON.stringify(appData));
         }
 
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-
-                    if (!importedData.profile || !importedData.subjects || !importedData.contents) {
-                        throw new Error('Formato de arquivo inválido');
-                    }
-
-                    if (confirm('Isso substituirá todos os seus dados atuais. Deseja continuar?')) {
-                        data = importedData;
-                        saveData();
-                        location.reload();
-                    }
-                } catch (err) {
-                    showToast('Erro ao importar dados: ' + err.message, 'error');
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
-        function clearAllData() {
-            if (confirm('⚠️ Isso apagará TODOS os seus dados permanentemente. Deseja continuar?')) {
-                if (confirm('Tem certeza? Esta ação não pode ser desfeita!')) {
-                    localStorage.clear();
-                    location.reload();
-                }
-            }
-        }
-
-        function openDataModal() {
-            openModal('modal-data');
-        }
-
-        // ===== PROFILE SCREEN =====
-        function startStudying(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value.trim();
-            const university = document.getElementById('university').value.trim();
-            const course = document.getElementById('course').value.trim();
-            const semester = document.getElementById('semester').value.trim();
-
-            if (!name || !university || !course || !semester) {
-                showToast('Preencha todos os campos!', 'error');
-                return;
-            }
-
-            data.profile = { name, university, course, semester };
-            saveData();
-
-            document.getElementById('profile-name').textContent = sanitizeHTML(name);
-            document.getElementById('profile-info').textContent = `${sanitizeHTML(university)} • ${sanitizeHTML(course)} • ${sanitizeHTML(semester)}`;
-
-            showScreen('screen-main');
-            updateStats();
-            showToast('Perfil salvo com sucesso!', 'success');
-        }
-
-        function editProfile() {
-            if (data.profile) {
-                document.getElementById('name').value = data.profile.name;
-                document.getElementById('university').value = data.profile.university;
-                document.getElementById('course').value = data.profile.course;
-                document.getElementById('semester').value = data.profile.semester;
-            }
-            showScreen('screen-profile');
-        }
-
-        // ===== NAVIGATION =====
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function switchTab(tabName, event) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById(`tab-${tabName}`).style.display = 'block';
-
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            if (tabName === 'stats') {
-                updateStats();
-                drawChart();
-            }
-        }
-
-        // ===== SUBJECTS =====
-        function openAddSubjectModal() {
-            document.getElementById('subject-name').value = '';
-            openModal('modal-add-subject');
-        }
-
-        function saveSubject(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('subject-name').value.trim();
-            if (!name) {
-                showToast('Digite o nome da matéria!', 'error');
-                return;
-            }
-
-            const subject = {
-                id: Date.now(),
-                name: sanitizeHTML(name)
-            };
-
-            data.subjects.push(subject);
-            saveData();
-            renderSubjects();
-            closeModal('modal-add-subject');
-            updateStats();
-            showToast('Matéria adicionada com sucesso!', 'success');
-        }
-
-        function deleteSubject(id) {
-            const subject = data.subjects.find(s => s.id === id);
-            if (confirm(`Deseja remover "${subject.name}"? Todos os conteúdos desta matéria também serão removidos.`)) {
-                data.subjects = data.subjects.filter(s => s.id !== id);
-                data.contents = data.contents.filter(c => c.subjectId !== id);
+        // Adicionar disciplina
+        function addSubject() {
+            const input = document.getElementById('newSubject');
+            const subject = input.value.trim();
+            
+            if (subject && !appData.subjects.includes(subject)) {
+                appData.subjects.push(subject);
+                input.value = '';
                 saveData();
-                renderSubjects();
-                renderContents();
-                updateStats();
-                showToast('Matéria removida com sucesso!', 'success');
+                render();
             }
+        }
+
+        // Remover disciplina
+        function removeSubject(subject) {
+            if (confirm(`Remover "${subject}" e todo seu conteúdo?`)) {
+                appData.subjects = appData.subjects.filter(s => s !== subject);
+                appData.contents = appData.contents.filter(c => c.subject !== subject);
+                saveData();
+                render();
+            }
+        }
+
+        // Adicionar conteúdo
+        function handleAddContent(e) {
+            e.preventDefault();
+            
+            const newContent = {
+                id: Date.now(),
+                subject: document.getElementById('contentSubject').value,
+                title: document.getElementById('contentTitle').value,
+                desc: document.getElementById('contentDesc').value,
+                difficulty: document.getElementById('contentDifficulty').value,
+                time: parseInt(document.getElementById('contentTime').value),
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+
+            appData.contents.push(newContent);
+            e.target.reset();
+            saveData();
+            render();
+            switchTab('dashboard');
+            alert('Conteúdo adicionado com sucesso!');
+        }
+
+        // Marcar como completo
+        function toggleComplete(id) {
+            const content = appData.contents.find(c => c.id === id);
+            if (content) {
+                content.completed = !content.completed;
+                saveData();
+                render();
+            }
+        }
+
+        // Remover conteúdo
+        function removeContent(id) {
+            if (confirm('Remover este conteúdo?')) {
+                appData.contents = appData.contents.filter(c => c.id !== id);
+                saveData();
+                render();
+            }
+        }
+
+        // Alternar abas
+        function switchTab(tabName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Renderizar interface
+        function render() {
+            renderSubjects();
+            renderContents();
+            renderReview();
+            renderStats();
+            updateSelects();
+            updateStats();
         }
 
         function renderSubjects() {
-            const list = document.getElementById('subjects-list');
-            if (data.subjects.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-light); text-align: center; padding: 20px;">Nenhuma matéria ainda</p>';
-                return;
-            }
-
-            list.innerHTML = data.subjects.map(s => `
+            const list = document.getElementById('subjectsList');
+            list.innerHTML = appData.subjects.map(subject => `
                 <div class="subject-item">
-                    <span>${s.name}</span>
-                    <button class="subject-item-delete" onclick="deleteSubject(${s.id})" title="Excluir" aria-label="Excluir ${s.name}">×</button>
+                    <span>${subject}</span>
+                    <button class="subject-item-delete" onclick="removeSubject('${subject}')">×</button>
                 </div>
             `).join('');
-        }
-
-        // ===== CONTENTS =====
-        function openAddContentModal() {
-            if (data.subjects.length === 0) {
-                showToast('Adicione uma matéria primeiro!', 'warning');
-                return;
-            }
-
-            const select = document.getElementById('content-subject');
-            select.innerHTML = data.subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-
-            document.getElementById('content-text').value = '';
-            document.getElementById('content-difficulty').value = 'medium';
-            document.getElementById('content-start').value = '';
-            document.getElementById('content-end').value = '';
-            document.getElementById('study-time-display').innerHTML = 'Horários preenchidos aparecerão aqui';
-
-            openModal('modal-add-content');
-        }
-
-        function calculateStudyTime() {
-            const start = document.getElementById('content-start').value;
-            const end = document.getElementById('content-end').value;
-
-            if (!start || !end) return;
-
-            const [startH, startM] = start.split(':').map(Number);
-            const [endH, endM] = end.split(':').map(Number);
-
-            let minutes = (endH * 60 + endM) - (startH * 60 + startM);
-            if (minutes < 0) minutes += 24 * 60;
-
-            if (minutes === 0) {
-                document.getElementById('study-time-display').innerHTML = '⚠️ Horário de início e fim são iguais';
-                return;
-            }
-
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-
-            const display = hours > 0
-                ? `⏱ ${hours}h${mins > 0 ? ' ' + mins + 'min' : ''}`
-                : `⏱ ${mins}min`;
-
-            document.getElementById('study-time-display').innerHTML = `${start} - ${end} = ${display}`;
-        }
-
-        function saveContent(event) {
-            event.preventDefault();
-
-            const subjectId = parseInt(document.getElementById('content-subject').value);
-            const text = document.getElementById('content-text').value.trim();
-            const difficulty = document.getElementById('content-difficulty').value;
-            const start = document.getElementById('content-start').value;
-            const end = document.getElementById('content-end').value;
-
-            if (!text || !start || !end) {
-                showToast('Preencha todos os campos!', 'error');
-                return;
-            }
-
-            const [startH, startM] = start.split(':').map(Number);
-            const [endH, endM] = end.split(':').map(Number);
-            let minutes = (endH * 60 + endM) - (startH * 60 + startM);
-            if (minutes < 0) minutes += 24 * 60;
-
-            if (minutes === 0) {
-                showToast('O horário de início e fim não podem ser iguais!', 'error');
-                return;
-            }
-
-            const content = {
-                id: Date.now(),
-                subjectId: subjectId,
-                text: sanitizeHTML(text),
-                difficulty: difficulty,
-                startTime: start,
-                endTime: end,
-                studyMinutes: minutes,
-                dateAdded: new Date().toLocaleDateString('pt-BR'),
-                reviews: {
-                    day1: { date: new Date(Date.now() + 1*24*60*60*1000).toLocaleDateString('pt-BR'), completed: false, method: null, quiz: null },
-                    day7: { date: new Date(Date.now() + 7*24*60*60*1000).toLocaleDateString('pt-BR'), completed: false, method: null, quiz: null },
-                    day30: { date: new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('pt-BR'), completed: false, method: null, quiz: null }
-                }
-            };
-
-            data.contents.push(content);
-            saveData();
-            renderContents();
-            closeModal('modal-add-content');
-            updateStats();
-            showToast('Conteúdo salvo com sucesso!', 'success');
-        }
-
-        function filterContents() {
-            const searchTerm = document.getElementById('content-search').value.toLowerCase();
-            const contentItems = document.querySelectorAll('.content-item');
-
-            contentItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
         }
 
         function renderContents() {
-            const list = document.getElementById('contents-list');
-            if (data.contents.length === 0) {
-                list.innerHTML = '<div class="empty-state"><p>Nenhum conteúdo adicionado ainda</p></div>';
+            const list = document.getElementById('contentList');
+            const empty = document.getElementById('emptyState');
+            
+            if (appData.contents.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
                 return;
             }
-
-            list.innerHTML = data.contents.slice().reverse().map(c => {
-                const subject = data.subjects.find(s => s.id === c.subjectId);
-                if (!subject) return '';
-
-                const difficultyText = { easy: 'Fácil', medium: 'Médio', hard: 'Difícil' }[c.difficulty];
-                const difficultyClass = `badge-difficulty-${c.difficulty}`;
-                const hours = Math.floor(c.studyMinutes / 60);
-                const mins = c.studyMinutes % 60;
-                const timeText = hours > 0 ? `${hours}h${mins > 0 ? ' ' + mins + 'min' : ''}` : `${mins}min`;
-
-                return `
-                    <div class="content-item">
-                        <div class="content-header">
+            
+            empty.style.display = 'none';
+            list.innerHTML = appData.contents.map(content => `
+                <div class="content-item">
+                    <div class="content-header">
+                        <div>
+                            <h3 style="margin-bottom: 8px;">${content.title}</h3>
                             <div class="badges">
-                                <span class="badge badge-subject">${subject.name}</span>
-                                <span class="badge ${difficultyClass}">${difficultyText}</span>
-                                <span class="badge badge-time">⏱ ${timeText}</span>
+                                <span class="badge badge-subject">${content.subject}</span>
+                                <span class="badge badge-difficulty-${content.difficulty}">
+                                    ${content.difficulty === 'easy' ? 'Fácil' : content.difficulty === 'medium' ? 'Médio' : 'Difícil'}
+                                </span>
+                                <span class="badge badge-time">⏱️ ${content.time} min</span>
                             </div>
-                            <button class="btn btn-danger btn-small" onclick="deleteContent(${c.id})">Deletar</button>
                         </div>
-                        <p class="content-text">${c.text}</p>
-                        <p class="content-meta">${c.startTime} - ${c.endTime} • ${c.dateAdded}</p>
-
-                        <div class="review-grid">
-                            ${renderReviewBoxes(c)}
-                        </div>
+                        <input type="checkbox" ${content.completed ? 'checked' : ''} onchange="toggleComplete(${content.id})" style="cursor: pointer; width: 24px; height: 24px;">
                     </div>
-                `;
-            }).join('');
-        }
-
-        function renderReviewBoxes(content) {
-            return ['day1', 'day7', 'day30'].map(day => {
-                const review = content.reviews[day];
-                const labels = { day1: '1 dia', day7: '7 dias', day30: '30 dias' };
-
-                let className = 'review-box pending';
-                let btnText = 'Revisar';
-
-                if (review.completed) {
-                    className = 'review-box completed';
-                    const methodEmoji = review.method === 'resumo' ? '📚' : review.method === 'simulado' ? '❓' : '📊';
-                    btnText = `✅ ${methodEmoji}`;
-                    if (review.quiz) {
-                        btnText += ` ${review.quiz.percentage}%`;
-                    }
-                }
-
-                return `
-                    <div class="${className}">
-                        <div class="review-label">${labels[day]}</div>
-                        <div class="review-date">${review.date}</div>
-                        ${!review.completed ?
-                            `<button class="btn btn-primary btn-small review-btn-small" onclick="openReviewModal(${content.id}, '${day}')">Revisar</button>` :
-                            `<div style="color: var(--text-light);">${btnText}</div>`
-                        }
+                    <p class="content-text">${content.desc || 'Sem descrição'}</p>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="btn btn-success btn-small" onclick="toggleComplete(${content.id})">
+                            ${content.completed ? '✓ Completo' : '◯ Marcar Completo'}
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="removeContent(${content.id})">Remover</button>
                     </div>
-                `;
-            }).join('');
-        }
-
-        function deleteContent(id) {
-            if (confirm('Deseja remover este conteúdo?')) {
-                data.contents = data.contents.filter(c => c.id !== id);
-                saveData();
-                renderContents();
-                updateStats();
-                showToast('Conteúdo removido com sucesso!', 'success');
-            }
-        }
-
-        // ===== REVIEW SYSTEM =====
-        let currentReviewId = null;
-        let currentReviewDay = null;
-
-        function openReviewModal(contentId, day) {
-            currentReviewId = contentId;
-            currentReviewDay = day;
-            document.getElementById('quiz-section').style.display = 'none';
-            document.querySelectorAll('.modal-method-btn').forEach(b => b.classList.remove('selected'));
-            document.getElementById('quiz-questions').value = '';
-            document.getElementById('quiz-correct').value = '';
-            openModal('modal-review');
-        }
-
-        function selectReviewMethod(method) {
-            document.querySelectorAll('.modal-method-btn').forEach(b => b.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-
-            const quizSection = document.getElementById('quiz-section');
-            quizSection.style.display = method === 'quiz' ? 'block' : 'none';
-        }
-
-        function completeReview() {
-            const selected = document.querySelector('.modal-method-btn.selected');
-            if (!selected) {
-                showToast('Selecione um método de revisão!', 'warning');
-                return;
-            }
-
-            const methodText = selected.querySelector('.modal-method-title').textContent.split(' ')[1].toLowerCase();
-
-            const content = data.contents.find(c => c.id === currentReviewId);
-            const review = content.reviews[currentReviewDay];
-
-            review.completed = true;
-            review.method = methodText;
-
-            if (methodText === 'simulado') {
-                const questions = parseInt(document.getElementById('quiz-questions').value);
-                const correct = parseInt(document.getElementById('quiz-correct').value);
-
-                if (!questions || !correct) {
-                    showToast('Preencha os dados do simulado!', 'error');
-                    return;
-                }
-
-                if (correct > questions) {
-                    showToast('Acertos não podem ser maiores que o total de questões!', 'error');
-                    return;
-                }
-
-                review.quiz = { questions, correct, percentage: Math.round((correct/questions)*100) };
-            }
-
-            saveData();
-            renderContents();
-            closeModal('modal-review');
-            updateStats();
-            showToast('Revisão concluída com sucesso!', 'success');
-        }
-
-        // ===== STATS =====
-        function updateStats() {
-            const totalContents = data.contents.length;
-            const totalTime = data.contents.reduce((sum, c) => sum + c.studyMinutes, 0);
-            const totalHours = Math.floor(totalTime / 60);
-            const totalMins = totalTime % 60;
-            const completed = data.contents.filter(c =>
-                c.reviews.day1.completed &&
-                c.reviews.day7.completed &&
-                c.reviews.day30.completed
-            ).length;
-
-            document.getElementById('stat-subjects').textContent = data.subjects.length;
-            document.getElementById('stat-contents').textContent = totalContents;
-            document.getElementById('total-contents').textContent = totalContents;
-            document.getElementById('total-time').textContent = totalHours > 0 ? `${totalHours}h${totalMins > 0 ? ' ' + totalMins + 'min' : ''}` : `${totalMins}min`;
-            document.getElementById('total-completed').textContent = completed;
-        }
-
-        function drawChart() {
-            const dates = {};
-
-            data.contents.forEach(c => {
-                const date = c.dateAdded;
-                if (!dates[date]) dates[date] = 0;
-                dates[date] += c.studyMinutes / 60;
-            });
-
-            const sortedDates = Object.entries(dates)
-                .sort((a, b) => {
-                    const [dayA, monthA, yearA] = a[0].split('/');
-                    const [dayB, monthB, yearB] = b[0].split('/');
-                    return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
-                })
-                .slice(-7);
-
-            if (sortedDates.length === 0) {
-                document.getElementById('chart').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">Nenhum dado para mostrar</p>';
-                return;
-            }
-
-            const maxHours = Math.max(...sortedDates.map(d => d[1]));
-
-            document.getElementById('chart').innerHTML = sortedDates.map(([date, hours]) => `
-                <div class="bar-item">
-                    <div class="bar" style="height: ${(hours / maxHours) * 200}px;" title="${hours.toFixed(2)}h"></div>
-                    <div class="bar-label">${date.split('/').slice(0, 2).join('/')}</div>
-                    <div class="bar-value">${hours.toFixed(1)}h</div>
                 </div>
             `).join('');
         }
 
-        // ===== MODALS =====
-        function openModal(id) {
-            document.getElementById(id).classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal on outside click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal(modal.id);
-                }
-            });
-        });
-
-        // ===== KEYBOARD NAVIGATION =====
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.show').forEach(modal => {
-                    closeModal(modal.id);
-                });
+        function renderReview() {
+            const list = document.getElementById('reviewList');
+            const notCompleted = appData.contents.filter(c => !c.completed);
+            
+            if (notCompleted.length === 0) {
+                list.innerHTML = '<div class="success-message"><h2>✨ Parabéns!</h2><p>Você completou todo o conteúdo!</p></div>';
+                return;
             }
-        });
-
-        // ===== INIT =====
-        loadData();
-        loadTheme();
-        renderSubjects();
-        renderContents();
-
-        if (data.profile) {
-            document.getElementById('profile-name').textContent = data.profile.name;
-            document.getElementById('profile-info').textContent = `${data.profile.university} • ${data.profile.course} • ${data.profile.semester}`;
-            showScreen('screen-main');
-            updateStats();
+            
+            list.innerHTML = notCompleted.map(content => `
+                <div class="content-item">
+                    <div class="content-header">
+                        <div>
+                            <h3 style="margin-bottom: 8px;">${content.title}</h3>
+                            <div class="badges">
+                                <span class="badge badge-subject">${content.subject}</span>
+                                <span class="badge badge-time">⏱️ ${content.time} min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="toggleComplete(${content.id})">Marcar como Revisado</button>
+                </div>
+            `).join('');
         }
+
+        function renderStats() {
+            const chartContainer = document.getElementById('chartContainer');
+            const subjectStats = {};
+            
+            appData.contents.forEach(c => {
+                if (!subjectStats[c.subject]) subjectStats[c.subject] = 0;
+                subjectStats[c.subject]++;
+            });
+
+            chartContainer.innerHTML = Object.entries(subjectStats).map(([subject, count]) => `
+                <div class="bar-item">
+                    <div class="bar" style="height: ${Math.max(20, count * 30)}px;"></div>
+                    <div class="bar-label">${subject}</div>
+                    <div class="bar-value">${count}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateSelects() {
+            const select = document.getElementById('contentSubject');
+            select.innerHTML = '<option value="">Selecione uma disciplina</option>' + 
+                appData.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function updateStats() {
+            const total = appData.contents.length;
+            const completed = appData.contents.filter(c => c.completed).length;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('subjectCount').textContent = appData.subjects.length;
+            document.getElementById('contentCount').textContent = total;
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statCompleted').textContent = completed;
+            document.getElementById('statRate').textContent = rate + '%';
+        }
+
+        // Inicializar
+        loadData();
     </script>
 </body>
 </html>

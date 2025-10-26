@@ -16,6 +16,64 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Modo Escuro */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .card {
+            background: #0f3460;
+            color: #e8e8e8;
+        }
+
+        body.dark-mode .materia-item {
+            background: #1a1a2e;
+            color: #e8e8e8;
+        }
+
+        body.dark-mode .materia-item.aprovado {
+            background: #0d3d2d;
+        }
+
+        body.dark-mode .materia-item.pf {
+            background: #3d2d0d;
+        }
+
+        body.dark-mode .materia-item.reprovado {
+            background: #3d0d0d;
+        }
+
+        body.dark-mode .sub-materia-card,
+        body.dark-mode .avaliacao-card {
+            background: #16213e;
+            color: #e8e8e8;
+        }
+
+        body.dark-mode .input-group input,
+        body.dark-mode .input-group select {
+            background: #1a1a2e;
+            color: #e8e8e8;
+            border-color: #4a5568;
+        }
+
+        body.dark-mode .modal-content {
+            background: #0f3460;
+            color: #e8e8e8;
+        }
+
+        body.dark-mode .info-box {
+            background: #1e3a5f;
+            border-left-color: #4dabf7;
+        }
+
+        body.dark-mode .calculo-detalhado,
+        body.dark-mode .sub-materia-form-item,
+        body.dark-mode .avaliacao-form-item {
+            background: #1a1a2e;
+            color: #e8e8e8;
         }
 
         .container {
@@ -563,6 +621,110 @@
             background: #f8f9fa;
         }
 
+        /* Botão Modo Escuro */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Botões de Importar/Exportar */
+        .data-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export, .btn-import {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-import {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-export:hover, .btn-import:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Calculadora PF */
+        .pf-calculator {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .pf-calculator input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .pf-result {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Estilos para Impressão */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .back-link, .btn, button, .dark-mode-toggle {
+                display: none !important;
+            }
+            .card {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            .materia-item {
+                page-break-inside: avoid;
+            }
+        }
+
         @media (max-width: 768px) {
             .materia-header {
                 flex-direction: column;
@@ -571,13 +733,28 @@
             .tipo-radio {
                 flex-direction: column;
             }
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            .data-controls {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Botão Modo Escuro -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="dark-mode-icon">🌙</span>
+        <span id="dark-mode-text">Modo Escuro</span>
+    </button>
+
     <div class="container">
         <a href="#" class="back-link">← Voltar</a>
-        
+
         <div class="header">
             <h1>📊 Calculadora de Boletim</h1>
             <p>Sistema de Notas Bimestrais e Modulares</p>
@@ -644,6 +821,16 @@
             <div id="materias-lista"></div>
 
             <button class="btn btn-success" onclick="gerarBoletimFinal()" style="width: 100%; margin: 20px 0; font-size: 1.1rem;">📄 Gerar Boletim Final</button>
+
+            <div class="data-controls">
+                <button class="btn-export" onclick="exportarDados()">
+                    📥 Exportar Dados (Backup)
+                </button>
+                <button class="btn-import" onclick="document.getElementById('import-file').click()">
+                    📤 Importar Dados
+                </button>
+                <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importarDados(event)">
+            </div>
 
             <div class="flex-buttons">
                 <button class="btn btn-secondary" onclick="voltarConfig()">← Configurações</button>
@@ -759,11 +946,27 @@
         <div class="modal-content">
             <h3 id="modal-plano-titulo">📊 Plano de Notas</h3>
             <div id="plano-conteudo"></div>
+
+            <!-- Calculadora de PF -->
+            <div id="pf-calculator-section" class="pf-calculator" style="display: none;">
+                <h4>🎯 Calculadora de Prova Final (PF)</h4>
+                <p style="font-size: 0.9rem; margin: 10px 0;">Média atual: <strong id="pf-media-atual">-</strong></p>
+                <p style="font-size: 0.9rem; margin: 10px 0;">Para passar, você precisa de média <strong id="pf-meta">7.0</strong> no semestre.</p>
+
+                <label style="display: block; margin-top: 15px; font-weight: bold;">Nota que pretende tirar na PF:</label>
+                <input type="number" id="pf-nota-input" step="0.1" min="0" max="10" placeholder="Ex: 8.0" oninput="calcularMediaComPF()">
+
+                <div id="pf-resultado" class="pf-result" style="display: none;"></div>
+            </div>
+
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="fecharModalPlano()">Fechar</button>
             </div>
         </div>
     </div>
+
+    <!-- Modal: Confirmar Exclusão -->
+    <div id="modal-confirmar" class="modal-overlay">
         <div class="modal-content">
             <h3>⚠️ Confirmar Exclusão</h3>
             <p id="modal-mensagem"></p>
@@ -1734,6 +1937,171 @@
 
         function fecharModalPlano() {
             document.getElementById('modal-plano').classList.remove('show');
+            document.getElementById('pf-calculator-section').style.display = 'none';
+            document.getElementById('pf-nota-input').value = '';
+            document.getElementById('pf-resultado').style.display = 'none';
+        }
+
+        // ====== MODO ESCURO ======
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+
+            // Atualiza ícone e texto
+            document.getElementById('dark-mode-icon').textContent = isDark ? '☀️' : '🌙';
+            document.getElementById('dark-mode-text').textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+
+            // Salva preferência
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        }
+
+        // Carrega preferência de modo escuro
+        window.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-icon').textContent = '☀️';
+                document.getElementById('dark-mode-text').textContent = 'Modo Claro';
+            }
+        });
+
+        // ====== EXPORTAR/IMPORTAR DADOS ======
+        function exportarDados() {
+            const dados = {
+                config: config,
+                materias: materias,
+                dataExportacao: new Date().toISOString(),
+                versao: '1.0'
+            };
+
+            const dataStr = JSON.stringify(dados, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `boletim_${config.semestre || 'backup'}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+            alert('✅ Dados exportados com sucesso!\n\nSalve este arquivo em um local seguro para fazer backup das suas notas.');
+        }
+
+        function importarDados(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+
+                    // Validação básica
+                    if (!dados.config || !dados.materias) {
+                        throw new Error('Arquivo inválido');
+                    }
+
+                    if (confirm('⚠️ Importar dados irá SUBSTITUIR todos os dados atuais.\n\nTem certeza que deseja continuar?')) {
+                        config = dados.config;
+                        materias = dados.materias;
+                        salvarDados();
+
+                        // Atualiza a interface
+                        document.getElementById('instituicao').value = config.instituicao;
+                        document.getElementById('media-aprovacao').value = config.mediaAprovacao;
+                        document.getElementById('media-pf').value = config.mediaPF || 4.0;
+                        document.getElementById('semestre').value = config.semestre;
+
+                        const modoInput = document.querySelector(`input[name="modo-peso"][value="${config.modoPeso || 'relativo'}"]`);
+                        if (modoInput) modoInput.checked = true;
+
+                        document.getElementById('info-instituicao').textContent = config.instituicao;
+                        document.getElementById('info-media').textContent = config.mediaAprovacao.toFixed(1);
+                        document.getElementById('info-pf').textContent = config.mediaPF.toFixed(1);
+
+                        renderizarMaterias();
+                        mostrarTela('tela-materias');
+
+                        alert('✅ Dados importados com sucesso!\n\n' + materias.length + ' matéria(s) carregada(s).');
+                    }
+                } catch (error) {
+                    alert('❌ Erro ao importar arquivo!\n\nVerifique se o arquivo é um backup válido do boletim.');
+                    console.error('Erro de importação:', error);
+                }
+            };
+            reader.readAsText(file);
+
+            // Limpa o input para permitir reimportar o mesmo arquivo
+            event.target.value = '';
+        }
+
+        // ====== CALCULADORA DE PF ======
+        let currentPFMateria = null;
+
+        function abrirModalPlano(indexMateria) {
+            currentPFMateria = indexMateria;
+            const materia = materias[indexMateria];
+            const mediaFinal = calcularMediaMateria(materia);
+
+            document.getElementById('modal-plano-titulo').textContent = `📊 Plano de Notas - ${materia.nome}`;
+            document.getElementById('plano-conteudo').innerHTML = calcularPlanoMateria(indexMateria);
+
+            // Mostra calculadora de PF se estiver em situação de PF
+            if (mediaFinal !== null) {
+                const status = obterStatus(mediaFinal);
+                if (status === 'pf') {
+                    document.getElementById('pf-calculator-section').style.display = 'block';
+                    document.getElementById('pf-media-atual').textContent = mediaFinal.toFixed(2);
+                    document.getElementById('pf-meta').textContent = config.mediaAprovacao.toFixed(1);
+                } else {
+                    document.getElementById('pf-calculator-section').style.display = 'none';
+                }
+            }
+
+            document.getElementById('modal-plano').classList.add('show');
+        }
+
+        function calcularMediaComPF() {
+            const notaPF = parseFloat(document.getElementById('pf-nota-input').value);
+            const resultadoDiv = document.getElementById('pf-resultado');
+
+            if (!notaPF || isNaN(notaPF) || notaPF < 0 || notaPF > 10) {
+                resultadoDiv.style.display = 'none';
+                return;
+            }
+
+            const materia = materias[currentPFMateria];
+            const mediaAtual = calcularMediaMateria(materia);
+
+            // Fórmula comum: (Média Atual + Nota PF) / 2
+            const mediaFinal = (mediaAtual + notaPF) / 2;
+
+            resultadoDiv.style.display = 'block';
+
+            if (mediaFinal >= config.mediaAprovacao) {
+                resultadoDiv.innerHTML = `
+                    ✅ <strong>APROVADO!</strong><br>
+                    Média final: <strong>${mediaFinal.toFixed(2)}</strong><br>
+                    <span style="font-size: 0.9rem;">(${mediaAtual.toFixed(2)} + ${notaPF.toFixed(2)}) / 2 = ${mediaFinal.toFixed(2)}</span>
+                `;
+                resultadoDiv.style.background = 'rgba(16, 185, 129, 0.3)';
+            } else {
+                const falta = config.mediaAprovacao - mediaFinal;
+                resultadoDiv.innerHTML = `
+                    ❌ <strong>REPROVADO</strong><br>
+                    Média final: <strong>${mediaFinal.toFixed(2)}</strong><br>
+                    <span style="font-size: 0.9rem;">Faltam ${falta.toFixed(2)} pontos para passar</span>
+                `;
+                resultadoDiv.style.background = 'rgba(239, 68, 68, 0.3)';
+            }
+
+            // Mostra nota mínima necessária na PF
+            const notaMinimaPF = (config.mediaAprovacao * 2) - mediaAtual;
+            const msgMinima = notaMinimaPF <= 10
+                ? `💡 <strong>Dica:</strong> Nota mínima na PF para passar: <strong>${Math.max(0, notaMinimaPF).toFixed(2)}</strong>`
+                : `⚠️ Mesmo tirando 10.0 na PF, não é possível passar (precisaria de ${notaMinimaPF.toFixed(2)})`;
+
+            resultadoDiv.innerHTML += `<br><br><span style="font-size: 0.85rem;">${msgMinima}</span>`;
         }
     </script>
 </body>

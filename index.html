@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" style="scroll-behavior: smooth;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +57,12 @@
     <header class="top-bar">
         <div class="container">
             <div class="logo">Estudante Sara</div>
-            <nav class="nav-links">
+            <button class="mobile-menu-toggle" aria-label="Menu de navegação" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-links" role="navigation" aria-label="Navegação principal">
                 <a href="#inicio">Início</a>
                 <a href="#sobre">Sobre Mim</a>
                 <a href="#blog">Blog</a>
@@ -348,6 +353,13 @@
             <p>&copy; <span id="year"></span> Estudante Sara. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <!-- Botão Voltar ao Topo -->
+    <button class="scroll-to-top" aria-label="Voltar ao topo" title="Voltar ao topo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
 
     <script src="script.js"></script>
 </body>

@@ -296,3 +296,106 @@ document.addEventListener('DOMContentLoaded', renderBlogPosts);
 if (document.readyState !== 'loading') {
     renderBlogPosts();
 }
+
+// ===== MENU HAMBURGUER MOBILE =====
+const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+
+if (mobileMenuToggle && navLinks) {
+    // Toggle menu ao clicar no botão
+    mobileMenuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+
+        // Atualizar aria-expanded
+        const isExpanded = navLinks.classList.contains('active');
+        this.setAttribute('aria-expanded', isExpanded);
+
+        // Prevenir scroll quando menu está aberto
+        document.body.style.overflow = isExpanded ? 'hidden' : '';
+    });
+
+    // Fechar menu ao clicar em um link
+    const menuLinks = navLinks.querySelectorAll('a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            mobileMenuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Fechar menu ao clicar fora
+    document.addEventListener('click', function(event) {
+        const isClickInsideMenu = navLinks.contains(event.target);
+        const isClickOnToggle = mobileMenuToggle.contains(event.target);
+
+        if (!isClickInsideMenu && !isClickOnToggle && navLinks.classList.contains('active')) {
+            mobileMenuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Fechar menu com tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+            mobileMenuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+// ===== BOTÃO VOLTAR AO TOPO =====
+const scrollToTopButton = document.querySelector('.scroll-to-top');
+
+if (scrollToTopButton) {
+    // Mostrar/ocultar botão baseado no scroll
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            scrollToTopButton.classList.add('visible');
+        } else {
+            scrollToTopButton.classList.remove('visible');
+        }
+    });
+
+    // Scroll suave para o topo ao clicar
+    scrollToTopButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// ===== ANIMAÇÕES DE ENTRADA =====
+// Observer para animar elementos quando entram na viewport
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const fadeInObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+// Aplicar animação de entrada aos cards
+document.addEventListener('DOMContentLoaded', function() {
+    const elementsToAnimate = document.querySelectorAll('.daily-entry, .highlight-card, .timeline-item, .comment-entry');
+
+    elementsToAnimate.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        fadeInObserver.observe(el);
+    });
+});

@@ -2,6 +2,30 @@
 
 const blogPosts = [
     {
+        id: "post-ia-medicina",
+        badge: "Reflexão",
+        titulo: "A Inteligência Artificial e o Caminho até a Medicina",
+        data: "26 de outubro de 2025",
+        categoria: "Tecnologia e Estudos",
+        conteudo: [
+            "Oi, pessoal.",
+            "A inteligência artificial chegou chegando, né? Desde aquele boom lá por 2021, ela tomou conta de tudo. O que antes era só território da OpenAI — com o famoso ChatGPT, nosso "amigo digital" — agora virou uma multidão de opções: Gemini, Claude, Grook e por aí vai. Cada uma com seu jeitinho e propósito.",
+            "Mas vamos falar de coisa séria: Medicina. Quando eu penso no caminho até passar num vestibular, me dá até um arrepio. É cursinho, simulado, noites viradas e gente duvidando da tua capacidade. Professores, familiares, até você mesma, em alguns dias ruins. E se lá atrás existisse IA do jeito que existe hoje, confesso… teria me poupado muita lágrima (e cafeína).",
+            "Quando finalmente entra na faculdade, vem a segunda fase: o ciclo básico. Dois anos intensos, confusos, cheios de matérias novas e com aquela sensação de "meu Deus, onde foi que eu me meti?".",
+            "Foi aí que eu percebi o poder da tecnologia. Hoje, a inteligência artificial é quase um braço direito pra mim. E olha… não entendo o preconceito que algumas pessoas ainda têm. Parece que usar IA é admitir "fraqueza intelectual". Como se estudar com apoio fosse trapaça.",
+            "Gente, estamos no século XXI. Ou você aprende a usar as ferramentas que o mundo oferece, ou vai ser atropelado por quem aprendeu.",
+            "A IA não tira mérito de ninguém. Pelo contrário: ela traduz o complicado, acelera o que consome tempo, e ajuda a colocar ordem no caos. É como ter um tutor disponível 24 horas, que não julga, não perde a paciência e explica quantas vezes você precisar.",
+            "Aí vem o argumento clássico: "vai deixar as pessoas burras". Não, vai deixar as pessoas eficientes. Quem usa bem, cresce mais rápido. Quem ignora, fica pra trás — simples assim.",
+            "Acho que o verdadeiro desafio agora é integrar essa tecnologia ao ensino, em vez de combatê-la. Porque ela não vai parar. E se pode facilitar a vida do aluno e do professor, por que não caminhar juntos?",
+            "No meu caso, ela já faz parte da rotina. Me ajuda a planejar o dia, organizar os estudos, revisar matérias, e até equilibrar a vida pessoal.",
+            "No fim das contas, usar IA não é preguiça. É estratégia. E, se você parar pra pensar, o que nos diferencia não é o medo da mudança — é a coragem de aprender com ela.",
+            "Então me conta: você já usa inteligência artificial nos estudos ou ainda está testando o terreno? Vamos conversar nos comentários — quero saber como tem sido pra você."
+        ],
+        assinatura: "Beijos da Sarinha 💙",
+        cta: "O que você acha sobre IA nos estudos?",
+        ctaLink: "#comentarios"
+    },
+    {
         id: "post-segundo-mes",
         badge: "Novidades",
         titulo: "Semana Caótica",

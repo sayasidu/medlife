@@ -25,13 +25,20 @@
 <meta property="og:url" content="https://sayasidu.github.io/medlife/">
 <meta property="og:title" content="Estudante Sara – Jornada na Medicina">
 <meta property="og:description" content="Acompanhe os bastidores da minha graduação em Medicina: relatos diários, reflexões sinceras e dicas sobre a vida acadêmica.">
+<meta property="og:image" content="https://sayasidu.github.io/medlife/favicon.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Estudante Sara - Blog de Medicina">
 <meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Estudante Sara">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://sayasidu.github.io/medlife/">
 <meta name="twitter:title" content="Estudante Sara – Jornada na Medicina">
 <meta name="twitter:description" content="Blog sobre a jornada de uma estudante de Medicina">
+<meta name="twitter:image" content="https://sayasidu.github.io/medlife/favicon.png">
+<meta name="twitter:image:alt" content="Estudante Sara - Blog de Medicina">
 
 <!-- Schema.org for Google -->
 <script type="application/ld+json">
@@ -57,11 +64,29 @@
     <header class="top-bar">
         <div class="container">
             <div class="logo">Estudante Sara</div>
-            <button class="mobile-menu-toggle" aria-label="Menu de navegação" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="header-actions">
+                <button class="theme-toggle" aria-label="Alternar modo escuro" title="Alternar tema">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" aria-label="Menu de navegação" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
             <nav class="nav-links" role="navigation" aria-label="Navegação principal">
                 <a href="#inicio">Início</a>
                 <a href="#sobre">Sobre Mim</a>
@@ -74,6 +99,9 @@
             </nav>
         </div>
     </header>
+
+    <!-- Barra de progresso de leitura -->
+    <div class="reading-progress" id="readingProgress"></div>
 
     <main>
         <section class="hero" id="inicio">
@@ -117,6 +145,21 @@
             <h2>Blog da Sara</h2>
             <p>Textos maiores, listas e registros especiais sobre as fases da faculdade, sempre que quero aprofundar um assunto ou dividir uma grande novidade.</p>
         </div>
+
+        <!-- Barra de busca e filtros -->
+        <div class="blog-controls">
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="blogSearch" placeholder="Buscar posts..." aria-label="Buscar posts do blog">
+            </div>
+            <div class="category-filters" id="categoryFilters">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+
         <div class="blog-layout">
             <!-- Os posts serão adicionados aqui automaticamente pelo JavaScript -->
             <aside class="blog-sidebar">

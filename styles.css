@@ -61,12 +61,21 @@ iframe {
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
+  gap: 20px;
 }
 
 .logo {
   font-weight: 700;
   font-size: 1.1rem;
   letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .nav-links {
@@ -1407,6 +1416,337 @@ main > section {
 /* Suavizar todas as transições globais */
 * {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== TOGGLE DE TEMA ESCURO ===== */
+.theme-toggle {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: rotate(180deg);
+}
+
+.theme-toggle svg {
+  position: absolute;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle .sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle .moon-icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0);
+}
+
+body.dark-mode .theme-toggle .sun-icon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0);
+}
+
+body.dark-mode .theme-toggle .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle:hover svg {
+  color: white;
+}
+
+/* ===== BARRA DE PROGRESSO DE LEITURA ===== */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  z-index: 1000;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 10px rgba(63, 94, 251, 0.5);
+}
+
+/* ===== BUSCA E FILTROS DO BLOG ===== */
+.blog-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+.search-box {
+  position: relative;
+  max-width: 500px;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(63, 94, 251, 0.1);
+}
+
+.category-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.category-filter {
+  padding: 8px 20px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-light);
+}
+
+.category-filter:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.category-filter.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-color: transparent;
+}
+
+/* ===== BOTÕES DE COMPARTILHAMENTO SOCIAL ===== */
+.share-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.share-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.share-button.twitter {
+  background: #1DA1F2;
+  color: white;
+}
+
+.share-button.facebook {
+  background: #4267B2;
+  color: white;
+}
+
+.share-button.whatsapp {
+  background: #25D366;
+  color: white;
+}
+
+.share-button.copy-link {
+  background: var(--surface-strong);
+  color: var(--primary);
+  border: 2px solid var(--border);
+}
+
+.share-button.copy-link.copied {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: transparent;
+}
+
+/* Mensagem de feedback ao copiar */
+.copy-feedback {
+  position: fixed;
+  bottom: 80px;
+  right: 30px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  z-index: 1001;
+  animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 2.7s;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* ===== ESTADOS DE CARREGAMENTO (SKELETON) ===== */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-strong) 0%, var(--surface) 50%, var(--surface-strong) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.skeleton-text.short {
+  width: 60%;
+}
+
+.skeleton-card {
+  height: 200px;
+  width: 100%;
+}
+
+/* ===== MELHORIAS DE RESPONSIVIDADE ===== */
+@media (max-width: 480px) {
+  :root {
+    --container: calc(100% - 24px);
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .section-intro h2 {
+    font-size: 1.6rem;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .search-box input {
+    font-size: 14px;
+  }
+
+  .share-buttons {
+    flex-direction: column;
+  }
+
+  .share-button {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* ===== MODO ESCURO FORÇADO (CLASSE) ===== */
+body.dark-mode {
+  --bg: #0f172a;
+  --surface: #111c32;
+  --surface-strong: #172440;
+  --text: #f8fafc;
+  --text-light: #cbd5e1;
+  --border: rgba(148, 163, 184, 0.2);
+  --shadow: 0 20px 36px -24px rgba(12, 74, 110, 0.6);
+}
+
+body.dark-mode .btn.ghost {
+  background: rgba(99, 102, 241, 0.16);
+  color: #e0e7ff;
+}
+
+/* ===== MELHORAR LAYOUT DO HEADER MOBILE ===== */
+@media (max-width: 768px) {
+  .top-bar .container {
+    flex-wrap: nowrap;
+  }
+
+  .header-actions {
+    order: 2;
+  }
+
+  .nav-links {
+    order: 3;
+    width: 100%;
+  }
+
+  .logo {
+    order: 1;
+  }
 }
 
 

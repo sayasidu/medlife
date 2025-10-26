@@ -1502,6 +1502,7 @@
             <div class="card">
                 <h2>Iniciar Sessão de Estudo</h2>
                 <form id="studySessionForm">
+                    <input type="hidden" id="editingSessionId" value="" />
                     <div class="form-group">
                         <label for="studyContent">Conteúdo *</label>
                         <select id="studyContent" required>
@@ -1555,12 +1556,12 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">
+                    <button type="submit" class="btn btn-primary btn-full" id="studySessionSubmitBtn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        Registrar Sessão
+                        <span id="studySessionSubmitText">Registrar Sessão</span>
                     </button>
                 </form>
 
@@ -1866,6 +1867,7 @@
             handleStudySession(e) {
                 e.preventDefault();
 
+                const editingSessionId = document.getElementById('editingSessionId').value;
                 const contentId = parseInt(document.getElementById('studyContent').value);
                 const date = document.getElementById('studyDate').value;
                 const startTime = document.getElementById('studyStartTime').value;
@@ -1892,35 +1894,108 @@
                     return;
                 }
 
-                const session = {
-                    id: Date.now(),
-                    contentId,
-                    contentTitle: content.title,
-                    subject: content.subject,
-                    date,
-                    startTime,
-                    endTime,
-                    duration: durationMinutes,
-                    createdAt: new Date().toISOString()
-                };
+                // Check if we're editing an existing session
+                if (editingSessionId) {
+                    const sessionIndex = this.data.studySessions.findIndex(s => s.id === parseInt(editingSessionId));
+                    if (sessionIndex !== -1) {
+                        // Update existing session
+                        this.data.studySessions[sessionIndex] = {
+                            ...this.data.studySessions[sessionIndex],
+                            contentId,
+                            contentTitle: content.title,
+                            subject: content.subject,
+                            date,
+                            startTime,
+                            endTime,
+                            duration: durationMinutes
+                        };
+                        this.showToast(`Sessão atualizada com sucesso!`, 'success');
+                    }
+                } else {
+                    // Create new session
+                    const session = {
+                        id: Date.now(),
+                        contentId,
+                        contentTitle: content.title,
+                        subject: content.subject,
+                        date,
+                        startTime,
+                        endTime,
+                        duration: durationMinutes,
+                        createdAt: new Date().toISOString()
+                    };
 
-                this.data.studySessions.push(session);
+                    this.data.studySessions.push(session);
 
-                // Create spaced repetition schedule if enabled
-                const enableReview = document.getElementById('enableSpacedReview').checked;
-                if (enableReview) {
-                    const reviewOption = document.querySelector('input[name="reviewInterval"]:checked').value;
-                    this.createReviewSchedule(contentId, date, reviewOption);
+                    // Create spaced repetition schedule if enabled
+                    const enableReview = document.getElementById('enableSpacedReview').checked;
+                    if (enableReview) {
+                        const reviewOption = document.querySelector('input[name="reviewInterval"]:checked').value;
+                        this.createReviewSchedule(contentId, date, reviewOption);
+                    }
+
+                    this.showToast(`Sessão de ${durationMinutes} minutos registrada!`, 'success');
                 }
 
+                // Reset form
                 e.target.reset();
+                document.getElementById('editingSessionId').value = '';
+                document.getElementById('studySessionSubmitText').textContent = 'Registrar Sessão';
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('studyDate').value = today;
                 document.getElementById('spacedReviewOptions').style.display = 'none';
 
                 this.saveData();
                 this.render();
-                this.showToast(`Sessão de ${durationMinutes} minutos registrada!`, 'success');
+            }
+
+            /**
+             * Edit a study session
+             */
+            editStudySession(sessionId) {
+                const session = this.data.studySessions.find(s => s.id === sessionId);
+                if (!session) {
+                    this.showToast('Sessão não encontrada', 'error');
+                    return;
+                }
+
+                // Fill the form with session data
+                document.getElementById('editingSessionId').value = sessionId;
+                document.getElementById('studyContent').value = session.contentId;
+                document.getElementById('studyDate').value = session.date;
+                document.getElementById('studyStartTime').value = session.startTime;
+                document.getElementById('studyEndTime').value = session.endTime;
+
+                // Update button text
+                document.getElementById('studySessionSubmitText').textContent = 'Atualizar Sessão';
+
+                // Scroll to form
+                document.getElementById('studySessionForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                this.showToast('Editando sessão de estudo', 'info');
+            }
+
+            /**
+             * Remove a study session
+             */
+            removeStudySession(sessionId) {
+                const session = this.data.studySessions.find(s => s.id === sessionId);
+                if (!session) {
+                    this.showToast('Sessão não encontrada', 'error');
+                    return;
+                }
+
+                this.showModal(
+                    'Confirmar Exclusão',
+                    `Deseja realmente excluir a sessão de estudo "${session.contentTitle}"?`,
+                    () => {
+                        this.data.studySessions = this.data.studySessions.filter(s => s.id !== sessionId);
+                        this.saveData();
+                        this.renderStudySessions();
+                        this.renderStats();
+                        this.showToast('Sessão de estudo excluída com sucesso!', 'success');
+                    }
+                );
             }
 
             /**
@@ -2187,6 +2262,28 @@
                                 <strong>Data:</strong> ${new Date(session.date).toLocaleDateString('pt-BR')}<br>
                                 <strong>Horário:</strong> ${session.startTime} - ${session.endTime}
                             </p>
+                            <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+                                <button
+                                    class="btn btn-secondary btn-small"
+                                    onclick="app.editStudySession(${session.id})"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Editar
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-small"
+                                    onclick="app.removeStudySession(${session.id})"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Excluir
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 `;

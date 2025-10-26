@@ -82,6 +82,14 @@
             color: #e8e8e8;
             border-color: #4a5568;
         }
+
+        body.dark-mode #profile-modal input,
+        body.dark-mode #schedule-modal input,
+        body.dark-mode #schedule-modal select {
+            background: #1a1a2e;
+            color: #e8e8e8;
+            border-color: #4a5568;
+        }
         
         .container {
             max-width: 1200px;
@@ -821,6 +829,16 @@
             .filters-container {
                 grid-template-columns: 1fr;
             }
+            #profile-display {
+                grid-template-columns: 1fr !important;
+            }
+            .modal-content {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            #schedule-modal .modal-content {
+                max-width: 100% !important;
+            }
         }
     </style>
 </head>
@@ -853,7 +871,50 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- Perfil do Usuário -->
+        <div class="stats-card" id="profile-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0;">👤 Meu Perfil</h3>
+                <button onclick="openProfileModal()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                    ✏️ Editar
+                </button>
+            </div>
+            <div id="profile-display" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div style="padding: 12px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 8px;">
+                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Nome</div>
+                    <div id="profile-nome" style="font-weight: 600;">Não configurado</div>
+                </div>
+                <div style="padding: 12px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 8px;">
+                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Instituição</div>
+                    <div id="profile-instituicao" style="font-weight: 600;">Não configurado</div>
+                </div>
+                <div style="padding: 12px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 8px;">
+                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Curso/Série</div>
+                    <div id="profile-curso" style="font-weight: 600;">Não configurado</div>
+                </div>
+                <div style="padding: 12px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 8px;">
+                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Semestre/Bimestre</div>
+                    <div id="profile-periodo" style="font-weight: 600;">Não configurado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendário de Aulas -->
+        <div class="stats-card" id="schedule-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0;">📅 Grade de Aulas</h3>
+                <button onclick="openScheduleModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                    ➕ Gerenciar Aulas
+                </button>
+            </div>
+            <div id="schedule-display" style="overflow-x: auto;">
+                <div style="text-align: center; padding: 32px; color: #9ca3af;">
+                    Nenhuma aula cadastrada. Clique em "Gerenciar Aulas" para começar!
+                </div>
+            </div>
+        </div>
+
         <!-- Estatísticas -->
         <div class="stats-card">
             <h3 style="margin-bottom: 8px;">📊 Estatísticas do Dia</h3>
@@ -1003,6 +1064,101 @@
         </div>
     </div>
     
+    <!-- Modal de Perfil -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 32px;">👤</span>
+                <h2>Editar Perfil</h2>
+            </div>
+            <div style="display: grid; gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Nome Completo</label>
+                    <input type="text" id="input-nome" placeholder="Ex: Maria Silva" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Faculdade/Colégio</label>
+                    <input type="text" id="input-instituicao" placeholder="Ex: Universidade Federal" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Curso/Série</label>
+                    <input type="text" id="input-curso" placeholder="Ex: Medicina / 3º Ano" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Semestre/Bimestre</label>
+                    <input type="text" id="input-periodo" placeholder="Ex: 5º Semestre / 2º Bimestre" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeProfileModal()">Cancelar</button>
+                <button class="modal-btn primary" onclick="saveProfile()">Salvar Perfil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Calendário de Aulas -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <span style="font-size: 32px;">📅</span>
+                <h2>Gerenciar Grade de Aulas</h2>
+            </div>
+
+            <div style="background: #fef3c7; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0; font-size: 14px; color: #92400e;">
+                    💡 <strong>Dica:</strong> Adicione suas aulas semanais e elas aparecerão automaticamente como compromissos nos dias correspondentes!
+                </p>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 12px; color: #1f2937;">➕ Adicionar Nova Aula</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f9fafb; padding: 16px; border-radius: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Dia da Semana</label>
+                        <select id="input-dia" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            <option value="segunda">Segunda-feira</option>
+                            <option value="terca">Terça-feira</option>
+                            <option value="quarta">Quarta-feira</option>
+                            <option value="quinta">Quinta-feira</option>
+                            <option value="sexta">Sexta-feira</option>
+                            <option value="sabado">Sábado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Horário</label>
+                        <input type="text" id="input-horario-aula" placeholder="Ex: 08:00 - 10:00" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Disciplina</label>
+                        <input type="text" id="input-disciplina" placeholder="Ex: Anatomia" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151;">Sala/Local</label>
+                        <input type="text" id="input-local" placeholder="Ex: Sala 201" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button onclick="addClassToSchedule()" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                            ✅ Adicionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 12px; color: #1f2937;">📋 Aulas Cadastradas</h3>
+                <div id="schedule-list" style="max-height: 400px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 24px; color: #9ca3af;">
+                        Nenhuma aula cadastrada ainda.
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeScheduleModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Delete -->
     <div id="delete-modal" class="delete-modal">
         <div class="delete-modal-content">
@@ -1694,6 +1850,323 @@
                 document.getElementById('dark-mode-text').textContent = 'Claro';
             }
         });
+
+        // ====== PERFIL DO USUÁRIO ======
+        let userProfile = {
+            nome: '',
+            instituicao: '',
+            curso: '',
+            periodo: ''
+        };
+
+        function loadProfile() {
+            try {
+                const saved = localStorage.getItem('userProfile');
+                if (saved) {
+                    userProfile = JSON.parse(saved);
+                    updateProfileDisplay();
+                }
+            } catch(e) {
+                console.error('Erro ao carregar perfil:', e);
+            }
+        }
+
+        function updateProfileDisplay() {
+            document.getElementById('profile-nome').textContent = userProfile.nome || 'Não configurado';
+            document.getElementById('profile-instituicao').textContent = userProfile.instituicao || 'Não configurado';
+            document.getElementById('profile-curso').textContent = userProfile.curso || 'Não configurado';
+            document.getElementById('profile-periodo').textContent = userProfile.periodo || 'Não configurado';
+        }
+
+        function openProfileModal() {
+            document.getElementById('input-nome').value = userProfile.nome || '';
+            document.getElementById('input-instituicao').value = userProfile.instituicao || '';
+            document.getElementById('input-curso').value = userProfile.curso || '';
+            document.getElementById('input-periodo').value = userProfile.periodo || '';
+
+            document.getElementById('profile-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function saveProfile() {
+            userProfile.nome = document.getElementById('input-nome').value.trim();
+            userProfile.instituicao = document.getElementById('input-instituicao').value.trim();
+            userProfile.curso = document.getElementById('input-curso').value.trim();
+            userProfile.periodo = document.getElementById('input-periodo').value.trim();
+
+            try {
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                updateProfileDisplay();
+                closeProfileModal();
+
+                const el = document.getElementById('congrats-message');
+                el.textContent = '✅ Perfil salvo com sucesso!';
+                el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                el.style.display = 'block';
+
+                setTimeout(() => {
+                    el.style.display = 'none';
+                }, 3000);
+            } catch(e) {
+                alert('Erro ao salvar perfil: ' + e.message);
+            }
+        }
+
+        // ====== CALENDÁRIO DE AULAS ======
+        let weeklySchedule = [];
+
+        function loadSchedule() {
+            try {
+                const saved = localStorage.getItem('weeklySchedule');
+                if (saved) {
+                    weeklySchedule = JSON.parse(saved);
+                    updateScheduleDisplay();
+                }
+            } catch(e) {
+                console.error('Erro ao carregar calendário:', e);
+            }
+        }
+
+        function saveSchedule() {
+            try {
+                localStorage.setItem('weeklySchedule', JSON.stringify(weeklySchedule));
+                console.log('Calendário salvo:', weeklySchedule.length, 'aulas');
+            } catch(e) {
+                console.error('Erro ao salvar calendário:', e);
+            }
+        }
+
+        function updateScheduleDisplay() {
+            const display = document.getElementById('schedule-display');
+
+            if (weeklySchedule.length === 0) {
+                display.innerHTML = `
+                    <div style="text-align: center; padding: 32px; color: #9ca3af;">
+                        Nenhuma aula cadastrada. Clique em "Gerenciar Aulas" para começar!
+                    </div>
+                `;
+                return;
+            }
+
+            // Organiza por dia da semana
+            const diasOrdem = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+            const diasNomes = {
+                'segunda': 'Segunda',
+                'terca': 'Terça',
+                'quarta': 'Quarta',
+                'quinta': 'Quinta',
+                'sexta': 'Sexta',
+                'sabado': 'Sábado'
+            };
+
+            const aulasPorDia = {};
+            diasOrdem.forEach(dia => aulasPorDia[dia] = []);
+
+            weeklySchedule.forEach(aula => {
+                if (aulasPorDia[aula.dia]) {
+                    aulasPorDia[aula.dia].push(aula);
+                }
+            });
+
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">';
+
+            diasOrdem.forEach(dia => {
+                const aulas = aulasPorDia[dia];
+                if (aulas.length > 0) {
+                    html += `
+                        <div style="padding: 12px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 12px; border-left: 4px solid #4f46e5;">
+                            <div style="font-weight: 700; margin-bottom: 12px; color: #4f46e5;">${diasNomes[dia]}</div>
+                            ${aulas.map(aula => `
+                                <div style="background: white; padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 13px;">
+                                    <div style="font-weight: 600; color: #1f2937;">${aula.disciplina}</div>
+                                    <div style="color: #6b7280; font-size: 12px;">🕐 ${aula.horario}</div>
+                                    ${aula.local ? `<div style="color: #6b7280; font-size: 12px;">📍 ${aula.local}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+            });
+
+            html += '</div>';
+            display.innerHTML = html;
+        }
+
+        function openScheduleModal() {
+            updateScheduleList();
+            document.getElementById('schedule-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('schedule-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            updateScheduleDisplay();
+        }
+
+        function addClassToSchedule() {
+            const dia = document.getElementById('input-dia').value;
+            const horario = document.getElementById('input-horario-aula').value.trim();
+            const disciplina = document.getElementById('input-disciplina').value.trim();
+            const local = document.getElementById('input-local').value.trim();
+
+            if (!horario || !disciplina) {
+                alert('⚠️ Preencha pelo menos o horário e a disciplina!');
+                return;
+            }
+
+            const newClass = {
+                id: weeklySchedule.length > 0 ? Math.max(...weeklySchedule.map(c => c.id)) + 1 : 1,
+                dia: dia,
+                horario: horario,
+                disciplina: disciplina,
+                local: local
+            };
+
+            weeklySchedule.push(newClass);
+            saveSchedule();
+            updateScheduleList();
+            updateScheduleDisplay();
+
+            // Limpa os campos
+            document.getElementById('input-horario-aula').value = '';
+            document.getElementById('input-disciplina').value = '';
+            document.getElementById('input-local').value = '';
+
+            // Gera compromisso automático para hoje se for o dia certo
+            generateClassTasks();
+
+            const el = document.getElementById('congrats-message');
+            el.textContent = `✅ Aula "${disciplina}" adicionada com sucesso!`;
+            el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            el.style.display = 'block';
+
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateScheduleList() {
+            const list = document.getElementById('schedule-list');
+
+            if (weeklySchedule.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: #9ca3af;">
+                        Nenhuma aula cadastrada ainda.
+                    </div>
+                `;
+                return;
+            }
+
+            const diasNomes = {
+                'segunda': 'Segunda-feira',
+                'terca': 'Terça-feira',
+                'quarta': 'Quarta-feira',
+                'quinta': 'Quinta-feira',
+                'sexta': 'Sexta-feira',
+                'sabado': 'Sábado'
+            };
+
+            list.innerHTML = weeklySchedule.map(aula => `
+                <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid #4f46e5; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; color: #1f2937; margin-bottom: 4px;">${aula.disciplina}</div>
+                        <div style="font-size: 14px; color: #6b7280;">
+                            📅 ${diasNomes[aula.dia]} • 🕐 ${aula.horario}
+                            ${aula.local ? `• 📍 ${aula.local}` : ''}
+                        </div>
+                    </div>
+                    <button onclick="deleteClass(${aula.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function deleteClass(id) {
+            if (!confirm('Tem certeza que deseja remover esta aula do calendário?')) {
+                return;
+            }
+
+            const index = weeklySchedule.findIndex(c => c.id === id);
+            if (index > -1) {
+                const aula = weeklySchedule[index];
+                weeklySchedule.splice(index, 1);
+                saveSchedule();
+                updateScheduleList();
+                updateScheduleDisplay();
+
+                const el = document.getElementById('congrats-message');
+                el.textContent = `🗑️ Aula "${aula.disciplina}" removida!`;
+                el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                el.style.display = 'block';
+
+                setTimeout(() => {
+                    el.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // ====== GERAR TAREFAS AUTOMÁTICAS DAS AULAS ======
+        function generateClassTasks() {
+            const hoje = new Date();
+            const diaSemana = hoje.getDay(); // 0 = domingo, 1 = segunda, etc.
+
+            const diaMap = {
+                1: 'segunda',
+                2: 'terca',
+                3: 'quarta',
+                4: 'quinta',
+                5: 'sexta',
+                6: 'sabado'
+            };
+
+            const diaHoje = diaMap[diaSemana];
+            if (!diaHoje) return; // Domingo não tem aulas
+
+            // Busca aulas do dia de hoje
+            const aulasHoje = weeklySchedule.filter(aula => aula.dia === diaHoje);
+
+            aulasHoje.forEach(aula => {
+                // Verifica se já existe uma tarefa para essa aula hoje
+                const jaExiste = tasks.some(task =>
+                    task.atividade.includes(aula.disciplina) &&
+                    task.horario === aula.horario &&
+                    task.tipo === 'Compromisso'
+                );
+
+                if (!jaExiste) {
+                    const newTask = {
+                        id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                        horario: aula.horario,
+                        atividade: `Aula: ${aula.disciplina}${aula.local ? ` (${aula.local})` : ''}`,
+                        tipo: 'Compromisso',
+                        prioridade: 'alta',
+                        concluido: false,
+                        autoGerada: true // Marca como auto-gerada
+                    };
+
+                    tasks.push(newTask);
+                }
+            });
+
+            if (aulasHoje.length > 0) {
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        // Inicializa perfil e calendário ao carregar página
+        loadProfile();
+        loadSchedule();
+
+        // Gera tarefas automáticas das aulas ao carregar
+        generateClassTasks();
     </script>
 </body>
 </html>

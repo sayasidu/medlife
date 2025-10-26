@@ -3,45 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Organize seus estudos de forma eficiente com o MedLife Study Planner">
+    <meta name="theme-color" content="#4f46e5">
     <title>Planejador de Estudos - MedLife</title>
+
+    <!-- PWA Support -->
     <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-    
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* ===== CSS VARIABLES ===== */
         :root {
+            /* Light Theme */
             --primary: #4f46e5;
             --primary-dark: #4338ca;
+            --primary-light: #818cf8;
             --secondary: #7c3aed;
-            --green: #10b981;
-            --red: #ef4444;
-            --yellow: #fbbf24;
+            --secondary-dark: #6d28d9;
+            --accent: #ec4899;
+            --success: #10b981;
+            --success-dark: #059669;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+
             --text: #1f2937;
-            --text-light: #6b7280;
-            --bg: #f3f4f6;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+
+            --bg: #f9fafb;
+            --bg-secondary: #f3f4f6;
             --surface: #ffffff;
+            --surface-elevated: #ffffff;
             --border: #e5e7eb;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --border-light: #f3f4f6;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --text: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-light: #9ca3af;
+
+            --bg: #0f172a;
+            --bg-secondary: #1e293b;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --border: #334155;
+            --border-light: #475569;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ===== BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
+            transition: background-color var(--transition), color var(--transition);
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -50,63 +111,78 @@
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 60px 0;
+            padding: 48px 0;
             margin-bottom: 40px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="white" opacity="0.03"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateX(0) translateY(0); }
+            to { transform: translateX(100px) translateY(100px); }
         }
 
         .header-content {
             display: grid;
             gap: 40px;
             align-items: center;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr auto;
+            position: relative;
+            z-index: 1;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
+        .header-main h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             margin-bottom: 12px;
             line-height: 1.2;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .header p {
+        .header-main p {
             font-size: 1.1rem;
             opacity: 0.95;
             margin-bottom: 24px;
         }
 
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateX(-4px);
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 16px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
             padding: 20px;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all var(--transition);
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .stat-card p {
@@ -118,62 +194,306 @@
         .stat-card .value {
             font-size: 2rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width var(--transition-slow), height var(--transition-slow);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all var(--transition);
+        }
+
+        .theme-toggle::after {
+            content: '🌙';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        [data-theme="dark"] .theme-toggle::after {
+            content: '☀️';
+            transform: translateX(28px);
         }
 
         /* ===== TABS ===== */
         .tabs {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 32px;
             background: var(--surface);
-            padding: 12px;
-            border-radius: 16px;
+            padding: 8px;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             flex-wrap: wrap;
+            position: relative;
         }
 
         .tab-btn {
             flex: 1;
             min-width: 120px;
-            padding: 14px 24px;
+            padding: 12px 20px;
             border: none;
             background: transparent;
-            border-radius: 12px;
+            border-radius: var(--radius);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-light);
-            font-size: 1rem;
+            transition: all var(--transition);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            position: relative;
         }
 
         .tab-btn.active {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: var(--shadow);
         }
 
         .tab-btn:hover:not(.active) {
-            background: var(--bg);
+            background: var(--bg-secondary);
             color: var(--text);
         }
 
-        /* ===== FORMS & INPUTS ===== */
-        .card {
+        /* ===== SEARCH BAR ===== */
+        .search-container {
             background: var(--surface);
-            border-radius: 16px;
-            padding: 32px;
+            padding: 24px;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             margin-bottom: 24px;
         }
 
-        .card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 24px;
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 48px 14px 48px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all var(--transition);
+            background: var(--bg);
             color: var(--text);
         }
 
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            display: none;
+        }
+
+        .search-input:not(:placeholder-shown) ~ .search-clear {
+            display: block;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+        }
+
+        .filter-tag.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-tag:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 24px;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        /* ===== FORMS ===== */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
@@ -190,10 +510,12 @@
             width: 100%;
             padding: 14px 16px;
             border: 2px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             font-size: 1rem;
             font-family: inherit;
-            transition: all 0.3s;
+            transition: all var(--transition);
+            background: var(--bg);
+            color: var(--text);
         }
 
         .form-group input:focus,
@@ -204,111 +526,21 @@
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
 
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg);
-            color: var(--text);
-            border: 2px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .btn-success {
-            background: var(--green);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--red);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-
-        .btn-full {
-            width: 100%;
-            justify-content: center;
-            margin-top: 16px;
-        }
-
-        /* ===== SCREENS ===== */
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .info-box {
-            background: #eff6ff;
-            border-left: 4px solid var(--primary);
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-            color: #1e40af;
-        }
-
-        /* ===== SUBJECT SIDEBAR ===== */
+        /* ===== CONTENT ITEMS ===== */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
+            grid-template-columns: 320px 1fr;
             gap: 24px;
             margin-bottom: 32px;
         }
@@ -321,71 +553,91 @@
 
         .subject-list {
             background: var(--surface);
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             padding: 24px;
             box-shadow: var(--shadow);
+            position: sticky;
+            top: 24px;
         }
 
         .subject-list h3 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             margin-bottom: 16px;
             color: var(--text);
+            font-weight: 700;
         }
 
         .subject-item {
             padding: 12px 16px;
             background: var(--bg);
-            border-radius: 10px;
+            border-radius: var(--radius);
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
+            transition: all var(--transition);
+            border-left: 3px solid transparent;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .subject-item:hover {
-            background: #e0e7ff;
+            background: var(--bg-secondary);
             border-left-color: var(--primary);
             transform: translateX(4px);
         }
 
         .subject-item.active {
-            background: #e0e7ff;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
             border-left-color: var(--primary);
             font-weight: 600;
+            color: var(--primary);
         }
 
         .subject-item-delete {
             background: none;
             border: none;
-            color: var(--red);
+            color: var(--danger);
             cursor: pointer;
             font-size: 1.2rem;
-            padding: 0;
+            padding: 4px;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity var(--transition);
+            border-radius: 4px;
+        }
+
+        .subject-item-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
         }
 
         .subject-item:hover .subject-item-delete {
             opacity: 1;
         }
 
-        /* ===== CONTENT CARDS ===== */
         .content-item {
             background: var(--surface);
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             padding: 24px;
             margin-bottom: 20px;
             border-left: 4px solid var(--primary);
             box-shadow: var(--shadow);
-            transition: all 0.3s;
+            transition: all var(--transition);
+            animation: slideUp var(--transition);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .content-item:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-lg);
         }
 
         .content-header {
@@ -393,8 +645,14 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
+        }
+
+        .content-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
         }
 
         .badges {
@@ -405,182 +663,284 @@
         }
 
         .badge {
-            display: inline-block;
-            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
+            transition: all var(--transition);
         }
 
         .badge-subject {
-            background: #e0e7ff;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
             color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.2);
         }
 
         .badge-difficulty-easy {
-            background: #d1fae5;
-            color: #065f46;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .badge-difficulty-medium {
-            background: #fef3c7;
-            color: #92400e;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         .badge-difficulty-hard {
-            background: #fee2e2;
-            color: #991b1b;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
         .badge-time {
-            background: #e9d5ff;
-            color: #6b21a8;
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(124, 58, 237, 0.2);
         }
 
         .content-text {
-            color: var(--text-light);
-            margin-bottom: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
             line-height: 1.6;
         }
 
-        .content-meta {
-            font-size: 0.85rem;
-            color: var(--text-light);
+        .content-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        /* ===== REVIEW CHECKLIST ===== */
-        .review-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-top: 16px;
+        .checkbox-wrapper {
+            width: 24px;
+            height: 24px;
+            position: relative;
         }
 
-        .review-box {
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            text-align: center;
-            transition: all 0.3s;
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
             cursor: pointer;
+            appearance: none;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            transition: all var(--transition);
         }
 
-        .review-box.pending {
-            border-color: #3b82f6;
-            background: #eff6ff;
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: var(--success);
+            border-color: var(--success);
         }
 
-        .review-box.completed {
-            background: #d1fae5;
-            border-color: var(--green);
-        }
-
-        .review-box.overdue {
-            background: #fee2e2;
-            border-color: var(--red);
-        }
-
-        .review-box:hover:not(.completed) {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .review-label {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-        }
-
-        .review-date {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 8px;
-        }
-
-        .review-btn-small {
-            width: 100%;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            text-align: center;
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
         }
 
         /* ===== MODAL ===== */
-        .modal {
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            animation: fadeIn var(--transition);
         }
 
-        .modal.show {
+        .modal-overlay.show {
             display: flex;
         }
 
-        .modal-content {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
             background: var(--surface);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 500px;
             width: 100%;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-xl);
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            animation: slideDown var(--transition-slow);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .modal-header {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .modal-body {
             margin-bottom: 24px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-actions {
             display: flex;
             gap: 12px;
-            align-items: center;
+            justify-content: flex-end;
         }
 
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--surface);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: var(--text);
+        }
+
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .toast-close {
             background: none;
             border: none;
-            font-size: 28px;
+            color: var(--text-secondary);
             cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s;
+            padding: 4px;
+            font-size: 1.25rem;
+            transition: color var(--transition);
         }
 
-        .modal-close:hover {
+        .toast-close:hover {
             color: var(--text);
         }
 
         /* ===== STATS ===== */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 32px;
         }
 
         .stat-box {
             background: var(--surface);
             padding: 24px;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             text-align: center;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-box h4 {
-            font-size: 0.95rem;
-            color: var(--text-light);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
             margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-box .value {
@@ -592,18 +952,19 @@
             background-clip: text;
         }
 
-        /* ===== CHART ===== */
+        /* ===== CHARTS ===== */
         .chart-container {
             background: var(--surface);
             padding: 24px;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             margin-bottom: 32px;
         }
 
         .chart-container h3 {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: var(--text);
+            font-weight: 700;
         }
 
         .simple-bar {
@@ -611,7 +972,7 @@
             align-items: flex-end;
             justify-content: space-around;
             height: 250px;
-            gap: 12px;
+            gap: 16px;
         }
 
         .bar-item {
@@ -620,31 +981,34 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
+            gap: 8px;
         }
 
         .bar {
             width: 100%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 8px 8px 0 0;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
             min-height: 20px;
-            transition: all 0.3s;
+            transition: all var(--transition);
             cursor: pointer;
+            position: relative;
         }
 
         .bar:hover {
             filter: brightness(1.1);
+            transform: scaleY(1.05);
         }
 
         .bar-label {
             margin-top: 8px;
-            font-size: 0.85rem;
-            color: var(--text-light);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
             text-align: center;
+            font-weight: 500;
         }
 
         .bar-value {
-            margin-top: 4px;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: var(--text);
         }
@@ -652,24 +1016,31 @@
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
         .empty-state p {
             font-size: 1.1rem;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         /* ===== SUCCESS MESSAGE ===== */
         .success-message {
-            background: linear-gradient(135deg, var(--green), #059669);
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
             color: white;
-            padding: 32px;
-            border-radius: 16px;
+            padding: 40px;
+            border-radius: var(--radius-lg);
             text-align: center;
             margin: 32px 0;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp var(--transition);
         }
 
         .success-message h2 {
@@ -678,29 +1049,64 @@
             color: white;
         }
 
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn var(--transition);
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
+            .header {
+                padding: 32px 0;
+            }
+
             .header-content {
                 grid-template-columns: 1fr;
             }
 
-            .header h1 {
-                font-size: 1.8rem;
+            .header-main h1 {
+                font-size: 1.75rem;
             }
 
             .stats-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
 
             .main-grid {
                 grid-template-columns: 1fr;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
+            .subject-list {
+                position: static;
             }
 
-            .review-grid {
+            .form-row {
                 grid-template-columns: 1fr;
             }
 
@@ -709,78 +1115,263 @@
             }
 
             .card {
-                padding: 20px;
+                padding: 24px;
             }
 
-            .modal-content {
+            .modal {
                 padding: 24px;
             }
 
             .tabs {
-                gap: 8px;
+                gap: 6px;
+                padding: 6px;
             }
 
             .tab-btn {
-                min-width: 100px;
-                padding: 10px 16px;
-                font-size: 0.9rem;
+                min-width: 90px;
+                padding: 10px 14px;
+                font-size: 0.875rem;
             }
+
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                max-width: none;
+            }
+
+            .simple-bar {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .content-actions {
+                flex-direction: column;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
+
+        /* ===== UTILITIES ===== */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-0 {
+            margin-bottom: 0 !important;
+        }
+
+        .mt-4 {
+            margin-top: 16px;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="container">
-            <div class="header-content">
-                <div>
-                    <h1>📚 Organizador de Estudos</h1>
-                    <p>Organize seu aprendizado de forma eficiente</p>
-                    <button class="back-btn" onclick="location.href='/'">← Voltar</button>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <p>Disciplinas</p>
-                        <div class="value" id="subjectCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <p>Conteúdos</p>
-                        <div class="value" id="contentCount">0</div>
-                    </div>
-                </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3 class="modal-header" id="modalTitle">Confirmar Ação</h3>
+            <div class="modal-body" id="modalBody">
+                Tem certeza que deseja continuar?
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modalCancel">Cancelar</button>
+                <button class="btn btn-danger" id="modalConfirm">Confirmar</button>
             </div>
         </div>
     </div>
 
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Planejador de Estudos
+                    </h1>
+                    <p>Organize seu aprendizado de forma eficiente e moderna</p>
+                    <div class="header-actions">
+                        <button class="btn btn-ghost" onclick="window.location.href='/'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Voltar
+                        </button>
+                        <button class="btn btn-ghost" onclick="app.exportData()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Exportar
+                        </button>
+                        <div class="theme-toggle" onclick="app.toggleTheme()" role="button" aria-label="Toggle dark mode"></div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p>Disciplinas</p>
+                        <div class="value">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span id="headerSubjectCount">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <p>Conteúdos</p>
+                        <div class="value">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span id="headerContentCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
     <div class="container">
         <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('addContent')">➕ Adicionar Conteúdo</button>
-            <button class="tab-btn" onclick="switchTab('review')">🔄 Revisões</button>
-            <button class="tab-btn" onclick="switchTab('stats')">📈 Estatísticas</button>
-        </div>
+        <nav class="tabs" role="tablist">
+            <button class="tab-btn active" data-tab="dashboard" role="tab" aria-selected="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </button>
+            <button class="tab-btn" data-tab="addContent" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Adicionar Conteúdo
+            </button>
+            <button class="tab-btn" data-tab="review" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                Revisões
+            </button>
+            <button class="tab-btn" data-tab="stats" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Estatísticas
+            </button>
+        </nav>
 
         <!-- Dashboard Screen -->
         <div id="dashboard" class="screen active">
             <div class="main-grid">
-                <div class="sidebar">
+                <!-- Sidebar -->
+                <aside class="sidebar">
                     <div class="subject-list">
                         <h3>Disciplinas</h3>
                         <div id="subjectsList"></div>
-                        <div class="form-group" style="margin-top: 16px;">
-                            <input type="text" id="newSubject" placeholder="Nova disciplina..." />
+                        <div class="form-group mt-4">
+                            <input
+                                type="text"
+                                id="newSubject"
+                                placeholder="Nova disciplina..."
+                                aria-label="Nome da nova disciplina"
+                            />
                         </div>
-                        <button class="btn btn-primary btn-full btn-small" onclick="addSubject()">Adicionar</button>
+                        <button class="btn btn-primary btn-full btn-small" onclick="app.addSubject()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Adicionar
+                        </button>
                     </div>
-                </div>
+                </aside>
 
-                <div>
+                <!-- Main Content -->
+                <main>
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input
+                                type="text"
+                                class="search-input"
+                                id="searchInput"
+                                placeholder="Buscar conteúdos..."
+                                aria-label="Buscar conteúdos"
+                            />
+                            <button class="search-clear" onclick="app.clearSearch()" aria-label="Limpar busca">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="filter-tags">
+                            <div class="filter-tag active" data-filter="all">Todos</div>
+                            <div class="filter-tag" data-filter="pending">Pendentes</div>
+                            <div class="filter-tag" data-filter="completed">Completados</div>
+                            <div class="filter-tag" data-filter="easy">Fácil</div>
+                            <div class="filter-tag" data-filter="medium">Médio</div>
+                            <div class="filter-tag" data-filter="hard">Difícil</div>
+                        </div>
+                    </div>
+
                     <div id="contentList"></div>
                     <div id="emptyState" class="empty-state">
-                        <p>Nenhum conteúdo adicionado ainda</p>
-                        <p>Comece clicando em "➕ Adicionar Conteúdo"</p>
+                        <div class="empty-state-icon">📚</div>
+                        <p>Nenhum conteúdo encontrado</p>
+                        <p>Comece adicionando um novo conteúdo</p>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
 
@@ -788,27 +1379,36 @@
         <div id="addContent" class="screen">
             <div class="card">
                 <h2>Adicionar Novo Conteúdo</h2>
-                <form onsubmit="handleAddContent(event)">
+                <form id="contentForm">
                     <div class="form-group">
-                        <label>Disciplina *</label>
+                        <label for="contentSubject">Disciplina *</label>
                         <select id="contentSubject" required>
                             <option value="">Selecione uma disciplina</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Título *</label>
-                        <input type="text" id="contentTitle" placeholder="Digite o título" required />
+                        <label for="contentTitle">Título *</label>
+                        <input
+                            type="text"
+                            id="contentTitle"
+                            placeholder="Digite o título do conteúdo"
+                            required
+                        />
                     </div>
 
                     <div class="form-group">
-                        <label>Descrição</label>
-                        <textarea id="contentDesc" placeholder="Descrição do conteúdo" rows="4"></textarea>
+                        <label for="contentDesc">Descrição</label>
+                        <textarea
+                            id="contentDesc"
+                            placeholder="Descreva o conteúdo que você irá estudar..."
+                            rows="5"
+                        ></textarea>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Dificuldade</label>
+                            <label for="contentDifficulty">Dificuldade</label>
                             <select id="contentDifficulty">
                                 <option value="easy">Fácil</option>
                                 <option value="medium" selected>Médio</option>
@@ -817,12 +1417,25 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Tempo de Estudo (min)</label>
-                            <input type="number" id="contentTime" placeholder="Minutos" value="30" />
+                            <label for="contentTime">Tempo de Estudo (min)</label>
+                            <input
+                                type="number"
+                                id="contentTime"
+                                placeholder="Minutos"
+                                value="30"
+                                min="5"
+                                max="480"
+                            />
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">Adicionar Conteúdo</button>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Adicionar Conteúdo
+                    </button>
                 </form>
             </div>
         </div>
@@ -850,241 +1463,746 @@
                     <h4>Taxa de Conclusão</h4>
                     <div class="value" id="statRate">0%</div>
                 </div>
+                <div class="stat-box">
+                    <h4>Tempo Total</h4>
+                    <div class="value" id="statTime">0h</div>
+                </div>
             </div>
 
             <div class="chart-container">
                 <h3>Conteúdos por Disciplina</h3>
                 <div class="simple-bar" id="chartContainer"></div>
             </div>
+
+            <div class="chart-container">
+                <h3>Progresso por Dificuldade</h3>
+                <div class="simple-bar" id="difficultyChart"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Dados
-        let appData = {
-            subjects: [],
-            contents: [],
-            reviews: []
-        };
+        /**
+         * Modern Study Planner Application
+         * Built with ES6+ JavaScript, using class-based architecture
+         */
 
-        // Carregar dados do localStorage
-        function loadData() {
-            const saved = localStorage.getItem('studyOrganizerData');
-            if (saved) {
-                appData = JSON.parse(saved);
-            } else {
-                // Dados de exemplo
-                appData = {
-                    subjects: ['Matemática', 'Português', 'História'],
-                    contents: [
-                        { id: 1, subject: 'Matemática', title: 'Equações do 2º Grau', desc: 'Aprenda a resolver equações', difficulty: 'medium', time: 45, completed: false },
-                        { id: 2, subject: 'Português', title: 'Análise Sintática', desc: 'Classes de palavras', difficulty: 'hard', time: 60, completed: false }
-                    ],
-                    reviews: []
+        class StudyPlannerApp {
+            constructor() {
+                this.data = {
+                    subjects: [],
+                    contents: [],
+                    settings: {
+                        theme: 'light'
+                    }
                 };
+                this.currentFilter = 'all';
+                this.searchQuery = '';
+                this.modalCallback = null;
+
+                this.init();
             }
-            render();
-        }
 
-        // Salvar dados
-        function saveData() {
-            localStorage.setItem('studyOrganizerData', JSON.stringify(appData));
-        }
+            /**
+             * Initialize the application
+             */
+            init() {
+                this.loadData();
+                this.setupEventListeners();
+                this.loadTheme();
+                this.render();
+                this.showWelcomeMessage();
+            }
 
-        // Adicionar disciplina
-        function addSubject() {
-            const input = document.getElementById('newSubject');
-            const subject = input.value.trim();
-            
-            if (subject && !appData.subjects.includes(subject)) {
-                appData.subjects.push(subject);
+            /**
+             * Setup all event listeners
+             */
+            setupEventListeners() {
+                // Tab switching
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+
+                // Form submission
+                document.getElementById('contentForm').addEventListener('submit', (e) => this.handleAddContent(e));
+
+                // Search input
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.searchQuery = e.target.value.toLowerCase();
+                    this.renderContents();
+                });
+
+                // Filter tags
+                document.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.renderContents();
+                    });
+                });
+
+                // Modal
+                document.getElementById('modalCancel').addEventListener('click', () => this.hideModal());
+                document.getElementById('modalOverlay').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('modalOverlay')) {
+                        this.hideModal();
+                    }
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.hideModal();
+                    }
+                });
+
+                // Enter key on subject input
+                document.getElementById('newSubject').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.addSubject();
+                    }
+                });
+            }
+
+            /**
+             * Load data from localStorage
+             */
+            loadData() {
+                try {
+                    const saved = localStorage.getItem('studyPlannerData');
+                    if (saved) {
+                        this.data = JSON.parse(saved);
+                    } else {
+                        // Initial sample data
+                        this.data = {
+                            subjects: ['Matemática', 'Português', 'História', 'Biologia'],
+                            contents: [
+                                {
+                                    id: Date.now(),
+                                    subject: 'Matemática',
+                                    title: 'Equações do 2º Grau',
+                                    desc: 'Aprender a resolver equações quadráticas usando a fórmula de Bhaskara',
+                                    difficulty: 'medium',
+                                    time: 45,
+                                    completed: false,
+                                    createdAt: new Date().toISOString()
+                                },
+                                {
+                                    id: Date.now() + 1,
+                                    subject: 'Português',
+                                    title: 'Análise Sintática',
+                                    desc: 'Estudar as classes de palavras e funções sintáticas',
+                                    difficulty: 'hard',
+                                    time: 60,
+                                    completed: false,
+                                    createdAt: new Date().toISOString()
+                                }
+                            ],
+                            settings: {
+                                theme: 'light'
+                            }
+                        };
+                        this.saveData();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showToast('Erro ao carregar dados', 'error');
+                }
+            }
+
+            /**
+             * Save data to localStorage
+             */
+            saveData() {
+                try {
+                    localStorage.setItem('studyPlannerData', JSON.stringify(this.data));
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    this.showToast('Erro ao salvar dados', 'error');
+                }
+            }
+
+            /**
+             * Add a new subject
+             */
+            addSubject() {
+                const input = document.getElementById('newSubject');
+                const subject = input.value.trim();
+
+                if (!subject) {
+                    this.showToast('Digite um nome para a disciplina', 'warning');
+                    return;
+                }
+
+                if (this.data.subjects.includes(subject)) {
+                    this.showToast('Esta disciplina já existe', 'warning');
+                    return;
+                }
+
+                this.data.subjects.push(subject);
                 input.value = '';
-                saveData();
-                render();
+                this.saveData();
+                this.render();
+                this.showToast(`Disciplina "${subject}" adicionada com sucesso!`, 'success');
             }
-        }
 
-        // Remover disciplina
-        function removeSubject(subject) {
-            if (confirm(`Remover "${subject}" e todo seu conteúdo?`)) {
-                appData.subjects = appData.subjects.filter(s => s !== subject);
-                appData.contents = appData.contents.filter(c => c.subject !== subject);
-                saveData();
-                render();
+            /**
+             * Remove a subject
+             */
+            removeSubject(subject) {
+                const contentsCount = this.data.contents.filter(c => c.subject === subject).length;
+                const message = contentsCount > 0
+                    ? `Remover "${subject}" e seus ${contentsCount} conteúdo(s)?`
+                    : `Remover a disciplina "${subject}"?`;
+
+                this.showModal('Confirmar Remoção', message, () => {
+                    this.data.subjects = this.data.subjects.filter(s => s !== subject);
+                    this.data.contents = this.data.contents.filter(c => c.subject !== subject);
+                    this.saveData();
+                    this.render();
+                    this.showToast(`Disciplina "${subject}" removida`, 'success');
+                });
             }
-        }
 
-        // Adicionar conteúdo
-        function handleAddContent(e) {
-            e.preventDefault();
-            
-            const newContent = {
-                id: Date.now(),
-                subject: document.getElementById('contentSubject').value,
-                title: document.getElementById('contentTitle').value,
-                desc: document.getElementById('contentDesc').value,
-                difficulty: document.getElementById('contentDifficulty').value,
-                time: parseInt(document.getElementById('contentTime').value),
-                completed: false,
-                createdAt: new Date().toISOString()
-            };
+            /**
+             * Handle add content form submission
+             */
+            handleAddContent(e) {
+                e.preventDefault();
 
-            appData.contents.push(newContent);
-            e.target.reset();
-            saveData();
-            render();
-            switchTab('dashboard');
-            alert('Conteúdo adicionado com sucesso!');
-        }
+                const subject = document.getElementById('contentSubject').value;
+                const title = document.getElementById('contentTitle').value.trim();
+                const desc = document.getElementById('contentDesc').value.trim();
+                const difficulty = document.getElementById('contentDifficulty').value;
+                const time = parseInt(document.getElementById('contentTime').value) || 30;
 
-        // Marcar como completo
-        function toggleComplete(id) {
-            const content = appData.contents.find(c => c.id === id);
-            if (content) {
-                content.completed = !content.completed;
-                saveData();
-                render();
+                if (!subject) {
+                    this.showToast('Selecione uma disciplina', 'warning');
+                    return;
+                }
+
+                if (!title) {
+                    this.showToast('Digite um título', 'warning');
+                    return;
+                }
+
+                const newContent = {
+                    id: Date.now(),
+                    subject,
+                    title,
+                    desc,
+                    difficulty,
+                    time,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.data.contents.push(newContent);
+                e.target.reset();
+                document.getElementById('contentTime').value = '30';
+                this.saveData();
+                this.render();
+                this.switchTab('dashboard');
+                this.showToast(`Conteúdo "${title}" adicionado com sucesso!`, 'success');
             }
-        }
 
-        // Remover conteúdo
-        function removeContent(id) {
-            if (confirm('Remover este conteúdo?')) {
-                appData.contents = appData.contents.filter(c => c.id !== id);
-                saveData();
-                render();
+            /**
+             * Toggle content completion
+             */
+            toggleComplete(id) {
+                const content = this.data.contents.find(c => c.id === id);
+                if (content) {
+                    content.completed = !content.completed;
+                    this.saveData();
+                    this.render();
+
+                    const message = content.completed
+                        ? `"${content.title}" marcado como completo!`
+                        : `"${content.title}" desmarcado`;
+                    this.showToast(message, 'success');
+                }
             }
-        }
 
-        // Alternar abas
-        function switchTab(tabName) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
+            /**
+             * Remove a content
+             */
+            removeContent(id) {
+                const content = this.data.contents.find(c => c.id === id);
+                if (!content) return;
 
-        // Renderizar interface
-        function render() {
-            renderSubjects();
-            renderContents();
-            renderReview();
-            renderStats();
-            updateSelects();
-            updateStats();
-        }
-
-        function renderSubjects() {
-            const list = document.getElementById('subjectsList');
-            list.innerHTML = appData.subjects.map(subject => `
-                <div class="subject-item">
-                    <span>${subject}</span>
-                    <button class="subject-item-delete" onclick="removeSubject('${subject}')">×</button>
-                </div>
-            `).join('');
-        }
-
-        function renderContents() {
-            const list = document.getElementById('contentList');
-            const empty = document.getElementById('emptyState');
-            
-            if (appData.contents.length === 0) {
-                list.innerHTML = '';
-                empty.style.display = 'block';
-                return;
+                this.showModal('Confirmar Remoção', `Remover o conteúdo "${content.title}"?`, () => {
+                    this.data.contents = this.data.contents.filter(c => c.id !== id);
+                    this.saveData();
+                    this.render();
+                    this.showToast('Conteúdo removido', 'success');
+                });
             }
-            
-            empty.style.display = 'none';
-            list.innerHTML = appData.contents.map(content => `
-                <div class="content-item">
-                    <div class="content-header">
-                        <div>
-                            <h3 style="margin-bottom: 8px;">${content.title}</h3>
-                            <div class="badges">
-                                <span class="badge badge-subject">${content.subject}</span>
-                                <span class="badge badge-difficulty-${content.difficulty}">
-                                    ${content.difficulty === 'easy' ? 'Fácil' : content.difficulty === 'medium' ? 'Médio' : 'Difícil'}
-                                </span>
-                                <span class="badge badge-time">⏱️ ${content.time} min</span>
+
+            /**
+             * Switch between tabs
+             */
+            switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    const isActive = btn.dataset.tab === tabName;
+                    btn.classList.toggle('active', isActive);
+                    btn.setAttribute('aria-selected', isActive);
+                });
+
+                // Update screens
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.toggle('active', screen.id === tabName);
+                });
+
+                // Render specific tab content
+                if (tabName === 'stats') {
+                    this.renderStats();
+                }
+            }
+
+            /**
+             * Filter contents based on search and filters
+             */
+            getFilteredContents() {
+                let filtered = [...this.data.contents];
+
+                // Apply search filter
+                if (this.searchQuery) {
+                    filtered = filtered.filter(c =>
+                        c.title.toLowerCase().includes(this.searchQuery) ||
+                        c.desc.toLowerCase().includes(this.searchQuery) ||
+                        c.subject.toLowerCase().includes(this.searchQuery)
+                    );
+                }
+
+                // Apply category filter
+                if (this.currentFilter !== 'all') {
+                    switch (this.currentFilter) {
+                        case 'pending':
+                            filtered = filtered.filter(c => !c.completed);
+                            break;
+                        case 'completed':
+                            filtered = filtered.filter(c => c.completed);
+                            break;
+                        case 'easy':
+                        case 'medium':
+                        case 'hard':
+                            filtered = filtered.filter(c => c.difficulty === this.currentFilter);
+                            break;
+                    }
+                }
+
+                return filtered;
+            }
+
+            /**
+             * Render all components
+             */
+            render() {
+                this.renderSubjects();
+                this.renderContents();
+                this.renderReview();
+                this.updateSelects();
+                this.updateHeaderStats();
+            }
+
+            /**
+             * Render subjects list
+             */
+            renderSubjects() {
+                const list = document.getElementById('subjectsList');
+
+                if (this.data.subjects.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px 0;">Nenhuma disciplina cadastrada</p>';
+                    return;
+                }
+
+                list.innerHTML = this.data.subjects.map(subject => {
+                    const count = this.data.contents.filter(c => c.subject === subject).length;
+                    return `
+                        <div class="subject-item">
+                            <span>${subject} ${count > 0 ? `(${count})` : ''}</span>
+                            <button
+                                class="subject-item-delete"
+                                onclick="app.removeSubject('${subject.replace(/'/g, "\\'")}')"
+                                aria-label="Remover ${subject}"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            /**
+             * Render contents list
+             */
+            renderContents() {
+                const list = document.getElementById('contentList');
+                const empty = document.getElementById('emptyState');
+                const filtered = this.getFilteredContents();
+
+                if (filtered.length === 0) {
+                    list.innerHTML = '';
+                    empty.style.display = 'block';
+                    return;
+                }
+
+                empty.style.display = 'none';
+
+                const difficultyLabels = {
+                    easy: 'Fácil',
+                    medium: 'Médio',
+                    hard: 'Difícil'
+                };
+
+                list.innerHTML = filtered.map(content => `
+                    <article class="content-item">
+                        <div class="content-header">
+                            <div style="flex: 1;">
+                                <h3 class="content-title">${this.escapeHtml(content.title)}</h3>
+                                <div class="badges">
+                                    <span class="badge badge-subject">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                        ${this.escapeHtml(content.subject)}
+                                    </span>
+                                    <span class="badge badge-difficulty-${content.difficulty}">
+                                        ${difficultyLabels[content.difficulty]}
+                                    </span>
+                                    <span class="badge badge-time">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        ${content.time} min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="checkbox-wrapper">
+                                <input
+                                    type="checkbox"
+                                    ${content.completed ? 'checked' : ''}
+                                    onchange="app.toggleComplete(${content.id})"
+                                    aria-label="Marcar como ${content.completed ? 'não completo' : 'completo'}"
+                                />
                             </div>
                         </div>
-                        <input type="checkbox" ${content.completed ? 'checked' : ''} onchange="toggleComplete(${content.id})" style="cursor: pointer; width: 24px; height: 24px;">
-                    </div>
-                    <p class="content-text">${content.desc || 'Sem descrição'}</p>
-                    <div style="display: flex; gap: 8px; margin-top: 12px;">
-                        <button class="btn btn-success btn-small" onclick="toggleComplete(${content.id})">
-                            ${content.completed ? '✓ Completo' : '◯ Marcar Completo'}
+                        ${content.desc ? `<p class="content-text">${this.escapeHtml(content.desc)}</p>` : ''}
+                        <div class="content-actions">
+                            <button
+                                class="btn ${content.completed ? 'btn-secondary' : 'btn-success'} btn-small"
+                                onclick="app.toggleComplete(${content.id})"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    ${content.completed
+                                        ? '<polyline points="1 12 7 18 23 2"></polyline>'
+                                        : '<circle cx="12" cy="12" r="10"></circle>'}
+                                </svg>
+                                ${content.completed ? 'Completo' : 'Marcar Completo'}
+                            </button>
+                            <button
+                                class="btn btn-danger btn-small"
+                                onclick="app.removeContent(${content.id})"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Remover
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+            }
+
+            /**
+             * Render review list
+             */
+            renderReview() {
+                const list = document.getElementById('reviewList');
+                const notCompleted = this.data.contents.filter(c => !c.completed);
+
+                if (notCompleted.length === 0) {
+                    list.innerHTML = `
+                        <div class="success-message">
+                            <h2>🎉 Parabéns!</h2>
+                            <p>Você completou todo o conteúdo!</p>
+                            <p style="margin-top: 8px; opacity: 0.9;">Continue assim e adicione mais conteúdos para estudar.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const difficultyLabels = {
+                    easy: 'Fácil',
+                    medium: 'Médio',
+                    hard: 'Difícil'
+                };
+
+                list.innerHTML = notCompleted.map(content => `
+                    <article class="content-item">
+                        <div class="content-header">
+                            <div style="flex: 1;">
+                                <h3 class="content-title">${this.escapeHtml(content.title)}</h3>
+                                <div class="badges">
+                                    <span class="badge badge-subject">${this.escapeHtml(content.subject)}</span>
+                                    <span class="badge badge-difficulty-${content.difficulty}">
+                                        ${difficultyLabels[content.difficulty]}
+                                    </span>
+                                    <span class="badge badge-time">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        ${content.time} min
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        ${content.desc ? `<p class="content-text">${this.escapeHtml(content.desc)}</p>` : ''}
+                        <button
+                            class="btn btn-success"
+                            onclick="app.toggleComplete(${content.id})"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Marcar como Revisado
                         </button>
-                        <button class="btn btn-danger btn-small" onclick="removeContent(${content.id})">Remover</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderReview() {
-            const list = document.getElementById('reviewList');
-            const notCompleted = appData.contents.filter(c => !c.completed);
-            
-            if (notCompleted.length === 0) {
-                list.innerHTML = '<div class="success-message"><h2>✨ Parabéns!</h2><p>Você completou todo o conteúdo!</p></div>';
-                return;
+                    </article>
+                `).join('');
             }
-            
-            list.innerHTML = notCompleted.map(content => `
-                <div class="content-item">
-                    <div class="content-header">
-                        <div>
-                            <h3 style="margin-bottom: 8px;">${content.title}</h3>
-                            <div class="badges">
-                                <span class="badge badge-subject">${content.subject}</span>
-                                <span class="badge badge-time">⏱️ ${content.time} min</span>
+
+            /**
+             * Render statistics
+             */
+            renderStats() {
+                const total = this.data.contents.length;
+                const completed = this.data.contents.filter(c => c.completed).length;
+                const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+                const totalTime = this.data.contents.reduce((sum, c) => sum + c.time, 0);
+
+                document.getElementById('statTotal').textContent = total;
+                document.getElementById('statCompleted').textContent = completed;
+                document.getElementById('statRate').textContent = rate + '%';
+                document.getElementById('statTime').textContent = Math.round(totalTime / 60) + 'h';
+
+                // Subject distribution chart
+                const subjectStats = {};
+                this.data.contents.forEach(c => {
+                    if (!subjectStats[c.subject]) subjectStats[c.subject] = 0;
+                    subjectStats[c.subject]++;
+                });
+
+                const chartContainer = document.getElementById('chartContainer');
+                if (Object.keys(subjectStats).length === 0) {
+                    chartContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">Nenhum dado disponível</p>';
+                } else {
+                    const maxCount = Math.max(...Object.values(subjectStats));
+                    chartContainer.innerHTML = Object.entries(subjectStats).map(([subject, count]) => {
+                        const height = Math.max(30, (count / maxCount) * 200);
+                        return `
+                            <div class="bar-item">
+                                <div class="bar-value">${count}</div>
+                                <div class="bar" style="height: ${height}px;"></div>
+                                <div class="bar-label">${this.escapeHtml(subject)}</div>
                             </div>
+                        `;
+                    }).join('');
+                }
+
+                // Difficulty distribution chart
+                const difficultyStats = {
+                    easy: this.data.contents.filter(c => c.difficulty === 'easy').length,
+                    medium: this.data.contents.filter(c => c.difficulty === 'medium').length,
+                    hard: this.data.contents.filter(c => c.difficulty === 'hard').length
+                };
+
+                const difficultyLabels = {
+                    easy: 'Fácil',
+                    medium: 'Médio',
+                    hard: 'Difícil'
+                };
+
+                const difficultyChart = document.getElementById('difficultyChart');
+                const maxDifficulty = Math.max(...Object.values(difficultyStats), 1);
+                difficultyChart.innerHTML = Object.entries(difficultyStats).map(([level, count]) => {
+                    const height = Math.max(30, (count / maxDifficulty) * 200);
+                    return `
+                        <div class="bar-item">
+                            <div class="bar-value">${count}</div>
+                            <div class="bar" style="height: ${height}px;"></div>
+                            <div class="bar-label">${difficultyLabels[level]}</div>
                         </div>
+                    `;
+                }).join('');
+            }
+
+            /**
+             * Update subject select options
+             */
+            updateSelects() {
+                const select = document.getElementById('contentSubject');
+                select.innerHTML = '<option value="">Selecione uma disciplina</option>' +
+                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s)}">${this.escapeHtml(s)}</option>`).join('');
+            }
+
+            /**
+             * Update header stats
+             */
+            updateHeaderStats() {
+                document.getElementById('headerSubjectCount').textContent = this.data.subjects.length;
+                document.getElementById('headerContentCount').textContent = this.data.contents.length;
+            }
+
+            /**
+             * Clear search input
+             */
+            clearSearch() {
+                document.getElementById('searchInput').value = '';
+                this.searchQuery = '';
+                this.renderContents();
+            }
+
+            /**
+             * Show toast notification
+             */
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                const icons = {
+                    success: '✓',
+                    error: '✕',
+                    warning: '⚠',
+                    info: 'ℹ'
+                };
+
+                toast.innerHTML = `
+                    <div class="toast-icon">${icons[type] || icons.info}</div>
+                    <div class="toast-content">
+                        <div class="toast-message">${this.escapeHtml(message)}</div>
                     </div>
-                    <button class="btn btn-success" onclick="toggleComplete(${content.id})">Marcar como Revisado</button>
-                </div>
-            `).join('');
+                    <button class="toast-close" onclick="this.parentElement.remove()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                `;
+
+                container.appendChild(toast);
+
+                // Auto remove after 4 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideInRight 0.3s ease reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+
+            /**
+             * Show modal
+             */
+            showModal(title, message, callback) {
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalBody').textContent = message;
+                document.getElementById('modalOverlay').classList.add('show');
+
+                this.modalCallback = callback;
+
+                const confirmBtn = document.getElementById('modalConfirm');
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+                newConfirmBtn.addEventListener('click', () => {
+                    if (this.modalCallback) {
+                        this.modalCallback();
+                        this.modalCallback = null;
+                    }
+                    this.hideModal();
+                });
+            }
+
+            /**
+             * Hide modal
+             */
+            hideModal() {
+                document.getElementById('modalOverlay').classList.remove('show');
+                this.modalCallback = null;
+            }
+
+            /**
+             * Toggle theme
+             */
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                document.documentElement.setAttribute('data-theme', newTheme);
+                this.data.settings.theme = newTheme;
+                this.saveData();
+
+                this.showToast(`Tema ${newTheme === 'dark' ? 'escuro' : 'claro'} ativado`, 'success');
+            }
+
+            /**
+             * Load theme from settings
+             */
+            loadTheme() {
+                const theme = this.data.settings?.theme || 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+
+            /**
+             * Export data as JSON
+             */
+            exportData() {
+                const dataStr = JSON.stringify(this.data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `medlife-planner-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+
+                this.showToast('Dados exportados com sucesso!', 'success');
+            }
+
+            /**
+             * Show welcome message for first-time users
+             */
+            showWelcomeMessage() {
+                const isFirstVisit = !localStorage.getItem('studyPlannerVisited');
+                if (isFirstVisit) {
+                    setTimeout(() => {
+                        this.showToast('Bem-vindo ao Planejador de Estudos MedLife!', 'success');
+                        localStorage.setItem('studyPlannerVisited', 'true');
+                    }, 500);
+                }
+            }
+
+            /**
+             * Escape HTML to prevent XSS
+             */
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
         }
 
-        function renderStats() {
-            const chartContainer = document.getElementById('chartContainer');
-            const subjectStats = {};
-            
-            appData.contents.forEach(c => {
-                if (!subjectStats[c.subject]) subjectStats[c.subject] = 0;
-                subjectStats[c.subject]++;
-            });
-
-            chartContainer.innerHTML = Object.entries(subjectStats).map(([subject, count]) => `
-                <div class="bar-item">
-                    <div class="bar" style="height: ${Math.max(20, count * 30)}px;"></div>
-                    <div class="bar-label">${subject}</div>
-                    <div class="bar-value">${count}</div>
-                </div>
-            `).join('');
-        }
-
-        function updateSelects() {
-            const select = document.getElementById('contentSubject');
-            select.innerHTML = '<option value="">Selecione uma disciplina</option>' + 
-                appData.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-        }
-
-        function updateStats() {
-            const total = appData.contents.length;
-            const completed = appData.contents.filter(c => c.completed).length;
-            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-            
-            document.getElementById('subjectCount').textContent = appData.subjects.length;
-            document.getElementById('contentCount').textContent = total;
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statCompleted').textContent = completed;
-            document.getElementById('statRate').textContent = rate + '%';
-        }
-
-        // Inicializar
-        loadData();
+        // Initialize the application
+        const app = new StudyPlannerApp();
     </script>
 </body>
 </html>

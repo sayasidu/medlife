@@ -1773,6 +1773,25 @@
             }
 
             /**
+             * Convert date string to local Date object
+             * Fixes timezone issues when creating dates from YYYY-MM-DD format
+             */
+            getLocalDate(dateString) {
+                const [year, month, day] = dateString.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            }
+
+            /**
+             * Convert Date object to YYYY-MM-DD string in local timezone
+             */
+            formatDateLocal(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            /**
              * Setup all event listeners
              */
             setupEventListeners() {
@@ -2117,7 +2136,7 @@
                 const content = this.data.contents.find(c => c.id === contentId);
                 if (!content) return;
 
-                const baseDate = new Date(studyDate);
+                const baseDate = this.getLocalDate(studyDate);
 
                 // Define intervals based on selected option
                 // option1: 24 horas, 7 dias, 30 dias, 90 dias
@@ -2133,7 +2152,7 @@
                     const existingReview = this.data.reviews.find(r =>
                         r.contentId === contentId &&
                         r.reviewNumber === index + 1 &&
-                        r.scheduledDate === reviewDate.toISOString().split('T')[0]
+                        r.scheduledDate === this.formatDateLocal(reviewDate)
                     );
 
                     if (!existingReview) {
@@ -2143,7 +2162,7 @@
                             contentTitle: content.title,
                             subject: content.subject,
                             reviewNumber: index + 1,
-                            scheduledDate: reviewDate.toISOString().split('T')[0],
+                            scheduledDate: this.formatDateLocal(reviewDate),
                             completed: false,
                             type: null,
                             completedAt: null
@@ -2371,7 +2390,7 @@
                                 </div>
                             </div>
                             <p style="color: var(--text-secondary); margin-top: 12px;">
-                                <strong>Data:</strong> ${new Date(session.date).toLocaleDateString('pt-BR')}<br>
+                                <strong>Data:</strong> ${this.getLocalDate(session.date).toLocaleDateString('pt-BR')}<br>
                                 <strong>Horário:</strong> ${session.startTime} - ${session.endTime}
                             </p>
                             <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
@@ -2534,8 +2553,8 @@
                         // Calculate days from first session
                         const firstSession = this.data.studySessions.find(s => s.contentId === review.contentId);
                         if (firstSession) {
-                            const baseDate = new Date(firstSession.date);
-                            const reviewDate = new Date(review.scheduledDate);
+                            const baseDate = this.getLocalDate(firstSession.date);
+                            const reviewDate = this.getLocalDate(review.scheduledDate);
                             const days = Math.round((reviewDate - baseDate) / (1000 * 60 * 60 * 24));
                             reviewLabels[review.reviewNumber] = days === 1 ? '24 horas' : `${days} dias`;
                         }
@@ -2586,7 +2605,7 @@
              * Render a single review item
              */
             renderReviewItem(review, reviewLabels, typeLabels, isPending) {
-                const date = new Date(review.scheduledDate);
+                const date = this.getLocalDate(review.scheduledDate);
                 const dateStr = date.toLocaleDateString('pt-BR');
 
                 return `
@@ -2636,7 +2655,7 @@
              * Render a completed review item
              */
             renderCompletedReviewItem(review, reviewLabels, typeLabels) {
-                const date = new Date(review.scheduledDate);
+                const date = this.getLocalDate(review.scheduledDate);
                 const dateStr = date.toLocaleDateString('pt-BR');
                 const completedDate = new Date(review.completedAt);
                 const completedStr = completedDate.toLocaleDateString('pt-BR');
@@ -2701,7 +2720,7 @@
 
                 const calculatePeriodTime = (startDate) => {
                     return this.data.studySessions
-                        .filter(s => new Date(s.date) >= startDate)
+                        .filter(s => this.getLocalDate(s.date) >= startDate)
                         .reduce((sum, s) => sum + s.duration, 0);
                 };
 

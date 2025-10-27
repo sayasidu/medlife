@@ -1013,6 +1013,87 @@
             color: var(--text);
         }
 
+        /* ===== RANKING ===== */
+        .ranking-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--background);
+            border-radius: var(--radius-md);
+            transition: all var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .ranking-item:hover {
+            transform: translateX(4px);
+            border-color: var(--primary);
+        }
+
+        .ranking-item.first {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.1));
+            border-color: #FFD700;
+        }
+
+        .ranking-item.second {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(169, 169, 169, 0.1));
+            border-color: #C0C0C0;
+        }
+
+        .ranking-item.third {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(184, 115, 51, 0.1));
+            border-color: #CD7F32;
+        }
+
+        .ranking-position {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .ranking-crown {
+            font-size: 2rem;
+            animation: crownBounce 2s infinite;
+        }
+
+        @keyframes crownBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .ranking-info {
+            flex: 1;
+        }
+
+        .ranking-subject {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .ranking-hours {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .ranking-badge {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
@@ -1599,6 +1680,37 @@
                     <h4>Tempo Total</h4>
                     <div class="value" id="statTime">0h</div>
                 </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Horas Estudadas por Período</h3>
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <h4>Hoje</h4>
+                        <div class="value" id="statToday">0h</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Semanal</h4>
+                        <div class="value" id="statWeekly">0h</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Mensal</h4>
+                        <div class="value" id="statMonthly">0h</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Semestral</h4>
+                        <div class="value" id="statSemester">0h</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Anual</h4>
+                        <div class="value" id="statYearly">0h</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Top 3 Matérias Mais Estudadas</h3>
+                <div id="topSubjectsRanking" class="ranking-container"></div>
             </div>
 
             <div class="chart-container">
@@ -2576,6 +2688,83 @@
                 document.getElementById('statTime').textContent = totalStudyHours > 0
                     ? `${totalStudyHours}h ${totalStudyMinutes}min`
                     : `${totalStudyMinutes}min`;
+
+                // Calculate study time by period
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                const startOfSemester = new Date(now.getFullYear(), Math.floor(now.getMonth() / 6) * 6, 1);
+                const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+                const calculatePeriodTime = (startDate) => {
+                    return this.data.studySessions
+                        .filter(s => new Date(s.date) >= startDate)
+                        .reduce((sum, s) => sum + s.duration, 0);
+                };
+
+                const formatTime = (minutes) => {
+                    const hours = Math.floor(minutes / 60);
+                    const mins = minutes % 60;
+                    if (hours > 0) {
+                        return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+                    }
+                    return `${mins}min`;
+                };
+
+                document.getElementById('statToday').textContent = formatTime(calculatePeriodTime(startOfDay));
+                document.getElementById('statWeekly').textContent = formatTime(calculatePeriodTime(startOfWeek));
+                document.getElementById('statMonthly').textContent = formatTime(calculatePeriodTime(startOfMonth));
+                document.getElementById('statSemester').textContent = formatTime(calculatePeriodTime(startOfSemester));
+                document.getElementById('statYearly').textContent = formatTime(calculatePeriodTime(startOfYear));
+
+                // Calculate top 3 most studied subjects
+                const subjectStudyTime = {};
+                this.data.studySessions.forEach(session => {
+                    const content = this.data.contents.find(c => c.id === session.contentId);
+                    if (content) {
+                        const subject = content.subject;
+                        if (!subjectStudyTime[subject]) {
+                            subjectStudyTime[subject] = 0;
+                        }
+                        subjectStudyTime[subject] += session.duration;
+                    }
+                });
+
+                const topSubjects = Object.entries(subjectStudyTime)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3);
+
+                const rankingContainer = document.getElementById('topSubjectsRanking');
+                if (topSubjects.length === 0) {
+                    rankingContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">Nenhuma sessão de estudo registrada ainda</p>';
+                } else {
+                    const rankingClasses = ['first', 'second', 'third'];
+                    const medals = ['👑', '🥈', '🥉'];
+
+                    rankingContainer.innerHTML = topSubjects.map(([subject, minutes], index) => {
+                        const hours = Math.floor(minutes / 60);
+                        const mins = minutes % 60;
+                        const timeText = hours > 0
+                            ? `${hours}h ${mins}min de estudo`
+                            : `${mins}min de estudo`;
+
+                        return `
+                            <div class="ranking-item ${rankingClasses[index]}">
+                                <div class="ranking-position">
+                                    ${index === 0 ? '<span class="ranking-crown">👑</span>' : medals[index]}
+                                </div>
+                                <div class="ranking-info">
+                                    <div class="ranking-subject">${this.escapeHtml(subject)}</div>
+                                    <div class="ranking-hours">${timeText}</div>
+                                </div>
+                                <div class="ranking-badge">#${index + 1}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
 
                 // Subject distribution chart
                 const subjectStats = {};

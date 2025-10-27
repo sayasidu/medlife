@@ -654,6 +654,17 @@
             }
         }
 
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .modal-content h3 {
             color: #333;
             margin-bottom: 20px;
@@ -951,6 +962,27 @@
         <span id="dark-mode-text">Modo Escuro</span>
     </button>
 
+    <!-- Indicador de Status do Armazenamento -->
+    <div id="storage-status" style="
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 1000;
+        cursor: pointer;
+        transition: all 0.3s;
+    " onclick="mostrarInfoArmazenamento()">
+        <span id="storage-icon">💾</span>
+        <span id="storage-text">Verificando...</span>
+    </div>
+
     <div class="container">
         <a href="#" class="back-link">← Voltar</a>
 
@@ -1184,108 +1216,215 @@
         let contadorAvaliacoesInd = 0;
         let contadorSubMaterias = 0;
 
+        // Atualiza o indicador de status do armazenamento
+        function atualizarIndicadorStatus() {
+            const icon = document.getElementById('storage-icon');
+            const text = document.getElementById('storage-text');
+
+            if (StorageManager.localAvailable) {
+                icon.textContent = '✅';
+                text.textContent = 'Salvando';
+            } else if (StorageManager.sessionAvailable) {
+                icon.textContent = '⚠️';
+                text.textContent = 'Temporário';
+            } else {
+                icon.textContent = '❌';
+                text.textContent = 'Não salva';
+            }
+        }
+
+        // Mostra informações detalhadas do armazenamento
+        function mostrarInfoArmazenamento() {
+            let tipo = 'Desconhecido';
+            let detalhes = '';
+            let cor = '#666';
+
+            if (StorageManager.localAvailable) {
+                tipo = 'localStorage (Permanente)';
+                detalhes = '✅ Seus dados estão sendo salvos permanentemente no navegador.';
+                cor = '#10b981';
+            } else if (StorageManager.sessionAvailable) {
+                tipo = 'sessionStorage (Temporário)';
+                detalhes = '⚠️ Seus dados serão perdidos ao fechar o navegador!\n\nUse o botão "📥 Exportar" para fazer backup.';
+                cor = '#f59e0b';
+            } else {
+                tipo = 'Memória (Não salva)';
+                detalhes = '❌ ATENÇÃO: Seus dados NÃO estão sendo salvos!\n\nSerão perdidos ao recarregar a página.\n\nUse "📥 Exportar" AGORA para não perder seus dados!';
+                cor = '#ef4444';
+            }
+
+            alert(`🗂️ Status do Armazenamento\n\nTipo: ${tipo}\n\n${detalhes}`);
+        }
+
         window.onload = function() {
+            console.log('🚀 Iniciando aplicação...');
+            StorageManager.init();
+            atualizarIndicadorStatus();
             carregarDados();
             document.getElementById('btn-cancelar').onclick = fecharModal;
             document.getElementById('btn-confirmar').onclick = confirmarAcao;
+            console.log('✅ Aplicação iniciada');
         };
+
+        // Cache em memória como último recurso
+        let memoryCache = {};
 
         // Verifica se localStorage está disponível (importante para Safari)
         function isLocalStorageAvailable() {
             try {
                 const test = '__localStorage_test__';
                 localStorage.setItem(test, test);
+                const retrieved = localStorage.getItem(test);
                 localStorage.removeItem(test);
-                return true;
+                console.log('✅ localStorage disponível');
+                return retrieved === test;
             } catch(e) {
+                console.warn('❌ localStorage NÃO disponível:', e.message);
                 return false;
             }
         }
 
-        // Sistema de armazenamento com fallback para Safari
+        // Verifica se sessionStorage está disponível
+        function isSessionStorageAvailable() {
+            try {
+                const test = '__session_test__';
+                sessionStorage.setItem(test, test);
+                const retrieved = sessionStorage.getItem(test);
+                sessionStorage.removeItem(test);
+                console.log('✅ sessionStorage disponível');
+                return retrieved === test;
+            } catch(e) {
+                console.warn('❌ sessionStorage NÃO disponível:', e.message);
+                return false;
+            }
+        }
+
+        // Sistema de armazenamento com múltiplos fallbacks para Safari
         const StorageManager = {
-            isAvailable: isLocalStorageAvailable(),
+            localAvailable: false,
+            sessionAvailable: false,
             storageWarningShown: false,
+            storageType: 'none',
+
+            init: function() {
+                this.localAvailable = isLocalStorageAvailable();
+                this.sessionAvailable = isSessionStorageAvailable();
+
+                if (this.localAvailable) {
+                    this.storageType = 'localStorage';
+                    console.log('📦 Usando localStorage (permanente)');
+                } else if (this.sessionAvailable) {
+                    this.storageType = 'sessionStorage';
+                    console.log('📦 Usando sessionStorage (temporário)');
+                    this.showStorageWarning('session');
+                } else {
+                    this.storageType = 'memory';
+                    console.log('📦 Usando memória (apenas nesta página)');
+                    this.showStorageWarning('memory');
+                }
+            },
 
             get: function(key) {
+                console.log(`🔍 Tentando ler: ${key}`);
                 try {
-                    if (this.isAvailable) {
-                        return localStorage.getItem(key);
+                    let value = null;
+
+                    if (this.localAvailable) {
+                        value = localStorage.getItem(key);
+                    } else if (this.sessionAvailable) {
+                        value = sessionStorage.getItem(key);
                     } else {
-                        // Fallback: usa sessionStorage se localStorage não estiver disponível
-                        return sessionStorage.getItem(key);
+                        value = memoryCache[key] || null;
                     }
+
+                    console.log(`${value ? '✅' : '❌'} Leitura ${value ? 'bem-sucedida' : 'vazia'} (${this.storageType})`);
+                    return value;
                 } catch(e) {
-                    console.error('Erro ao ler dados:', e);
-                    this.showStorageWarning();
-                    return null;
+                    console.error('❌ Erro ao ler:', e);
+                    return memoryCache[key] || null;
                 }
             },
 
             set: function(key, value) {
+                console.log(`💾 Tentando salvar: ${key}`);
                 try {
-                    if (this.isAvailable) {
+                    if (this.localAvailable) {
                         localStorage.setItem(key, value);
+                        console.log('✅ Salvo no localStorage');
+                        return true;
+                    } else if (this.sessionAvailable) {
+                        sessionStorage.setItem(key, value);
+                        console.log('✅ Salvo no sessionStorage');
                         return true;
                     } else {
-                        // Fallback: usa sessionStorage
-                        sessionStorage.setItem(key, value);
-                        this.showStorageWarning();
+                        memoryCache[key] = value;
+                        console.log('✅ Salvo na memória');
                         return true;
                     }
                 } catch(e) {
-                    console.error('Erro ao salvar dados:', e);
-                    this.showStorageWarning();
-                    return false;
+                    console.error('❌ Erro ao salvar:', e);
+                    memoryCache[key] = value;
+                    console.log('✅ Salvo na memória (fallback)');
+                    return true;
                 }
             },
 
             remove: function(key) {
                 try {
-                    if (this.isAvailable) {
+                    if (this.localAvailable) {
                         localStorage.removeItem(key);
-                    } else {
+                    } else if (this.sessionAvailable) {
                         sessionStorage.removeItem(key);
                     }
+                    delete memoryCache[key];
                     return true;
                 } catch(e) {
-                    console.error('Erro ao remover dados:', e);
+                    console.error('❌ Erro ao remover:', e);
+                    delete memoryCache[key];
                     return false;
                 }
             },
 
-            showStorageWarning: function() {
-                if (!this.storageWarningShown) {
-                    this.storageWarningShown = true;
-                    console.warn('⚠️ Armazenamento local não disponível. Usando sessão temporária.');
+            showStorageWarning: function(type) {
+                if (this.storageWarningShown) return;
+                this.storageWarningShown = true;
 
-                    // Cria um aviso discreto na interface
-                    const warning = document.createElement('div');
-                    warning.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: rgba(255, 152, 0, 0.95);
-                        color: white;
-                        padding: 12px 24px;
-                        border-radius: 8px;
-                        font-size: 0.9rem;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                        max-width: 90%;
-                        text-align: center;
-                    `;
-                    warning.innerHTML = '⚠️ Safari: Dados salvos apenas nesta sessão. Use "Exportar" para backup permanente.';
-                    document.body.appendChild(warning);
+                let message = '';
+                let color = '';
 
-                    // Remove o aviso após 8 segundos
-                    setTimeout(() => {
-                        warning.style.transition = 'opacity 0.5s';
-                        warning.style.opacity = '0';
-                        setTimeout(() => warning.remove(), 500);
-                    }, 8000);
+                if (type === 'session') {
+                    message = '⚠️ ATENÇÃO: Dados serão perdidos ao fechar o navegador! Use "📥 Exportar" para fazer backup.';
+                    color = 'rgba(255, 152, 0, 0.95)';
+                } else if (type === 'memory') {
+                    message = '🚨 CRÍTICO: Dados NÃO estão sendo salvos! Serão perdidos ao recarregar. Use "📥 Exportar" AGORA!';
+                    color = 'rgba(239, 68, 68, 0.95)';
                 }
+
+                // Aviso persistente no topo
+                const warning = document.createElement('div');
+                warning.id = 'storage-warning-bar';
+                warning.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    background: ${color};
+                    color: white;
+                    padding: 15px 20px;
+                    font-size: 0.95rem;
+                    font-weight: 700;
+                    z-index: 10001;
+                    text-align: center;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: slideDown 0.5s ease;
+                `;
+                warning.innerHTML = message;
+                document.body.insertBefore(warning, document.body.firstChild);
+
+                // Adiciona padding ao body para compensar a barra
+                document.body.style.paddingTop = '60px';
+
+                console.warn('⚠️ Aviso de armazenamento exibido:', type);
             }
         };
 
@@ -2260,7 +2399,14 @@
 
         // Carrega preferência de modo escuro
         window.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 DOMContentLoaded - Inicializando...');
+            // Garante que o StorageManager está inicializado
+            if (!StorageManager.storageType || StorageManager.storageType === 'none') {
+                StorageManager.init();
+            }
+
             const darkMode = StorageManager.get('darkMode');
+            console.log('🌓 Modo escuro:', darkMode);
             if (darkMode === 'enabled') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('dark-mode-icon').textContent = '☀️';

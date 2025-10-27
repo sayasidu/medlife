@@ -196,10 +196,11 @@ main > section {
 
 .embed-container {
   position: relative;
-  padding-top: 120%;
+  padding-top: 177.78%;
   border-radius: calc(var(--radius-lg) - 8px);
   overflow: hidden;
   z-index: 2;
+  box-shadow: 0 2px 8px 0 rgba(63, 69, 81, 0.16);
 }
 
 .embed-container iframe {

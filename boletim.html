@@ -2036,7 +2036,7 @@
                 const statusTexto = media ? obterTextoStatus(status) : 'Cursando';
                 const periodo = materia.tipoPeriodo === 'bimestral' ? 'Bimestral' : 'Modular';
                 const tipo = materia.tipo === 'individual' ? 'Individual' : 'Conjugada';
-                const mediaTxt = media ? media : '-';
+                const mediaTxt = media ? formatarMedia(media) : '-';
 
                 if (status === 'aprovado') totalAprovado++;
                 if (status === 'pf') totalPF++;

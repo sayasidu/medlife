@@ -1155,6 +1155,222 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ===== WEEKLY AGENDA STYLES ===== */
+        .weekly-agenda-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .weekly-agenda-title {
+            text-align: center;
+            flex: 1;
+        }
+
+        .weekly-agenda-title h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .weekly-agenda-title .text-secondary {
+            margin: 0;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            min-width: auto;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weekly-planner {
+            margin-top: 1.5rem;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .day-column {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition);
+        }
+
+        .day-column:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow);
+        }
+
+        .day-column.today {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--surface) 0%, rgba(79, 70, 229, 0.05) 100%);
+        }
+
+        .day-header {
+            text-align: center;
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .day-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .day-column.today .day-name {
+            color: var(--primary);
+        }
+
+        .day-date {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 0.25rem;
+        }
+
+        .day-column.today .day-date {
+            color: var(--primary);
+        }
+
+        .day-month {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.125rem;
+        }
+
+        .reviews-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            overflow-y: auto;
+        }
+
+        .review-item-mini {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .review-item-mini:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-light);
+        }
+
+        .review-item-mini.completed {
+            opacity: 0.6;
+            background: var(--surface);
+        }
+
+        .review-item-mini.completed:hover {
+            opacity: 0.8;
+        }
+
+        .review-mini-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-number-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .review-item-mini.completed .review-number-badge {
+            background: var(--success);
+        }
+
+        .review-mini-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .review-mini-subject {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .review-mini-actions {
+            display: flex;
+            gap: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        .review-mini-actions button {
+            flex: 1;
+            padding: 0.375rem;
+            font-size: 0.75rem;
+            min-width: auto;
+        }
+
+        .day-reviews-count {
+            text-align: center;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .day-column.today .day-reviews-count {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .empty-day {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .main-grid {
@@ -1223,6 +1439,20 @@
             .simple-bar {
                 height: 200px;
             }
+
+            .week-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .weekly-agenda-header {
+                flex-wrap: wrap;
+            }
+
+            .weekly-agenda-title {
+                order: -1;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1249,6 +1479,23 @@
 
             .modal-actions .btn {
                 width: 100%;
+            }
+
+            .week-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .day-column {
+                min-height: auto;
+            }
+
+            .weekly-agenda-header {
+                gap: 0.5rem;
+            }
+
+            .btn-icon {
+                width: 36px;
+                height: 36px;
             }
         }
 
@@ -1387,6 +1634,15 @@
                     <rect x="3" y="14" width="7" height="7"></rect>
                 </svg>
                 Dashboard
+            </button>
+            <button class="tab-btn" data-tab="weeklyAgenda" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Agenda da Semana
             </button>
             <button class="tab-btn" data-tab="addContent" role="tab" aria-selected="false">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1533,6 +1789,49 @@
                         <p>Comece adicionando um novo conteúdo</p>
                     </div>
                 </main>
+            </div>
+        </div>
+
+        <!-- Weekly Agenda Screen -->
+        <div id="weeklyAgenda" class="screen">
+            <div class="card">
+                <div class="weekly-agenda-header">
+                    <button class="btn btn-secondary btn-icon" onclick="app.previousWeek()" aria-label="Semana anterior">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <div class="weekly-agenda-title">
+                        <h2 id="weekTitle">Agenda da Semana</h2>
+                        <p id="weekRange" class="text-secondary"></p>
+                    </div>
+                    <button class="btn btn-secondary btn-icon" onclick="app.nextWeek()" aria-label="Próxima semana">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="btn btn-primary" onclick="app.goToCurrentWeek()" style="margin-left: auto;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Hoje
+                    </button>
+                </div>
+
+                <div class="weekly-planner">
+                    <div class="week-grid" id="weekGrid">
+                        <!-- Days will be rendered here by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="emptyWeekState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📅</div>
+                    <p>Nenhuma revisão agendada para esta semana</p>
+                    <p>Continue estudando para gerar novas revisões!</p>
+                </div>
             </div>
         </div>
 
@@ -1751,6 +2050,7 @@
                 this.currentFilter = 'all';
                 this.searchQuery = '';
                 this.modalCallback = null;
+                this.currentWeekOffset = 0; // 0 = current week, -1 = previous week, 1 = next week
 
                 this.init();
             }
@@ -2329,6 +2629,7 @@
                 this.renderContents();
                 this.renderReview();
                 this.renderStudySessions();
+                this.renderWeeklyAgenda();
                 this.updateSelects();
                 this.updateHeaderStats();
             }
@@ -2983,6 +3284,204 @@
                         localStorage.setItem('studyPlannerVisited', 'true');
                     }, 500);
                 }
+            }
+
+            /**
+             * Get week start (Monday) and end (Sunday) dates
+             */
+            getWeekDates(offset = 0) {
+                const today = new Date();
+                const currentDay = today.getDay();
+                const diff = currentDay === 0 ? -6 : 1 - currentDay; // Adjust when Sunday (0)
+
+                const monday = new Date(today);
+                monday.setDate(today.getDate() + diff + (offset * 7));
+                monday.setHours(0, 0, 0, 0);
+
+                const days = [];
+                for (let i = 0; i < 7; i++) {
+                    const day = new Date(monday);
+                    day.setDate(monday.getDate() + i);
+                    days.push(day);
+                }
+
+                return days;
+            }
+
+            /**
+             * Format date as YYYY-MM-DD
+             */
+            formatDateLocal(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            /**
+             * Get reviews for a specific date
+             */
+            getReviewsForDate(dateString) {
+                return this.data.reviews.filter(review => review.scheduledDate === dateString);
+            }
+
+            /**
+             * Render weekly agenda
+             */
+            renderWeeklyAgenda() {
+                const weekDays = this.getWeekDates(this.currentWeekOffset);
+                const weekGrid = document.getElementById('weekGrid');
+                const emptyState = document.getElementById('emptyWeekState');
+
+                if (!weekGrid) return;
+
+                const dayNames = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+                const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+                // Update week title
+                const firstDay = weekDays[0];
+                const lastDay = weekDays[6];
+                const weekRange = document.getElementById('weekRange');
+                if (weekRange) {
+                    weekRange.textContent = `${firstDay.getDate()} de ${monthNames[firstDay.getMonth()]} - ${lastDay.getDate()} de ${monthNames[lastDay.getMonth()]} ${lastDay.getFullYear()}`;
+                }
+
+                let totalReviews = 0;
+                let html = '';
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                weekDays.forEach((day, index) => {
+                    const dateString = this.formatDateLocal(day);
+                    const reviews = this.getReviewsForDate(dateString);
+                    const pendingReviews = reviews.filter(r => !r.completed);
+                    const completedReviews = reviews.filter(r => r.completed);
+
+                    totalReviews += reviews.length;
+
+                    const isToday = day.getTime() === today.getTime();
+                    const todayClass = isToday ? 'today' : '';
+
+                    html += `
+                        <div class="day-column ${todayClass}">
+                            <div class="day-header">
+                                <div class="day-name">${dayNames[index]}</div>
+                                <div class="day-date">${day.getDate()}</div>
+                                <div class="day-month">${monthNames[day.getMonth()]}</div>
+                            </div>
+                            <div class="reviews-list">
+                    `;
+
+                    if (reviews.length === 0) {
+                        html += `<div class="empty-day">Sem revisões</div>`;
+                    } else {
+                        // Render pending reviews first
+                        pendingReviews.forEach(review => {
+                            html += this.renderMiniReviewItem(review);
+                        });
+
+                        // Then completed reviews
+                        completedReviews.forEach(review => {
+                            html += this.renderMiniReviewItem(review);
+                        });
+                    }
+
+                    html += `
+                            </div>
+                            ${reviews.length > 0 ? `
+                                <div class="day-reviews-count">
+                                    ${pendingReviews.length} pendente${pendingReviews.length !== 1 ? 's' : ''}
+                                    ${completedReviews.length > 0 ? `• ${completedReviews.length} concluída${completedReviews.length !== 1 ? 's' : ''}` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                weekGrid.innerHTML = html;
+
+                // Show/hide empty state
+                if (emptyState) {
+                    emptyState.style.display = totalReviews === 0 ? 'block' : 'none';
+                }
+            }
+
+            /**
+             * Render mini review item for weekly agenda
+             */
+            renderMiniReviewItem(review) {
+                const completedClass = review.completed ? 'completed' : '';
+                const intervals = this.getReviewOption() === '1' ? [1, 7, 30, 90] : [1, 3, 7, 30, 90];
+                const intervalLabels = this.getReviewOption() === '1'
+                    ? ['24 horas', '1 semana', '1 mês', '3 meses']
+                    : ['24 horas', '3 dias', '1 semana', '1 mês', '3 meses'];
+
+                const intervalLabel = intervalLabels[review.reviewNumber - 1] || `Revisão ${review.reviewNumber}`;
+
+                return `
+                    <div class="review-item-mini ${completedClass}">
+                        <div class="review-mini-header">
+                            <span class="review-number-badge">R${review.reviewNumber} - ${intervalLabel}</span>
+                        </div>
+                        <div class="review-mini-title" title="${this.escapeHtml(review.contentTitle)}">
+                            ${this.escapeHtml(review.contentTitle)}
+                        </div>
+                        <div class="review-mini-subject">${this.escapeHtml(review.subject)}</div>
+                        ${!review.completed ? `
+                            <div class="review-mini-actions">
+                                <button class="btn btn-success btn-small" onclick="app.completeReview('${review.id}', 'flashcard')">
+                                    Flashcard
+                                </button>
+                                <button class="btn btn-info btn-small" onclick="app.completeReview('${review.id}', 'simulado')">
+                                    Simulado
+                                </button>
+                                <button class="btn btn-secondary btn-small" onclick="app.completeReview('${review.id}', 'outro')">
+                                    Outro
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="review-mini-subject" style="color: var(--success); margin-top: 0.5rem;">
+                                ✓ Concluída
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+
+            /**
+             * Get current review option from settings
+             */
+            getReviewOption() {
+                const option1Radio = document.getElementById('reviewOption1');
+                if (option1Radio && option1Radio.checked) {
+                    return '1';
+                }
+                return '2'; // default
+            }
+
+            /**
+             * Navigate to previous week
+             */
+            previousWeek() {
+                this.currentWeekOffset--;
+                this.renderWeeklyAgenda();
+            }
+
+            /**
+             * Navigate to next week
+             */
+            nextWeek() {
+                this.currentWeekOffset++;
+                this.renderWeeklyAgenda();
+            }
+
+            /**
+             * Go to current week
+             */
+            goToCurrentWeek() {
+                this.currentWeekOffset = 0;
+                this.renderWeeklyAgenda();
             }
 
             /**

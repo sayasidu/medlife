@@ -1371,6 +1371,183 @@
             padding: 1rem;
         }
 
+        /* ===== POMODORO STYLES ===== */
+        .pomodoro-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .level-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .level-btn:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .level-icon {
+            font-size: 2rem;
+            margin-bottom: 4px;
+        }
+
+        .level-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .level-time {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .level-break {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .level-btn.active .level-name,
+        .level-btn.active .level-time,
+        .level-btn.active .level-break {
+            color: white;
+        }
+
+        .pomodoro-timer-container {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 40px 32px;
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .pomodoro-display {
+            margin-bottom: 32px;
+        }
+
+        .timer-type {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .session-info {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pomodoro-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .pomodoro-progress {
+            margin-top: 24px;
+        }
+
+        .progress-bar {
+            background: var(--bg-secondary);
+            height: 8px;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 1s linear;
+            border-radius: 99px;
+        }
+
+        .pomodoro-history {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border);
+        }
+
+        .pomodoro-history h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .pomodoro-session-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition);
+        }
+
+        .pomodoro-session-item:hover {
+            border-color: var(--primary-light);
+            transform: translateX(4px);
+        }
+
+        .pomodoro-session-details {
+            flex: 1;
+        }
+
+        .pomodoro-session-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .pomodoro-session-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pomodoro-session-time {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .main-grid {
@@ -1657,6 +1834,13 @@
                     <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
                 Sessão de Estudo
+            </button>
+            <button class="tab-btn" data-tab="pomodoro" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Pomodoro
             </button>
             <button class="tab-btn" data-tab="review" role="tab" aria-selected="false">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2020,6 +2204,104 @@
             <div class="chart-container">
                 <h3>Progresso por Dificuldade</h3>
                 <div class="simple-bar" id="difficultyChart"></div>
+            </div>
+        </div>
+
+        <!-- Pomodoro Screen -->
+        <div id="pomodoro" class="screen">
+            <div class="card">
+                <h2>Técnica Pomodoro</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Melhore seu foco com a técnica Pomodoro: períodos de estudo intenso intercalados com pausas estratégicas.
+                </p>
+
+                <div class="form-group">
+                    <label for="pomodoroSubject">Matéria *</label>
+                    <input type="text" id="pomodoroSubject" placeholder="Ex: Matemática" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="pomodoroContent">Conteúdo *</label>
+                    <input type="text" id="pomodoroContent" placeholder="Ex: Equações do 2º Grau" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Nível de Estudo</label>
+                    <div class="pomodoro-levels">
+                        <button class="level-btn active" data-level="beginner">
+                            <div class="level-icon">🌱</div>
+                            <div class="level-name">Iniciante</div>
+                            <div class="level-time">25 min</div>
+                            <div class="level-break">5 min descanso</div>
+                        </button>
+                        <button class="level-btn" data-level="intermediate">
+                            <div class="level-icon">🌿</div>
+                            <div class="level-name">Intermediário</div>
+                            <div class="level-time">30 min</div>
+                            <div class="level-break">5 min descanso</div>
+                        </button>
+                        <button class="level-btn" data-level="advanced">
+                            <div class="level-icon">🌳</div>
+                            <div class="level-name">Avançado</div>
+                            <div class="level-time">45 min</div>
+                            <div class="level-break">10 min descanso</div>
+                        </button>
+                        <button class="level-btn" data-level="expert">
+                            <div class="level-icon">🚀</div>
+                            <div class="level-name">Super Avançado</div>
+                            <div class="level-time">60 min</div>
+                            <div class="level-break">15 min descanso</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pomodoro-timer-container">
+                    <div class="pomodoro-display">
+                        <div class="timer-type" id="timerType">Foco</div>
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="session-info" id="sessionInfo">Sessão 1 de 4</div>
+                    </div>
+
+                    <div class="pomodoro-controls">
+                        <button class="btn btn-primary" id="startPomodoroBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Iniciar
+                        </button>
+                        <button class="btn btn-secondary" id="pausePomodoroBtn" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="6" y="4" width="4" height="16"></rect>
+                                <rect x="14" y="4" width="4" height="16"></rect>
+                            </svg>
+                            Pausar
+                        </button>
+                        <button class="btn btn-secondary" id="resumePomodoroBtn" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Continuar
+                        </button>
+                        <button class="btn btn-danger" id="resetPomodoroBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="1 4 1 10 7 10"></polyline>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                            </svg>
+                            Reiniciar
+                        </button>
+                    </div>
+
+                    <div class="pomodoro-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="pomodoroProgress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pomodoro-history" id="pomodoroHistory">
+                    <h3>Histórico de Hoje</h3>
+                    <div id="todayPomodoroList"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -3494,8 +3776,283 @@
             }
         }
 
+        /**
+         * Pomodoro Timer Class
+         */
+        class PomodoroTimer {
+            constructor() {
+                this.levels = {
+                    beginner: { focus: 25, break: 5, longBreak: 15 },
+                    intermediate: { focus: 30, break: 5, longBreak: 15 },
+                    advanced: { focus: 45, break: 10, longBreak: 15 },
+                    expert: { focus: 60, break: 15, longBreak: 15 }
+                };
+
+                this.currentLevel = 'beginner';
+                this.timeLeft = 25 * 60; // seconds
+                this.totalTime = 25 * 60;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.currentSession = 1;
+                this.maxSessions = 4;
+                this.isBreak = false;
+                this.timer = null;
+                this.sessions = [];
+                this.currentSubject = '';
+                this.currentContent = '';
+
+                this.init();
+            }
+
+            init() {
+                // Level buttons
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (this.isRunning && !this.isPaused) {
+                            alert('Pause o timer antes de mudar de nível');
+                            return;
+                        }
+
+                        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.currentLevel = btn.dataset.level;
+                        this.reset();
+                    });
+                });
+
+                // Control buttons
+                document.getElementById('startPomodoroBtn').addEventListener('click', () => this.start());
+                document.getElementById('pausePomodoroBtn').addEventListener('click', () => this.pause());
+                document.getElementById('resumePomodoroBtn').addEventListener('click', () => this.resume());
+                document.getElementById('resetPomodoroBtn').addEventListener('click', () => this.reset());
+
+                this.updateDisplay();
+                this.loadTodaySessions();
+            }
+
+            start() {
+                const subject = document.getElementById('pomodoroSubject').value.trim();
+                const content = document.getElementById('pomodoroContent').value.trim();
+
+                if (!subject || !content) {
+                    alert('Por favor, preencha a matéria e o conteúdo antes de iniciar');
+                    return;
+                }
+
+                this.currentSubject = subject;
+                this.currentContent = content;
+                this.isRunning = true;
+                this.isPaused = false;
+
+                document.getElementById('startPomodoroBtn').style.display = 'none';
+                document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
+                document.getElementById('resumePomodoroBtn').style.display = 'none';
+
+                this.runTimer();
+            }
+
+            pause() {
+                this.isPaused = true;
+                this.isRunning = false;
+                clearInterval(this.timer);
+
+                document.getElementById('pausePomodoroBtn').style.display = 'none';
+                document.getElementById('resumePomodoroBtn').style.display = 'inline-flex';
+            }
+
+            resume() {
+                this.isPaused = false;
+                this.isRunning = true;
+
+                document.getElementById('resumePomodoroBtn').style.display = 'none';
+                document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
+
+                this.runTimer();
+            }
+
+            reset() {
+                this.isRunning = false;
+                this.isPaused = false;
+                this.currentSession = 1;
+                this.isBreak = false;
+                clearInterval(this.timer);
+
+                const level = this.levels[this.currentLevel];
+                this.timeLeft = level.focus * 60;
+                this.totalTime = level.focus * 60;
+
+                document.getElementById('startPomodoroBtn').style.display = 'inline-flex';
+                document.getElementById('pausePomodoroBtn').style.display = 'none';
+                document.getElementById('resumePomodoroBtn').style.display = 'none';
+
+                this.updateDisplay();
+            }
+
+            runTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateDisplay();
+
+                    if (this.timeLeft <= 0) {
+                        this.handleTimerComplete();
+                    }
+                }, 1000);
+            }
+
+            handleTimerComplete() {
+                clearInterval(this.timer);
+                const level = this.levels[this.currentLevel];
+
+                if (!this.isBreak) {
+                    // Completed a focus session
+                    this.saveSession();
+
+                    // Play notification sound (optional)
+                    this.playNotification();
+
+                    if (this.currentSession >= this.maxSessions) {
+                        // Long break after 4 sessions
+                        alert(`🎉 Parabéns! Você completou ${this.maxSessions} sessões!\nAgora faça uma pausa de ${level.longBreak} minutos.`);
+                        this.timeLeft = level.longBreak * 60;
+                        this.totalTime = level.longBreak * 60;
+                        this.isBreak = true;
+                    } else {
+                        // Short break
+                        alert(`✅ Sessão ${this.currentSession} completa!\nFaça uma pausa de ${level.break} minutos.`);
+                        this.timeLeft = level.break * 60;
+                        this.totalTime = level.break * 60;
+                        this.isBreak = true;
+                    }
+                } else {
+                    // Completed a break
+                    if (this.currentSession >= this.maxSessions) {
+                        // Completed all sessions
+                        alert('🏆 Ciclo Pomodoro completo! Excelente trabalho!');
+                        this.reset();
+                        return;
+                    } else {
+                        // Start next session
+                        this.currentSession++;
+                        alert(`💪 Pausa terminada! Vamos para a sessão ${this.currentSession}!`);
+                        this.timeLeft = level.focus * 60;
+                        this.totalTime = level.focus * 60;
+                        this.isBreak = false;
+                    }
+                }
+
+                this.updateDisplay();
+                this.runTimer();
+            }
+
+            updateDisplay() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                document.getElementById('timerDisplay').textContent = display;
+                document.getElementById('timerType').textContent = this.isBreak ? 'Descanso' : 'Foco';
+                document.getElementById('sessionInfo').textContent = `Sessão ${this.currentSession} de ${this.maxSessions}`;
+
+                // Update progress bar
+                const progress = ((this.totalTime - this.timeLeft) / this.totalTime) * 100;
+                document.getElementById('pomodoroProgress').style.width = `${progress}%`;
+
+                // Update page title
+                if (this.isRunning || this.isPaused) {
+                    document.title = `${display} - ${this.isBreak ? 'Descanso' : 'Foco'} - MedLife`;
+                }
+            }
+
+            saveSession() {
+                const session = {
+                    subject: this.currentSubject,
+                    content: this.currentContent,
+                    level: this.currentLevel,
+                    duration: this.levels[this.currentLevel].focus,
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toLocaleDateString('pt-BR')
+                };
+
+                const sessions = JSON.parse(localStorage.getItem('pomodoroSessions') || '[]');
+                sessions.push(session);
+                localStorage.setItem('pomodoroSessions', JSON.stringify(sessions));
+
+                this.loadTodaySessions();
+            }
+
+            loadTodaySessions() {
+                const sessions = JSON.parse(localStorage.getItem('pomodoroSessions') || '[]');
+                const today = new Date().toLocaleDateString('pt-BR');
+                const todaySessions = sessions.filter(s => s.date === today);
+
+                const container = document.getElementById('todayPomodoroList');
+
+                if (todaySessions.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Nenhuma sessão Pomodoro hoje. Comece agora! 🚀</p>';
+                    return;
+                }
+
+                const totalMinutes = todaySessions.reduce((sum, s) => sum + s.duration, 0);
+
+                container.innerHTML = `
+                    <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); margin-bottom: 16px; text-align: center;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 4px;">Total de hoje</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${totalMinutes} min</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">${todaySessions.length} sessões completadas</div>
+                    </div>
+                    ${todaySessions.reverse().map(session => `
+                        <div class="pomodoro-session-item">
+                            <div class="pomodoro-session-details">
+                                <div class="pomodoro-session-title">${session.subject}</div>
+                                <div class="pomodoro-session-meta">
+                                    <span>📚 ${session.content}</span>
+                                    <span>⏱️ ${session.duration} min</span>
+                                    <span>🎯 ${this.getLevelName(session.level)}</span>
+                                    <span>🕐 ${new Date(session.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            getLevelName(level) {
+                const names = {
+                    beginner: 'Iniciante',
+                    intermediate: 'Intermediário',
+                    advanced: 'Avançado',
+                    expert: 'Super Avançado'
+                };
+                return names[level] || level;
+            }
+
+            playNotification() {
+                // Simple beep using Web Audio API
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                } catch (e) {
+                    console.log('Audio notification not available');
+                }
+            }
+        }
+
         // Initialize the application
         const app = new StudyPlannerApp();
+        const pomodoroTimer = new PomodoroTimer();
     </script>
 </body>
 </html>

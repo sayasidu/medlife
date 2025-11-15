@@ -12,7 +12,7 @@
 <body>
     <div id="root"></div>
     <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
 // Mapeamento de imagens Base64 será inserido aqui
 const IMAGES = {
@@ -133,6 +133,41 @@ const SurgicalTrainingGame = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [detailsModal, setDetailsModal] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutos = 180 segundos
+  const [timerActive, setTimerActive] = useState(false);
+
+  // useEffect para gerenciar o temporizador
+  useEffect(() => {
+    let interval = null;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((time) => time - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft]);
+
+  // Funções do temporizador
+  const startTimer = () => {
+    setTimerActive(true);
+  };
+
+  const pauseTimer = () => {
+    setTimerActive(false);
+  };
+
+  const resetTimer = () => {
+    setTimeLeft(180);
+    setTimerActive(false);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const getCorrectQuadrant = (instrumentId) => {
     for (const [quadrant, instruments] of Object.entries(allInstruments)) {
@@ -298,6 +333,35 @@ const SurgicalTrainingGame = () => {
               <span className="font-bold text-orange-600">{availableInstruments.length}</span>
             </div>
           </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Tempo:</span>
+              <span className={`font-bold text-2xl ${timeLeft <= 30 ? 'text-red-600 animate-pulse' : timeLeft <= 60 ? 'text-orange-600' : 'text-blue-600'}`}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {!timerActive ? (
+                <button
+                  onClick={startTimer}
+                  className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  ▶️ Iniciar
+                </button>
+              ) : (
+                <button
+                  onClick={pauseTimer}
+                  className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  ⏸️ Pausar
+                </button>
+              )}
+              <button
+                onClick={resetTimer}
+                className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                🔄 Reset
+              </button>
+            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">

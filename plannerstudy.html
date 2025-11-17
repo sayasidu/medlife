@@ -3910,38 +3910,36 @@
                     // Play notification sound (optional)
                     this.playNotification();
 
-                    if (this.currentSession >= this.maxSessions) {
-                        // Long break after 4 sessions
-                        alert(`🎉 Parabéns! Você completou ${this.maxSessions} sessões!\nAgora faça uma pausa de ${level.longBreak} minutos.`);
-                        this.timeLeft = level.longBreak * 60;
-                        this.totalTime = level.longBreak * 60;
-                        this.isBreak = true;
-                    } else {
-                        // Short break
-                        alert(`✅ Sessão ${this.currentSession} completa!\nFaça uma pausa de ${level.break} minutos.`);
+                    // Ask if user wants to continue
+                    const continuar = confirm(`✅ Sessão ${this.currentSession} completa!\n\nDeseja fazer mais uma sessão? (máximo 4 sessões)`);
+
+                    if (continuar && this.currentSession < this.maxSessions) {
+                        // User wants to continue - start break
+                        alert(`💚 Ótimo! Faça uma pausa de ${level.break} minutos antes da próxima sessão.`);
                         this.timeLeft = level.break * 60;
                         this.totalTime = level.break * 60;
                         this.isBreak = true;
+                        this.updateDisplay();
+                        this.runTimer();
+                    } else if (continuar && this.currentSession >= this.maxSessions) {
+                        // Reached max sessions
+                        alert('🏆 Parabéns! Você já completou o máximo de 4 sessões!\nExcelente trabalho!');
+                        this.reset();
+                    } else {
+                        // User doesn't want to continue
+                        alert('🎉 Excelente trabalho! Suas sessões foram salvas.');
+                        this.reset();
                     }
                 } else {
-                    // Completed a break
-                    if (this.currentSession >= this.maxSessions) {
-                        // Completed all sessions
-                        alert('🏆 Ciclo Pomodoro completo! Excelente trabalho!');
-                        this.reset();
-                        return;
-                    } else {
-                        // Start next session
-                        this.currentSession++;
-                        alert(`💪 Pausa terminada! Vamos para a sessão ${this.currentSession}!`);
-                        this.timeLeft = level.focus * 60;
-                        this.totalTime = level.focus * 60;
-                        this.isBreak = false;
-                    }
+                    // Completed a break - start next session
+                    this.currentSession++;
+                    alert(`💪 Pausa terminada! Iniciando sessão ${this.currentSession}!`);
+                    this.timeLeft = level.focus * 60;
+                    this.totalTime = level.focus * 60;
+                    this.isBreak = false;
+                    this.updateDisplay();
+                    this.runTimer();
                 }
-
-                this.updateDisplay();
-                this.runTimer();
             }
 
             updateDisplay() {

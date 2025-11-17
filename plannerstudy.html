@@ -1548,6 +1548,114 @@
             color: var(--primary);
         }
 
+        /* ===== POMODORO MODAL ===== */
+        .pomodoro-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pomodoro-modal-overlay.show {
+            display: flex;
+        }
+
+        .pomodoro-modal {
+            background: var(--bg);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .pomodoro-modal-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .pomodoro-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .pomodoro-modal-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .pomodoro-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .pomodoro-modal-btn {
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pomodoro-modal-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .pomodoro-modal-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .pomodoro-modal-btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .pomodoro-modal-btn-secondary:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .main-grid {
@@ -2302,6 +2410,28 @@
                     <h3>Histórico de Hoje</h3>
                     <div id="todayPomodoroList"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pomodoro Confirmation Modal -->
+    <div class="pomodoro-modal-overlay" id="pomodoroModal">
+        <div class="pomodoro-modal">
+            <div class="pomodoro-modal-icon" id="pomodoroModalIcon">✅</div>
+            <div class="pomodoro-modal-title" id="pomodoroModalTitle">Sessão Completa!</div>
+            <div class="pomodoro-modal-message" id="pomodoroModalMessage">
+                Parabéns! Você completou uma sessão de estudo.<br>
+                Deseja fazer mais uma sessão?
+            </div>
+            <div class="pomodoro-modal-buttons">
+                <button class="pomodoro-modal-btn pomodoro-modal-btn-primary" id="pomodoroModalContinue">
+                    <span>💪</span>
+                    <span>Continuar</span>
+                </button>
+                <button class="pomodoro-modal-btn pomodoro-modal-btn-secondary" id="pomodoroModalStop">
+                    <span>🎉</span>
+                    <span>Finalizar</span>
+                </button>
             </div>
         </div>
     </div>
@@ -3910,35 +4040,94 @@
                     // Play notification sound (optional)
                     this.playNotification();
 
-                    // Ask if user wants to continue
-                    const continuar = confirm(`✅ Sessão ${this.currentSession} completa!\n\nDeseja fazer mais uma sessão? (máximo 4 sessões)`);
+                    // Show notification
+                    this.showNotification('✅ Sessão completa!', 'Verifique a notificação do Pomodoro.');
 
-                    if (continuar && this.currentSession < this.maxSessions) {
-                        // User wants to continue - start break
-                        alert(`💚 Ótimo! Faça uma pausa de ${level.break} minutos antes da próxima sessão.`);
-                        this.timeLeft = level.break * 60;
-                        this.totalTime = level.break * 60;
-                        this.isBreak = true;
-                        this.updateDisplay();
-                        this.runTimer();
-                    } else if (continuar && this.currentSession >= this.maxSessions) {
-                        // Reached max sessions
-                        alert('🏆 Parabéns! Você já completou o máximo de 4 sessões!\nExcelente trabalho!');
-                        this.reset();
-                    } else {
-                        // User doesn't want to continue
-                        alert('🎉 Excelente trabalho! Suas sessões foram salvas.');
-                        this.reset();
-                    }
+                    // Ask if user wants to continue using modal
+                    this.showConfirmationModal();
                 } else {
-                    // Completed a break - start next session
+                    // Completed a break - start next session automatically
                     this.currentSession++;
-                    alert(`💪 Pausa terminada! Iniciando sessão ${this.currentSession}!`);
+                    this.showNotification('💪 Pausa terminada!', `Iniciando sessão ${this.currentSession}!`);
                     this.timeLeft = level.focus * 60;
                     this.totalTime = level.focus * 60;
                     this.isBreak = false;
                     this.updateDisplay();
                     this.runTimer();
+                }
+            }
+
+            showConfirmationModal() {
+                const modal = document.getElementById('pomodoroModal');
+                const modalIcon = document.getElementById('pomodoroModalIcon');
+                const modalTitle = document.getElementById('pomodoroModalTitle');
+                const modalMessage = document.getElementById('pomodoroModalMessage');
+                const continueBtn = document.getElementById('pomodoroModalContinue');
+                const stopBtn = document.getElementById('pomodoroModalStop');
+
+                // Update modal content
+                modalIcon.textContent = '✅';
+                modalTitle.textContent = `Sessão ${this.currentSession} Completa!`;
+                modalMessage.innerHTML = `Parabéns! Você completou uma sessão de estudo.<br>Deseja fazer mais uma sessão? (máximo 4 sessões)`;
+
+                // Show modal
+                modal.classList.add('show');
+
+                // Handle continue button
+                const handleContinue = () => {
+                    modal.classList.remove('show');
+                    this.handleContinueSession();
+                    cleanup();
+                };
+
+                // Handle stop button
+                const handleStop = () => {
+                    modal.classList.remove('show');
+                    this.handleStopSession();
+                    cleanup();
+                };
+
+                // Cleanup event listeners
+                const cleanup = () => {
+                    continueBtn.removeEventListener('click', handleContinue);
+                    stopBtn.removeEventListener('click', handleStop);
+                };
+
+                continueBtn.addEventListener('click', handleContinue);
+                stopBtn.addEventListener('click', handleStop);
+            }
+
+            handleContinueSession() {
+                const level = this.levels[this.currentLevel];
+
+                if (this.currentSession < this.maxSessions) {
+                    // User wants to continue - start break
+                    this.showNotification('💚 Ótimo!', `Faça uma pausa de ${level.break} minutos antes da próxima sessão.`);
+                    this.timeLeft = level.break * 60;
+                    this.totalTime = level.break * 60;
+                    this.isBreak = true;
+                    this.updateDisplay();
+                    this.runTimer();
+                } else {
+                    // Reached max sessions
+                    this.showNotification('🏆 Máximo atingido!', 'Você já completou o máximo de 4 sessões! Excelente trabalho!');
+                    this.reset();
+                }
+            }
+
+            handleStopSession() {
+                // User doesn't want to continue
+                this.showNotification('🎉 Excelente trabalho!', 'Suas sessões foram salvas.');
+                this.reset();
+            }
+
+            showNotification(title, message) {
+                // Try to use browser notification API if available
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, {
+                        body: message,
+                        icon: '/favicon.ico'
+                    });
                 }
             }
 

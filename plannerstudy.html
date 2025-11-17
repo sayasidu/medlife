@@ -2325,12 +2325,16 @@
 
                 <div class="form-group">
                     <label for="pomodoroSubject">Matéria *</label>
-                    <input type="text" id="pomodoroSubject" placeholder="Ex: Matemática" required />
+                    <select id="pomodoroSubject" required>
+                        <option value="">Selecione uma matéria</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="pomodoroContent">Conteúdo *</label>
-                    <input type="text" id="pomodoroContent" placeholder="Ex: Equações do 2º Grau" required />
+                    <select id="pomodoroContent" required>
+                        <option value="">Selecione um conteúdo</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -2436,6 +2440,28 @@
         </div>
     </div>
 
+    <!-- Pomodoro Association Modal -->
+    <div class="pomodoro-modal-overlay" id="pomodoroAssociationModal">
+        <div class="pomodoro-modal">
+            <div class="pomodoro-modal-icon">⏱️</div>
+            <div class="pomodoro-modal-title">Vincular ao Pomodoro?</div>
+            <div class="pomodoro-modal-message">
+                Deseja associar esta sessão de estudo à técnica Pomodoro?<br>
+                <small style="opacity: 0.8; font-size: 0.9em;">O Pomodoro será preenchido automaticamente com os dados da sua sessão.</small>
+            </div>
+            <div class="pomodoro-modal-buttons">
+                <button class="pomodoro-modal-btn pomodoro-modal-btn-primary" id="pomodoroAssociationYes">
+                    <span>✅</span>
+                    <span>Sim, vincular</span>
+                </button>
+                <button class="pomodoro-modal-btn pomodoro-modal-btn-secondary" id="pomodoroAssociationNo">
+                    <span>❌</span>
+                    <span>Não, obrigado</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         /**
          * Modern Study Planner Application
@@ -2462,6 +2488,7 @@
                 this.currentFilter = 'all';
                 this.searchQuery = '';
                 this.modalCallback = null;
+                this.tempPomodoroData = null; // Temporary storage for Pomodoro association
                 this.currentWeekOffset = 0; // 0 = current week, -1 = previous week, 1 = next week
 
                 this.init();
@@ -2554,6 +2581,19 @@
                         e.preventDefault();
                         this.addSubject();
                     }
+                });
+
+                // Pomodoro subject change
+                document.getElementById('pomodoroSubject').addEventListener('change', (e) => {
+                    this.updatePomodoroSelects(e.target.value);
+                });
+
+                // Pomodoro association modal
+                document.getElementById('pomodoroAssociationYes').addEventListener('click', () => {
+                    this.associateWithPomodoro();
+                });
+                document.getElementById('pomodoroAssociationNo').addEventListener('click', () => {
+                    this.closePomodoroAssociationModal();
                 });
 
                 // Set today's date by default
@@ -2778,6 +2818,11 @@
                     }
 
                     this.showToast(`Sessão de ${durationMinutes} minutos registrada!`, 'success');
+
+                    // Show Pomodoro association modal for new sessions
+                    setTimeout(() => {
+                        this.showPomodoroAssociationModal(content.subject, content.title);
+                    }, 500);
                 }
 
                 // Reset form
@@ -3560,6 +3605,35 @@
                 const studySelect = document.getElementById('studyContent');
                 studySelect.innerHTML = '<option value="">Selecione um conteúdo</option>' +
                     this.data.contents.map(c => `<option value="${c.id}">${this.escapeHtml(c.subject)} - ${this.escapeHtml(c.title)}</option>`).join('');
+
+                // Update Pomodoro selects
+                this.updatePomodoroSelects();
+            }
+
+            /**
+             * Update Pomodoro select options
+             */
+            updatePomodoroSelects(selectedSubject = null) {
+                const subjectSelect = document.getElementById('pomodoroSubject');
+                subjectSelect.innerHTML = '<option value="">Selecione uma matéria</option>' +
+                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s)}">${this.escapeHtml(s)}</option>`).join('');
+
+                // If a subject is pre-selected, set it
+                if (selectedSubject) {
+                    subjectSelect.value = selectedSubject;
+                }
+
+                // Update content select based on selected subject
+                const contentSelect = document.getElementById('pomodoroContent');
+                const currentSubject = selectedSubject || subjectSelect.value;
+
+                if (currentSubject) {
+                    const filteredContents = this.data.contents.filter(c => c.subject === currentSubject);
+                    contentSelect.innerHTML = '<option value="">Selecione um conteúdo</option>' +
+                        filteredContents.map(c => `<option value="${this.escapeHtml(c.title)}">${this.escapeHtml(c.title)}</option>`).join('');
+                } else {
+                    contentSelect.innerHTML = '<option value="">Selecione uma matéria primeiro</option>';
+                }
             }
 
             /**
@@ -3645,6 +3719,58 @@
             hideModal() {
                 document.getElementById('modalOverlay').classList.remove('show');
                 this.modalCallback = null;
+            }
+
+            /**
+             * Show Pomodoro association modal
+             */
+            showPomodoroAssociationModal(subject, contentTitle) {
+                this.tempPomodoroData = { subject, contentTitle };
+                const modal = document.getElementById('pomodoroAssociationModal');
+                modal.classList.add('show');
+            }
+
+            /**
+             * Close Pomodoro association modal
+             */
+            closePomodoroAssociationModal() {
+                const modal = document.getElementById('pomodoroAssociationModal');
+                modal.classList.remove('show');
+                this.tempPomodoroData = null;
+            }
+
+            /**
+             * Associate session with Pomodoro
+             */
+            associateWithPomodoro() {
+                if (!this.tempPomodoroData) return;
+
+                const { subject, contentTitle } = this.tempPomodoroData;
+
+                // Close modal
+                this.closePomodoroAssociationModal();
+
+                // Switch to Pomodoro tab
+                this.switchTab('pomodoro');
+
+                // Pre-fill Pomodoro form
+                setTimeout(() => {
+                    const subjectSelect = document.getElementById('pomodoroSubject');
+                    const contentSelect = document.getElementById('pomodoroContent');
+
+                    // Set subject
+                    subjectSelect.value = subject;
+
+                    // Update content options and set content
+                    this.updatePomodoroSelects(subject);
+
+                    // Set content after a brief delay to ensure options are populated
+                    setTimeout(() => {
+                        contentSelect.value = contentTitle;
+                    }, 50);
+
+                    this.showToast('Pomodoro preenchido automaticamente! Clique em Iniciar quando estiver pronto.', 'success');
+                }, 100);
             }
 
             /**

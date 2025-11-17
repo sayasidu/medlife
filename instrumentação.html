@@ -133,25 +133,34 @@ const SurgicalTrainingGame = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [detailsModal, setDetailsModal] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(180); // 3 minutos = 180 segundos
+  const [elapsedTime, setElapsedTime] = useState(0); // Tempo decorrido em segundos
   const [timerActive, setTimerActive] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
-  // useEffect para gerenciar o temporizador
+  // useEffect para gerenciar o temporizador (conta para cima)
   useEffect(() => {
     let interval = null;
-    if (timerActive && timeLeft > 0) {
+    if (timerActive) {
       interval = setInterval(() => {
-        setTimeLeft((time) => time - 1);
+        setElapsedTime((time) => time + 1);
       }, 1000);
-    } else if (timeLeft === 0) {
-      setTimerActive(false);
     }
     return () => clearInterval(interval);
-  }, [timerActive, timeLeft]);
+  }, [timerActive]);
+
+  // useEffect para parar o timer quando completar
+  useEffect(() => {
+    if (availableInstruments.length === 0 && gameStarted) {
+      setTimerActive(false);
+    }
+  }, [availableInstruments, gameStarted]);
 
   // Funções do temporizador
   const startTimer = () => {
     setTimerActive(true);
+    if (!gameStarted) {
+      setGameStarted(true);
+    }
   };
 
   const pauseTimer = () => {
@@ -159,8 +168,50 @@ const SurgicalTrainingGame = () => {
   };
 
   const resetTimer = () => {
-    setTimeLeft(180);
+    setElapsedTime(0);
     setTimerActive(false);
+  };
+
+  // Função para obter classificação e feedback baseado no tempo
+  const getPerformanceFeedback = (timeInSeconds) => {
+    const messages = {
+      excelente: [
+        { text: '🏆 Selo de Qualidade Professor Vinícius!', emoji: '🌟', color: 'from-yellow-400 to-amber-500' },
+        { text: '⚡ Velocidade do Professor Kleber!', emoji: '⚡', color: 'from-blue-400 to-cyan-500' },
+        { text: '🎯 Precisão aprovada pelo Professor Odenil!', emoji: '🎯', color: 'from-green-400 to-emerald-500' },
+        { text: '💪 Desempenho excepcional! Os professores estão orgulhosos!', emoji: '🌟', color: 'from-purple-400 to-pink-500' }
+      ],
+      quaseLa: [
+        { text: '👍 Quase lá! Continue praticando!', emoji: '💪', color: 'from-green-400 to-teal-500' },
+        { text: '📚 Bom trabalho! Mais algumas repetições e você chega no nível Professor Vinícius!', emoji: '📈', color: 'from-blue-400 to-indigo-500' },
+        { text: '🎓 Progresso sólido! Continue assim!', emoji: '✨', color: 'from-teal-400 to-cyan-500' }
+      ],
+      melhorar: [
+        { text: '⚠️ Precisa melhorar! O Professor Kleber está de olho!', emoji: '📖', color: 'from-orange-400 to-amber-500' },
+        { text: '🔄 Mais prática necessária! Revise com atenção!', emoji: '🎯', color: 'from-yellow-400 to-orange-500' },
+        { text: '💡 Foque na velocidade sem perder a precisão!', emoji: '⚡', color: 'from-amber-400 to-orange-500' }
+      ],
+      tentarNovamente: [
+        { text: '🚨 Cuidado! O Thiago pode te pegar!', emoji: '😰', color: 'from-red-400 to-rose-500' },
+        { text: '⏰ Muito lento! O Professor Thiago está esperando você!', emoji: '😅', color: 'from-red-500 to-pink-500' },
+        { text: '🏃 Acelere! Não deixe o Thiago te alcançar!', emoji: '🏃', color: 'from-rose-400 to-red-500' },
+        { text: '⚡ Tempo excessivo! Treine mais para evitar o Professor Thiago!', emoji: '⏱️', color: 'from-red-400 to-orange-500' }
+      ]
+    };
+
+    if (timeInSeconds < 180) { // Menos de 3 minutos
+      const msg = messages.excelente[Math.floor(Math.random() * messages.excelente.length)];
+      return { level: 'Excelente', ...msg };
+    } else if (timeInSeconds < 240) { // 3-4 minutos
+      const msg = messages.quaseLa[Math.floor(Math.random() * messages.quaseLa.length)];
+      return { level: 'Quase Lá', ...msg };
+    } else if (timeInSeconds < 300) { // 4-5 minutos
+      const msg = messages.melhorar[Math.floor(Math.random() * messages.melhorar.length)];
+      return { level: 'Precisa Melhorar', ...msg };
+    } else { // Mais de 5 minutos
+      const msg = messages.tentarNovamente[Math.floor(Math.random() * messages.tentarNovamente.length)];
+      return { level: 'Tentar Novamente', ...msg };
+    }
   };
 
   const formatTime = (seconds) => {
@@ -180,6 +231,12 @@ const SurgicalTrainingGame = () => {
 
   const handleDrop = (quadrant) => {
     if (!draggedItem) return;
+
+    // Iniciar o timer automaticamente no primeiro movimento
+    if (!gameStarted) {
+      setGameStarted(true);
+      setTimerActive(true);
+    }
 
     const correctQuadrant = getCorrectQuadrant(draggedItem.id);
     const isCorrect = correctQuadrant === quadrant;
@@ -222,6 +279,9 @@ const SurgicalTrainingGame = () => {
     setScore(0);
     setAttempts(0);
     setFeedback(null);
+    setElapsedTime(0);
+    setTimerActive(false);
+    setGameStarted(false);
   };
 
   const totalInstruments = Object.values(allInstruments).flat().length;
@@ -250,35 +310,53 @@ const SurgicalTrainingGame = () => {
         </div>
       )}
 
-      {isComplete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <div className="text-center">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">Parabéns!</h2>
-              <p className="text-gray-600 mb-6">Você completou o treinamento!</p>
-              <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6 mb-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-gray-600">Precisão</div>
-                    <div className="text-3xl font-bold text-indigo-600">{accuracy}%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600">Tentativas</div>
-                    <div className="text-3xl font-bold text-indigo-600">{attempts}</div>
+      {isComplete && (() => {
+        const performanceFeedback = getPerformanceFeedback(elapsedTime);
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Parabéns!</h2>
+                <p className="text-gray-600 mb-6">Você completou o treinamento!</p>
+
+                {/* Classificação de Performance */}
+                <div className={`bg-gradient-to-r ${performanceFeedback.color} rounded-xl p-6 mb-4 text-white shadow-lg`}>
+                  <div className="text-5xl mb-2">{performanceFeedback.emoji}</div>
+                  <div className="text-2xl font-bold mb-2">{performanceFeedback.level}</div>
+                  <div className="text-lg font-medium">{performanceFeedback.text}</div>
+                </div>
+
+                {/* Estatísticas */}
+                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6 mb-6">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <div className="text-sm text-gray-600">Precisão</div>
+                      <div className="text-2xl font-bold text-indigo-600">{accuracy}%</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Tentativas</div>
+                      <div className="text-2xl font-bold text-indigo-600">{attempts}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Tempo</div>
+                      <div className="text-2xl font-bold text-indigo-600">{formatTime(elapsedTime)}</div>
+                    </div>
                   </div>
                 </div>
+
+                <button
+                  onClick={resetGame}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg"
+                >
+                  🔄 Treinar Novamente
+                </button>
               </div>
-              <button
-                onClick={resetGame}
-                className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg"
-              >
-                🔄 Treinar Novamente
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
 
       {detailsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setDetailsModal(null)}>

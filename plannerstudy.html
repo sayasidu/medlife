@@ -4145,6 +4145,9 @@
             }
 
             runTimer() {
+                // Clear any existing timer to prevent multiple intervals
+                clearInterval(this.timer);
+
                 this.timer = setInterval(() => {
                     this.timeLeft--;
                     this.updateDisplay();

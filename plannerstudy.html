@@ -3807,9 +3807,9 @@
             init() {
                 // Level buttons
                 document.querySelectorAll('.level-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
+                    btn.addEventListener('click', async () => {
                         if (this.isRunning && !this.isPaused) {
-                            alert('Pause o timer antes de mudar de nível');
+                            await this.showPomodoroAlert('Pause o timer antes de mudar de nível');
                             return;
                         }
 
@@ -3830,12 +3830,12 @@
                 this.loadTodaySessions();
             }
 
-            start() {
+            async start() {
                 const subject = document.getElementById('pomodoroSubject').value.trim();
                 const content = document.getElementById('pomodoroContent').value.trim();
 
                 if (!subject || !content) {
-                    alert('Por favor, preencha a matéria e o conteúdo antes de iniciar');
+                    await this.showPomodoroAlert('Por favor, preencha a matéria e o conteúdo antes de iniciar');
                     return;
                 }
 
@@ -3899,7 +3899,7 @@
                 }, 1000);
             }
 
-            handleTimerComplete() {
+            async handleTimerComplete() {
                 clearInterval(this.timer);
                 const level = this.levels[this.currentLevel];
 
@@ -3911,11 +3911,11 @@
                     this.playNotification();
 
                     // Ask if user wants to continue
-                    const continuar = confirm(`✅ Sessão ${this.currentSession} completa!\n\nDeseja fazer mais uma sessão? (máximo 4 sessões)`);
+                    const continuar = await this.showPomodoroConfirm(`✅ Sessão ${this.currentSession} completa!\n\nDeseja fazer mais uma sessão? (máximo 4 sessões)`);
 
                     if (continuar && this.currentSession < this.maxSessions) {
                         // User wants to continue - start break
-                        alert(`💚 Ótimo! Faça uma pausa de ${level.break} minutos antes da próxima sessão.`);
+                        await this.showPomodoroAlert(`💚 Ótimo! Faça uma pausa de ${level.break} minutos antes da próxima sessão.`);
                         this.timeLeft = level.break * 60;
                         this.totalTime = level.break * 60;
                         this.isBreak = true;
@@ -3923,17 +3923,17 @@
                         this.runTimer();
                     } else if (continuar && this.currentSession >= this.maxSessions) {
                         // Reached max sessions
-                        alert('🏆 Parabéns! Você já completou o máximo de 4 sessões!\nExcelente trabalho!');
+                        await this.showPomodoroAlert('🏆 Parabéns! Você já completou o máximo de 4 sessões!\nExcelente trabalho!');
                         this.reset();
                     } else {
                         // User doesn't want to continue
-                        alert('🎉 Excelente trabalho! Suas sessões foram salvas.');
+                        await this.showPomodoroAlert('🎉 Excelente trabalho! Suas sessões foram salvas.');
                         this.reset();
                     }
                 } else {
                     // Completed a break - start next session
                     this.currentSession++;
-                    alert(`💪 Pausa terminada! Iniciando sessão ${this.currentSession}!`);
+                    await this.showPomodoroAlert(`💪 Pausa terminada! Iniciando sessão ${this.currentSession}!`);
                     this.timeLeft = level.focus * 60;
                     this.totalTime = level.focus * 60;
                     this.isBreak = false;
@@ -4022,6 +4022,117 @@
                     expert: 'Super Avançado'
                 };
                 return names[level] || level;
+            }
+
+            /**
+             * Show confirmation dialog using custom modal
+             * @param {string} message - Message to display
+             * @returns {Promise<boolean>} - Promise that resolves to true if confirmed, false otherwise
+             */
+            showPomodoroConfirm(message) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('modalOverlay');
+                    const title = document.getElementById('modalTitle');
+                    const body = document.getElementById('modalBody');
+                    const confirmBtn = document.getElementById('modalConfirm');
+                    const cancelBtn = document.getElementById('modalCancel');
+
+                    // Set content
+                    title.textContent = 'Pomodoro';
+                    body.textContent = message;
+
+                    // Update confirm button style for positive action
+                    confirmBtn.textContent = 'Sim';
+                    confirmBtn.className = 'btn btn-primary';
+                    cancelBtn.textContent = 'Não';
+
+                    // Show modal
+                    modal.classList.add('show');
+
+                    // Handle confirm
+                    const handleConfirm = () => {
+                        cleanup();
+                        resolve(true);
+                    };
+
+                    // Handle cancel
+                    const handleCancel = () => {
+                        cleanup();
+                        resolve(false);
+                    };
+
+                    // Cleanup function
+                    const cleanup = () => {
+                        modal.classList.remove('show');
+                        confirmBtn.removeEventListener('click', handleConfirm);
+                        cancelBtn.removeEventListener('click', handleCancel);
+                        modal.removeEventListener('click', handleOverlayClick);
+                    };
+
+                    // Handle overlay click
+                    const handleOverlayClick = (e) => {
+                        if (e.target === modal) {
+                            handleCancel();
+                        }
+                    };
+
+                    // Add event listeners
+                    confirmBtn.addEventListener('click', handleConfirm);
+                    cancelBtn.addEventListener('click', handleCancel);
+                    modal.addEventListener('click', handleOverlayClick);
+                });
+            }
+
+            /**
+             * Show alert dialog using custom modal
+             * @param {string} message - Message to display
+             * @returns {Promise<void>} - Promise that resolves when user closes the alert
+             */
+            showPomodoroAlert(message) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('modalOverlay');
+                    const title = document.getElementById('modalTitle');
+                    const body = document.getElementById('modalBody');
+                    const confirmBtn = document.getElementById('modalConfirm');
+                    const cancelBtn = document.getElementById('modalCancel');
+
+                    // Set content
+                    title.textContent = 'Pomodoro';
+                    body.textContent = message;
+
+                    // Update buttons for alert (only show OK button)
+                    confirmBtn.textContent = 'OK';
+                    confirmBtn.className = 'btn btn-primary';
+                    cancelBtn.style.display = 'none';
+
+                    // Show modal
+                    modal.classList.add('show');
+
+                    // Handle confirm
+                    const handleConfirm = () => {
+                        cleanup();
+                        resolve();
+                    };
+
+                    // Cleanup function
+                    const cleanup = () => {
+                        modal.classList.remove('show');
+                        cancelBtn.style.display = ''; // Restore cancel button
+                        confirmBtn.removeEventListener('click', handleConfirm);
+                        modal.removeEventListener('click', handleOverlayClick);
+                    };
+
+                    // Handle overlay click
+                    const handleOverlayClick = (e) => {
+                        if (e.target === modal) {
+                            handleConfirm();
+                        }
+                    };
+
+                    // Add event listeners
+                    confirmBtn.addEventListener('click', handleConfirm);
+                    modal.addEventListener('click', handleOverlayClick);
+                });
             }
 
             playNotification() {

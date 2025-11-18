@@ -3185,7 +3185,7 @@
                             <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
                                 <button
                                     class="btn btn-secondary btn-small"
-                                    onclick="app.editStudySession(${session.id})"
+                                    onclick="window.app.editStudySession(${session.id})"
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -3195,7 +3195,7 @@
                                 </button>
                                 <button
                                     class="btn btn-danger btn-small"
-                                    onclick="app.removeStudySession(${session.id})"
+                                    onclick="window.app.removeStudySession(${session.id})"
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"></polyline>

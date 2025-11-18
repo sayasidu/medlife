@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Organize seus estudos de forma eficiente com o MedLife Study Planner">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#0891b2">
     <title>Planejador de Estudos - MedLife</title>
 
     <!-- PWA Support -->
@@ -20,30 +20,30 @@
     <style>
         /* ===== CSS VARIABLES ===== */
         :root {
-            /* Light Theme */
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --primary-light: #818cf8;
-            --secondary: #7c3aed;
-            --secondary-dark: #6d28d9;
-            --accent: #ec4899;
+            /* Light Theme - Medical Modern */
+            --primary: #0891b2;
+            --primary-dark: #0e7490;
+            --primary-light: #06b6d4;
+            --secondary: #0284c7;
+            --secondary-dark: #0369a1;
+            --accent: #14b8a6;
             --success: #10b981;
             --success-dark: #059669;
             --danger: #ef4444;
             --danger-dark: #dc2626;
             --warning: #f59e0b;
-            --info: #3b82f6;
+            --info: #0ea5e9;
 
-            --text: #1f2937;
-            --text-secondary: #6b7280;
-            --text-light: #9ca3af;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-light: #94a3b8;
 
-            --bg: #f9fafb;
-            --bg-secondary: #f3f4f6;
+            --bg: linear-gradient(to bottom, #f0fdfa 0%, #f8fafc 100%);
+            --bg-secondary: #ecfeff;
             --surface: #ffffff;
             --surface-elevated: #ffffff;
-            --border: #e5e7eb;
-            --border-light: #f3f4f6;
+            --border: #e0f2fe;
+            --border-light: #f0f9ff;
 
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -94,11 +94,18 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
+            background: linear-gradient(to bottom, #f0fdfa 0%, #f8fafc 100%);
+            background-attachment: fixed;
             color: var(--text);
             line-height: 1.6;
-            transition: background-color var(--transition), color var(--transition);
+            transition: all var(--transition);
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(to bottom, #0f172a 0%, #1e293b 100%);
+            background-attachment: fixed;
         }
 
         .container {
@@ -109,11 +116,11 @@
 
         /* ===== HEADER ===== */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 50%, #14b8a6 100%);
             color: white;
-            padding: 48px 0;
+            padding: 56px 0;
             margin-bottom: 40px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 40px -10px rgba(8, 145, 178, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -125,8 +132,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="white" opacity="0.03"/></svg>');
-            animation: float 20s infinite linear;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 L30 25 M25 20 L35 20" stroke="white" stroke-width="1.5" opacity="0.05"/><circle cx="30" cy="40" r="8" stroke="white" stroke-width="1.5" fill="none" opacity="0.05"/></svg>');
+            animation: float 25s infinite linear;
         }
 
         @keyframes float {
@@ -172,17 +182,19 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(24px);
+            padding: 22px;
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             transition: all var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .stat-card:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .stat-card p {
@@ -201,7 +213,7 @@
 
         /* ===== BUTTONS ===== */
         .btn {
-            padding: 12px 24px;
+            padding: 13px 28px;
             border: none;
             border-radius: var(--radius);
             font-weight: 600;
@@ -211,10 +223,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             font-family: inherit;
             position: relative;
             overflow: hidden;
+            letter-spacing: 0.3px;
         }
 
         .btn::before {
@@ -241,18 +254,19 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);
             color: white;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(8, 145, 178, 0.35);
+            background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(0) scale(0.98);
         }
 
         .btn-secondary {
@@ -350,11 +364,12 @@
             gap: 8px;
             margin-bottom: 32px;
             background: var(--surface);
-            padding: 8px;
+            padding: 10px;
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.08);
             flex-wrap: wrap;
             position: relative;
+            border: 1px solid rgba(8, 145, 178, 0.08);
         }
 
         .tab-btn {
@@ -373,9 +388,9 @@
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);
             color: white;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25);
         }
 
         .tab-btn:hover:not(.active) {
@@ -388,8 +403,9 @@
             background: var(--surface);
             padding: 24px;
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.08);
             margin-bottom: 24px;
+            border: 1px solid rgba(8, 145, 178, 0.08);
         }
 
         .search-wrapper {
@@ -398,20 +414,20 @@
 
         .search-input {
             width: 100%;
-            padding: 14px 48px 14px 48px;
+            padding: 15px 48px 15px 48px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             font-size: 1rem;
             font-family: inherit;
             transition: all var(--transition);
-            background: var(--bg);
+            background: var(--surface);
             color: var(--text);
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.12);
         }
 
         .search-icon {
@@ -448,26 +464,29 @@
         }
 
         .filter-tag {
-            padding: 6px 12px;
+            padding: 7px 16px;
             border-radius: 20px;
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all var(--transition);
             border: 2px solid var(--border);
             background: var(--surface);
             color: var(--text-secondary);
+            letter-spacing: 0.2px;
         }
 
         .filter-tag.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);
             color: white;
-            border-color: var(--primary);
+            border-color: transparent;
+            box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
         }
 
         .filter-tag:hover:not(.active) {
             border-color: var(--primary);
             color: var(--primary);
+            transform: translateY(-1px);
         }
 
         /* ===== CARDS ===== */
@@ -475,13 +494,16 @@
             background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 32px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.08);
             margin-bottom: 24px;
             transition: all var(--transition);
+            border: 1px solid rgba(8, 145, 178, 0.08);
         }
 
         .card:hover {
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 8px 24px rgba(8, 145, 178, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(8, 145, 178, 0.15);
         }
 
         .card h2 {
@@ -508,13 +530,13 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 14px 16px;
+            padding: 14px 18px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             font-size: 1rem;
             font-family: inherit;
             transition: all var(--transition);
-            background: var(--bg);
+            background: var(--surface);
             color: var(--text);
         }
 
@@ -523,7 +545,8 @@
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+            background: var(--surface);
         }
 
         .form-group textarea {
@@ -619,9 +642,11 @@
             padding: 24px;
             margin-bottom: 20px;
             border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
+            box-shadow: 0 2px 12px rgba(8, 145, 178, 0.1);
             transition: all var(--transition);
             animation: slideUp var(--transition);
+            border: 1px solid rgba(8, 145, 178, 0.1);
+            border-left: 4px solid var(--primary);
         }
 
         @keyframes slideUp {
@@ -637,7 +662,8 @@
 
         .content-item:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 8px 24px rgba(8, 145, 178, 0.18);
+            border-color: rgba(8, 145, 178, 0.2);
         }
 
         .content-header {
@@ -666,17 +692,18 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
             transition: all var(--transition);
+            letter-spacing: 0.3px;
         }
 
         .badge-subject {
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.12), rgba(2, 132, 199, 0.12));
             color: var(--primary);
-            border: 1px solid rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(8, 145, 178, 0.25);
         }
 
         .badge-difficulty-easy {
@@ -698,9 +725,9 @@
         }
 
         .badge-time {
-            background: rgba(124, 58, 237, 0.1);
+            background: rgba(2, 132, 199, 0.1);
             color: var(--secondary);
-            border: 1px solid rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(2, 132, 199, 0.25);
         }
 
         .content-text {
@@ -780,14 +807,15 @@
         .modal {
             background: var(--surface);
             border-radius: var(--radius-xl);
-            padding: 32px;
+            padding: 36px;
             max-width: 500px;
             width: 100%;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 20px 60px rgba(8, 145, 178, 0.15);
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
             animation: slideDown var(--transition-slow);
+            border: 1px solid rgba(8, 145, 178, 0.1);
         }
 
         @keyframes slideDown {
@@ -834,13 +862,15 @@
 
         .toast {
             background: var(--surface);
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
+            padding: 18px 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 24px rgba(8, 145, 178, 0.15);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             animation: slideInRight var(--transition);
+            border-left: 4px solid var(--primary);
+            border: 1px solid rgba(8, 145, 178, 0.15);
             border-left: 4px solid var(--primary);
         }
 
@@ -1432,12 +1462,13 @@
         }
 
         .pomodoro-timer-container {
-            background: var(--surface);
-            border: 2px solid var(--border);
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.03) 0%, rgba(2, 132, 199, 0.03) 100%);
+            border: 2px solid rgba(8, 145, 178, 0.15);
             border-radius: var(--radius-xl);
-            padding: 40px 32px;
+            padding: 48px 40px;
             margin: 32px 0;
             text-align: center;
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.08);
         }
 
         .pomodoro-display {

@@ -9,12 +9,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Suprimir aviso do Tailwind CDN (adequado para demo/protótipo) -->
     <script>
-        const originalWarn = console.warn;
-        console.warn = function(...args) {
+        const originalLog = console.log;
+        console.log = function(...args) {
             if (args[0]?.includes && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
                 return;
             }
-            originalWarn.apply(console, args);
+            originalLog.apply(console, args);
         };
     </script>
     <!-- Carregar as imagens primeiro -->

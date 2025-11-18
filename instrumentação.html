@@ -7,6 +7,16 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Suprimir aviso do Tailwind CDN (adequado para demo/protótipo) -->
+    <script>
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            if (args[0]?.includes && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
+                return;
+            }
+            originalWarn.apply(console, args);
+        };
+    </script>
     <!-- Carregar as imagens primeiro -->
     <script src="instrumentacao-images.js"></script>
 </head>

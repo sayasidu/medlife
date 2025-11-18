@@ -6,6 +6,8 @@
     <title>Jogo de Instrumentação Cirúrgica</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone é ESSENCIAL para compilar JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Suprimir aviso do Tailwind CDN (adequado para demo/protótipo) -->
     <script>
@@ -19,6 +21,50 @@
     </script>
     <!-- Carregar as imagens primeiro -->
     <script src="instrumentacao-images.js"></script>
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Personalizar scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -81,27 +127,37 @@ const SurgicalTrainingGame = () => {
   const [errors, setErrors] = useState(0);
   const [detailsModal, setDetailsModal] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
+  const [dragOverQuadrant, setDragOverQuadrant] = useState(null);
+  const [feedbackMessage, setFeedbackMessage] = useState(null);
 
   const handleDrop = (quadrantId) => {
     if (!draggedItem) return;
 
     const isCorrect = draggedItem.quadrant === quadrantId;
-    
+
     if (isCorrect) {
       setPlacedInstruments(prev => ({
         ...prev,
         [quadrantId]: [...prev[quadrantId], draggedItem]
       }));
-      setAvailableInstruments(prev => 
+      setAvailableInstruments(prev =>
         prev.filter(item => item.id !== draggedItem.id)
       );
       setScore(prev => prev + 10);
+      showFeedback('✓ Correto! +10 pontos', 'success');
     } else {
       setErrors(prev => prev + 1);
       setScore(prev => Math.max(0, prev - 5));
+      showFeedback('✗ Incorreto! -5 pontos', 'error');
     }
-    
+
     setDraggedItem(null);
+    setDragOverQuadrant(null);
+  };
+
+  const showFeedback = (message, type) => {
+    setFeedbackMessage({ message, type });
+    setTimeout(() => setFeedbackMessage(null), 2000);
   };
 
   useEffect(() => {
@@ -116,27 +172,47 @@ const SurgicalTrainingGame = () => {
     setScore(0);
     setErrors(0);
     setGameComplete(false);
+    setFeedbackMessage(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      {feedbackMessage && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-2xl font-bold text-white transition-all animate-bounce ${
+          feedbackMessage.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`}>
+          {feedbackMessage.message}
+        </div>
+      )}
+
       {detailsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
              onClick={() => setDetailsModal(null)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-in"
                onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-2xl font-bold text-gray-800">{detailsModal.name}</h3>
-              <button onClick={() => setDetailsModal(null)} 
-                      className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+              <button onClick={() => setDetailsModal(null)}
+                      className="text-gray-400 hover:text-gray-600 text-3xl leading-none transition-colors"
+                      title="Fechar">×</button>
             </div>
-            <img src={detailsModal.image} alt={detailsModal.name} 
-                 className="w-full h-48 object-contain mb-4 bg-gray-50 rounded-lg"/>
-            <div className="space-y-2 text-sm text-gray-600">
-              <p><strong>Categoria:</strong> {detailsModal.category.toUpperCase()}</p>
-              <p><strong>Tempo cirúrgico:</strong> {
-                ['DIÉRESE', 'HEMOSTASIA', 'PREENSÃO', 'SÍNTESE'][detailsModal.quadrant - 1]
-              }</p>
+            <img src={detailsModal.image} alt={detailsModal.name}
+                 className="w-full h-48 object-contain mb-4 bg-gray-50 rounded-lg p-2"/>
+            <div className="space-y-3">
+              <div className="bg-indigo-50 rounded-lg p-3">
+                <p className="text-sm text-gray-600">
+                  <strong className="text-indigo-700">Categoria:</strong>
+                  <span className="ml-2 text-gray-800">{detailsModal.category.toUpperCase()}</span>
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3">
+                <p className="text-sm text-gray-600">
+                  <strong className="text-green-700">Tempo cirúrgico:</strong>
+                  <span className="ml-2 text-gray-800">{
+                    ['DIÉRESE', 'HEMOSTASIA', 'PREENSÃO', 'SÍNTESE'][detailsModal.quadrant - 1]
+                  }</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -144,7 +220,7 @@ const SurgicalTrainingGame = () => {
 
       {gameComplete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl text-center">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl text-center animate-slide-in">
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Parabéns!</h2>
             <p className="text-xl text-gray-600 mb-6">
@@ -160,6 +236,14 @@ const SurgicalTrainingGame = () => {
                 <div className="text-sm text-gray-600">Erros</div>
               </div>
             </div>
+            <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+              <div className="text-lg font-bold text-indigo-700">
+                {errors === 0 ? '🌟 Desempenho Perfeito!' : errors <= 3 ? '👍 Ótimo Desempenho!' : errors <= 6 ? '👌 Bom Desempenho!' : '💪 Continue Praticando!'}
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                Taxa de acerto: {Math.round(((INSTRUMENTS_DATA.length - errors) / INSTRUMENTS_DATA.length) * 100)}%
+              </div>
+            </div>
             <button onClick={resetGame}
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
               Jogar Novamente
@@ -173,10 +257,19 @@ const SurgicalTrainingGame = () => {
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                Treinamento de Instrumentação Cirúrgica
+                🏥 Treinamento de Instrumentação Cirúrgica
               </h1>
               <p className="text-gray-600">
                 Arraste cada instrumento para o tempo cirúrgico correto
+              </p>
+              <div className="mt-2 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-indigo-600 h-full transition-all duration-500"
+                  style={{ width: `${((INSTRUMENTS_DATA.length - availableInstruments.length) / INSTRUMENTS_DATA.length) * 100}%` }}
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                Progresso: {INSTRUMENTS_DATA.length - availableInstruments.length} / {INSTRUMENTS_DATA.length} instrumentos
               </p>
             </div>
             
@@ -212,7 +305,10 @@ const SurgicalTrainingGame = () => {
                     key={instrument.id}
                     draggable
                     onDragStart={() => setDraggedItem(instrument)}
-                    className="bg-white border-2 border-gray-200 rounded-xl p-4 cursor-move hover:border-indigo-400 hover:shadow-lg transition-all group relative"
+                    onDragEnd={() => setDraggedItem(null)}
+                    className={`bg-white border-2 border-gray-200 rounded-xl p-4 cursor-move hover:border-indigo-400 hover:shadow-lg transition-all group relative ${
+                      draggedItem?.id === instrument.id ? 'opacity-50 scale-95' : ''
+                    }`}
                     title={instrument.name}
                   >
                     <img 
@@ -234,9 +330,15 @@ const SurgicalTrainingGame = () => {
               {quadrants.map((quadrant) => (
                 <div
                   key={quadrant.id}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOverQuadrant(quadrant.id);
+                  }}
+                  onDragLeave={() => setDragOverQuadrant(null)}
                   onDrop={() => handleDrop(quadrant.id)}
-                  className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl p-6 min-h-[350px] relative overflow-hidden shadow-xl"
+                  className={`bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl p-6 min-h-[350px] relative overflow-hidden shadow-xl transition-all ${
+                    dragOverQuadrant === quadrant.id ? 'ring-4 ring-yellow-400 scale-105' : ''
+                  }`}
                 >
                   <div className="absolute top-4 right-4 text-white text-8xl font-bold opacity-20">
                     {quadrant.number}
@@ -251,7 +353,7 @@ const SurgicalTrainingGame = () => {
                     {placedInstruments[quadrant.id].map((instrument) => (
                       <div
                         key={instrument.id}
-                        className="bg-white rounded-lg p-3 shadow-md hover:shadow-xl transition-shadow"
+                        className="bg-white rounded-lg p-3 shadow-md hover:shadow-xl transition-shadow animate-slide-in"
                       >
                         <div className="flex items-center gap-3">
                           <img src={instrument.image} alt={instrument.name} className="w-12 h-12 object-contain flex-shrink-0" />

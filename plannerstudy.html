@@ -4088,7 +4088,14 @@
                 this.currentSubject = '';
                 this.currentContent = '';
 
+                // Timestamp-based timer properties
+                this.startTimestamp = null;
+                this.endTimestamp = null;
+                this.pausedAt = null;
+                this.totalPausedTime = 0;
+
                 this.init();
+                this.restoreState();
             }
 
             init() {
@@ -4112,6 +4119,21 @@
                 document.getElementById('pausePomodoroBtn').addEventListener('click', () => this.pause());
                 document.getElementById('resumePomodoroBtn').addEventListener('click', () => this.resume());
                 document.getElementById('resetPomodoroBtn').addEventListener('click', () => this.reset());
+
+                // Page visibility change listener - handle tab switching
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden && this.isRunning) {
+                        // User returned to the tab, recalculate time
+                        this.updateTimerFromTimestamp();
+                    }
+                });
+
+                // Before unload - save state
+                window.addEventListener('beforeunload', () => {
+                    if (this.isRunning || this.isPaused) {
+                        this.saveState();
+                    }
+                });
 
                 this.updateDisplay();
                 this.loadTodaySessions();
@@ -4139,13 +4161,20 @@
                 this.isRunning = true;
                 this.isPaused = false;
 
+                // Initialize timestamp-based timer
+                const now = Date.now();
+                this.startTimestamp = now;
+                this.endTimestamp = now + (this.timeLeft * 1000);
+                this.pausedAt = null;
+                this.totalPausedTime = 0;
+
                 // If user wants to integrate, create a study session
                 if (createSession && window.app) {
                     try {
                         // Create study session automatically
-                        const now = new Date();
-                        const startTime = now.toTimeString().slice(0, 5);
-                        const endTime = new Date(now.getTime() + this.levels[this.currentLevel].focus * 60000).toTimeString().slice(0, 5);
+                        const dateNow = new Date();
+                        const startTime = dateNow.toTimeString().slice(0, 5);
+                        const endTime = new Date(dateNow.getTime() + this.levels[this.currentLevel].focus * 60000).toTimeString().slice(0, 5);
 
                         // Find the content in app data
                         const contentObj = window.app.data.contents.find(c =>
@@ -4156,7 +4185,7 @@
                             const session = {
                                 id: Date.now().toString(),
                                 contentId: contentObj.id,
-                                date: now.toISOString().split('T')[0],
+                                date: dateNow.toISOString().split('T')[0],
                                 startTime: startTime,
                                 endTime: endTime,
                                 completed: false
@@ -4175,6 +4204,7 @@
                 document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
                 document.getElementById('resumePomodoroBtn').style.display = 'none';
 
+                this.saveState();
                 this.runTimer();
             }
 
@@ -4208,19 +4238,32 @@
             pause() {
                 this.isPaused = true;
                 this.isRunning = false;
+                this.pausedAt = Date.now();
                 clearInterval(this.timer);
 
                 document.getElementById('pausePomodoroBtn').style.display = 'none';
                 document.getElementById('resumePomodoroBtn').style.display = 'inline-flex';
+
+                this.saveState();
             }
 
             resume() {
                 this.isPaused = false;
                 this.isRunning = true;
 
+                // Calculate total paused time
+                if (this.pausedAt) {
+                    this.totalPausedTime += Date.now() - this.pausedAt;
+                    this.pausedAt = null;
+                }
+
+                // Recalculate end timestamp
+                this.endTimestamp = Date.now() + (this.timeLeft * 1000);
+
                 document.getElementById('resumePomodoroBtn').style.display = 'none';
                 document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
 
+                this.saveState();
                 this.runTimer();
             }
 
@@ -4235,9 +4278,18 @@
                 this.timeLeft = level.focus * 60;
                 this.totalTime = level.focus * 60;
 
+                // Reset timestamp properties
+                this.startTimestamp = null;
+                this.endTimestamp = null;
+                this.pausedAt = null;
+                this.totalPausedTime = 0;
+
                 document.getElementById('startPomodoroBtn').style.display = 'inline-flex';
                 document.getElementById('pausePomodoroBtn').style.display = 'none';
                 document.getElementById('resumePomodoroBtn').style.display = 'none';
+
+                // Clear saved state
+                localStorage.removeItem('pomodoroTimerState');
 
                 this.updateDisplay();
             }
@@ -4248,8 +4300,8 @@
 
                 this.timer = setInterval(() => {
                     try {
-                        this.timeLeft--;
-                        this.updateDisplay();
+                        // Calculate time left based on timestamp
+                        this.updateTimerFromTimestamp();
 
                         if (this.timeLeft <= 0) {
                             this.handleTimerComplete();
@@ -4259,6 +4311,19 @@
                         // Continue executando mesmo se houver erro
                     }
                 }, 1000);
+            }
+
+            updateTimerFromTimestamp() {
+                if (!this.endTimestamp || !this.isRunning) {
+                    return;
+                }
+
+                const now = Date.now();
+                const remaining = Math.max(0, Math.floor((this.endTimestamp - now) / 1000));
+
+                this.timeLeft = remaining;
+                this.updateDisplay();
+                this.saveState();
             }
 
             async handleTimerComplete() {
@@ -4297,7 +4362,15 @@
                         this.timeLeft = level.focus * 60;
                         this.totalTime = level.focus * 60;
                         this.isBreak = false;
+
+                        // Reset timestamps for next focus session
+                        const now = Date.now();
+                        this.startTimestamp = now;
+                        this.endTimestamp = now + (this.timeLeft * 1000);
+                        this.totalPausedTime = 0;
+
                         this.updateDisplay();
+                        this.saveState();
                         this.runTimer();
                     }
                 } catch (error) {
@@ -4356,7 +4429,15 @@
                     this.timeLeft = level.break * 60;
                     this.totalTime = level.break * 60;
                     this.isBreak = true;
+
+                    // Reset timestamps for break
+                    const now = Date.now();
+                    this.startTimestamp = now;
+                    this.endTimestamp = now + (this.timeLeft * 1000);
+                    this.totalPausedTime = 0;
+
                     this.updateDisplay();
+                    this.saveState();
                     this.runTimer();
                 } else {
                     // Reached max sessions
@@ -4572,6 +4653,98 @@
                     confirmBtn.addEventListener('click', handleConfirm);
                     modal.addEventListener('click', handleOverlayClick);
                 });
+            }
+
+            saveState() {
+                const state = {
+                    currentLevel: this.currentLevel,
+                    timeLeft: this.timeLeft,
+                    totalTime: this.totalTime,
+                    isRunning: this.isRunning,
+                    isPaused: this.isPaused,
+                    currentSession: this.currentSession,
+                    isBreak: this.isBreak,
+                    currentSubject: this.currentSubject,
+                    currentContent: this.currentContent,
+                    startTimestamp: this.startTimestamp,
+                    endTimestamp: this.endTimestamp,
+                    pausedAt: this.pausedAt,
+                    totalPausedTime: this.totalPausedTime
+                };
+
+                try {
+                    localStorage.setItem('pomodoroTimerState', JSON.stringify(state));
+                } catch (e) {
+                    console.error('Erro ao salvar estado do timer:', e);
+                }
+            }
+
+            restoreState() {
+                try {
+                    const savedState = localStorage.getItem('pomodoroTimerState');
+                    if (!savedState) return;
+
+                    const state = JSON.parse(savedState);
+
+                    // Restore basic properties
+                    this.currentLevel = state.currentLevel || 'beginner';
+                    this.currentSession = state.currentSession || 1;
+                    this.isBreak = state.isBreak || false;
+                    this.currentSubject = state.currentSubject || '';
+                    this.currentContent = state.currentContent || '';
+                    this.totalTime = state.totalTime || 25 * 60;
+                    this.totalPausedTime = state.totalPausedTime || 0;
+
+                    // Restore timestamps
+                    this.startTimestamp = state.startTimestamp;
+                    this.endTimestamp = state.endTimestamp;
+                    this.pausedAt = state.pausedAt;
+
+                    // If timer was running, restore it
+                    if (state.isRunning && this.endTimestamp) {
+                        const now = Date.now();
+                        const remaining = Math.max(0, Math.floor((this.endTimestamp - now) / 1000));
+
+                        if (remaining > 0) {
+                            // Timer is still valid
+                            this.timeLeft = remaining;
+                            this.isRunning = true;
+                            this.isPaused = false;
+
+                            document.getElementById('startPomodoroBtn').style.display = 'none';
+                            document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
+                            document.getElementById('resumePomodoroBtn').style.display = 'none';
+
+                            // Update level button
+                            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                            document.querySelector(`[data-level="${this.currentLevel}"]`)?.classList.add('active');
+
+                            this.runTimer();
+                        } else {
+                            // Timer expired while away
+                            this.reset();
+                            localStorage.removeItem('pomodoroTimerState');
+                        }
+                    } else if (state.isPaused && this.pausedAt) {
+                        // Timer was paused
+                        this.timeLeft = state.timeLeft;
+                        this.isRunning = false;
+                        this.isPaused = true;
+
+                        document.getElementById('startPomodoroBtn').style.display = 'none';
+                        document.getElementById('pausePomodoroBtn').style.display = 'none';
+                        document.getElementById('resumePomodoroBtn').style.display = 'inline-flex';
+
+                        // Update level button
+                        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelector(`[data-level="${this.currentLevel}"]`)?.classList.add('active');
+
+                        this.updateDisplay();
+                    }
+                } catch (e) {
+                    console.error('Erro ao restaurar estado do timer:', e);
+                    localStorage.removeItem('pomodoroTimerState');
+                }
             }
 
             playNotification() {

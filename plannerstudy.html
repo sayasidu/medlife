@@ -4126,16 +4126,83 @@
                     return;
                 }
 
+                // Show integration modal first
+                this.showIntegrationModal(subject, content);
+            }
+
+            startTimerAfterIntegration(createSession = false) {
+                const subject = document.getElementById('pomodoroSubject').value.trim();
+                const content = document.getElementById('pomodoroContent').value.trim();
+
                 this.currentSubject = subject;
                 this.currentContent = content;
                 this.isRunning = true;
                 this.isPaused = false;
+
+                // If user wants to integrate, create a study session
+                if (createSession && window.app) {
+                    try {
+                        // Create study session automatically
+                        const now = new Date();
+                        const startTime = now.toTimeString().slice(0, 5);
+                        const endTime = new Date(now.getTime() + this.levels[this.currentLevel].focus * 60000).toTimeString().slice(0, 5);
+
+                        // Find the content in app data
+                        const contentObj = window.app.data.contents.find(c =>
+                            c.title === content && c.subject === subject
+                        );
+
+                        if (contentObj) {
+                            const session = {
+                                id: Date.now().toString(),
+                                contentId: contentObj.id,
+                                date: now.toISOString().split('T')[0],
+                                startTime: startTime,
+                                endTime: endTime,
+                                completed: false
+                            };
+
+                            window.app.data.studySessions.push(session);
+                            window.app.saveData();
+                            window.app.render();
+                        }
+                    } catch (e) {
+                        console.log('Erro ao criar sessão de estudo:', e);
+                    }
+                }
 
                 document.getElementById('startPomodoroBtn').style.display = 'none';
                 document.getElementById('pausePomodoroBtn').style.display = 'inline-flex';
                 document.getElementById('resumePomodoroBtn').style.display = 'none';
 
                 this.runTimer();
+            }
+
+            showIntegrationModal(subject, content) {
+                const modal = document.getElementById('pomodoroAssociationModal');
+                const yesBtn = document.getElementById('pomodoroAssociationYes');
+                const noBtn = document.getElementById('pomodoroAssociationNo');
+
+                // Show modal
+                modal.classList.add('show');
+
+                // Remove any existing listeners
+                const newYesBtn = yesBtn.cloneNode(true);
+                const newNoBtn = noBtn.cloneNode(true);
+                yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+                noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+
+                // Handle YES - integrate with study session
+                newYesBtn.addEventListener('click', () => {
+                    modal.classList.remove('show');
+                    this.startTimerAfterIntegration(true);
+                }, { once: true });
+
+                // Handle NO - just start timer
+                newNoBtn.addEventListener('click', () => {
+                    modal.classList.remove('show');
+                    this.startTimerAfterIntegration(false);
+                }, { once: true });
             }
 
             pause() {
@@ -4180,40 +4247,63 @@
                 clearInterval(this.timer);
 
                 this.timer = setInterval(() => {
-                    this.timeLeft--;
-                    this.updateDisplay();
+                    try {
+                        this.timeLeft--;
+                        this.updateDisplay();
 
-                    if (this.timeLeft <= 0) {
-                        this.handleTimerComplete();
+                        if (this.timeLeft <= 0) {
+                            this.handleTimerComplete();
+                        }
+                    } catch (error) {
+                        console.error('Erro no timer Pomodoro:', error);
+                        // Continue executando mesmo se houver erro
                     }
                 }, 1000);
             }
 
             async handleTimerComplete() {
-                clearInterval(this.timer);
-                const level = this.levels[this.currentLevel];
+                try {
+                    clearInterval(this.timer);
+                    const level = this.levels[this.currentLevel];
 
-                if (!this.isBreak) {
-                    // Completed a focus session
-                    this.saveSession();
+                    if (!this.isBreak) {
+                        // Completed a focus session
+                        this.saveSession();
 
-                    // Play notification sound (optional)
-                    this.playNotification();
+                        // Play notification sound (optional)
+                        try {
+                            this.playNotification();
+                        } catch (e) {
+                            console.log('Erro ao tocar notificação:', e);
+                        }
 
-                    // Show notification
-                    this.showNotification('✅ Sessão completa!', 'Verifique a notificação do Pomodoro.');
+                        // Show notification
+                        try {
+                            this.showNotification('✅ Sessão completa!', 'Verifique a notificação do Pomodoro.');
+                        } catch (e) {
+                            console.log('Erro ao mostrar notificação:', e);
+                        }
 
-                    // Ask if user wants to continue using modal
-                    this.showConfirmationModal();
-                } else {
-                    // Completed a break - start next session automatically
-                    this.currentSession++;
-                    this.showNotification('💪 Pausa terminada!', `Iniciando sessão ${this.currentSession}!`);
-                    this.timeLeft = level.focus * 60;
-                    this.totalTime = level.focus * 60;
-                    this.isBreak = false;
-                    this.updateDisplay();
-                    this.runTimer();
+                        // Ask if user wants to continue using modal
+                        this.showConfirmationModal();
+                    } else {
+                        // Completed a break - start next session automatically
+                        this.currentSession++;
+                        try {
+                            this.showNotification('💪 Pausa terminada!', `Iniciando sessão ${this.currentSession}!`);
+                        } catch (e) {
+                            console.log('Erro ao mostrar notificação:', e);
+                        }
+                        this.timeLeft = level.focus * 60;
+                        this.totalTime = level.focus * 60;
+                        this.isBreak = false;
+                        this.updateDisplay();
+                        this.runTimer();
+                    }
+                } catch (error) {
+                    console.error('Erro ao completar timer:', error);
+                    // Garantir que o timer não fique travado
+                    this.reset();
                 }
             }
 
@@ -4510,7 +4600,9 @@
 
         // Initialize the application
         const app = new StudyPlannerApp();
+        window.app = app; // Make app globally accessible for Pomodoro integration
         const pomodoroTimer = new PomodoroTimer();
+        window.pomodoroTimer = pomodoroTimer; // Make timer globally accessible
     </script>
 </body>
 </html>

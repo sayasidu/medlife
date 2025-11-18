@@ -4182,13 +4182,17 @@
                         );
 
                         if (contentObj) {
+                            const durationMinutes = this.levels[this.currentLevel].focus;
                             const session = {
-                                id: Date.now().toString(),
+                                id: Date.now(),
                                 contentId: contentObj.id,
+                                contentTitle: contentObj.title,
+                                subject: contentObj.subject,
                                 date: dateNow.toISOString().split('T')[0],
                                 startTime: startTime,
                                 endTime: endTime,
-                                completed: false
+                                duration: durationMinutes,
+                                createdAt: new Date().toISOString()
                             };
 
                             window.app.data.studySessions.push(session);

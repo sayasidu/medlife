@@ -2660,6 +2660,27 @@
                             reviews: loadedData.reviews || [],
                             settings: loadedData.settings || { theme: 'light' }
                         };
+
+                        // Migração de dados: corrigir sessões antigas
+                        this.data.studySessions = this.data.studySessions.map((session, index) => {
+                            // Garantir que a sessão tenha um ID válido
+                            if (!session.id) {
+                                session.id = Date.now() + index;
+                            }
+
+                            // Calcular duração se não existir
+                            if (!session.duration && session.startTime && session.endTime && session.date) {
+                                try {
+                                    const start = new Date(`${session.date}T${session.startTime}`);
+                                    const end = new Date(`${session.date}T${session.endTime}`);
+                                    session.duration = Math.round((end - start) / 1000 / 60);
+                                } catch (e) {
+                                    session.duration = 0;
+                                }
+                            }
+
+                            return session;
+                        });
                     } else {
                         // Initial sample data
                         this.data = {
@@ -2872,7 +2893,13 @@
              * Edit a study session
              */
             editStudySession(sessionId) {
-                const session = this.data.studySessions.find(s => s.id === sessionId);
+                // Converter para número para garantir compatibilidade
+                const numericId = parseInt(sessionId);
+                const session = this.data.studySessions.find(s => {
+                    const sId = parseInt(s.id);
+                    return sId === numericId || s.id === sessionId;
+                });
+
                 if (!session) {
                     this.showToast('Sessão não encontrada', 'error');
                     return;
@@ -2898,7 +2925,13 @@
              * Remove a study session
              */
             removeStudySession(sessionId) {
-                const session = this.data.studySessions.find(s => s.id === sessionId);
+                // Converter para número para garantir compatibilidade
+                const numericId = parseInt(sessionId);
+                const session = this.data.studySessions.find(s => {
+                    const sId = parseInt(s.id);
+                    return sId === numericId || s.id === sessionId;
+                });
+
                 if (!session) {
                     this.showToast('Sessão não encontrada', 'error');
                     return;
@@ -2908,7 +2941,10 @@
                     'Confirmar Exclusão',
                     `Deseja realmente excluir a sessão de estudo "${session.contentTitle}"?`,
                     () => {
-                        this.data.studySessions = this.data.studySessions.filter(s => s.id !== sessionId);
+                        this.data.studySessions = this.data.studySessions.filter(s => {
+                            const sId = parseInt(s.id);
+                            return sId !== numericId && s.id !== sessionId;
+                        });
                         this.saveData();
                         this.renderStudySessions();
                         this.renderStats();
@@ -3167,25 +3203,38 @@
 
                 list.innerHTML = `
                     <h3 style="margin-top: 24px; margin-bottom: 16px;">Histórico de Sessões</h3>
-                    ${sessions.map(session => `
+                    ${sessions.map(session => {
+                        // Calcular duração se não existir
+                        let duration = session.duration;
+                        if (!duration && session.startTime && session.endTime && session.date) {
+                            const start = new Date(`${session.date}T${session.startTime}`);
+                            const end = new Date(`${session.date}T${session.endTime}`);
+                            duration = Math.round((end - start) / 1000 / 60);
+                        }
+
+                        // Garantir que temos um ID válido
+                        const sessionId = session.id || 0;
+
+                        return `
                         <div class="content-item" style="margin-bottom: 16px;">
                             <div class="content-header">
                                 <div style="flex: 1;">
-                                    <h4 class="content-title" style="font-size: 1.1rem;">${this.escapeHtml(session.contentTitle)}</h4>
+                                    <h4 class="content-title" style="font-size: 1.1rem;">${this.escapeHtml(session.contentTitle || 'Sem título')}</h4>
                                     <div class="badges">
-                                        <span class="badge badge-subject">${this.escapeHtml(session.subject)}</span>
-                                        <span class="badge badge-time">${session.duration} min</span>
+                                        <span class="badge badge-subject">${this.escapeHtml(session.subject || 'Sem disciplina')}</span>
+                                        <span class="badge badge-time">${duration || 'N/A'} min</span>
                                     </div>
                                 </div>
                             </div>
                             <p style="color: var(--text-secondary); margin-top: 12px;">
                                 <strong>Data:</strong> ${this.getLocalDate(session.date).toLocaleDateString('pt-BR')}<br>
-                                <strong>Horário:</strong> ${session.startTime} - ${session.endTime}
+                                <strong>Horário:</strong> ${session.startTime || 'N/A'} - ${session.endTime || 'N/A'}
                             </p>
                             <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
                                 <button
                                     class="btn btn-secondary btn-small"
-                                    onclick="window.app.editStudySession(${session.id})"
+                                    onclick="window.app.editStudySession(${sessionId})"
+                                    ${!sessionId ? 'disabled' : ''}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -3195,7 +3244,8 @@
                                 </button>
                                 <button
                                     class="btn btn-danger btn-small"
-                                    onclick="window.app.removeStudySession(${session.id})"
+                                    onclick="window.app.removeStudySession(${sessionId})"
+                                    ${!sessionId ? 'disabled' : ''}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -3205,7 +3255,7 @@
                                 </button>
                             </div>
                         </div>
-                    `).join('')}
+                    `;}).join('')}
                 `;
             }
 

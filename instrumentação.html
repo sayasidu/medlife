@@ -98,16 +98,19 @@ const createPlaceholder = (id, name) => {
 
 // Data dos instrumentos com placeholders SVG
 const INSTRUMENTS_DATA = [
-  // DIÉRESE (7)
-  { id: 'd1', name: 'Bisturi nº 3', category: 'dierese', quadrant: 1 },
-  { id: 'd2', name: 'Bisturi nº 4', category: 'dierese', quadrant: 1 },
-  { id: 'd3', name: 'Tesoura de Metzenbaum', category: 'dierese', quadrant: 1 },
-  { id: 'd4', name: 'Tesoura de Mayo reta', category: 'dierese', quadrant: 1 },
-  { id: 'd5', name: 'Tesoura de Mayo curva', category: 'dierese', quadrant: 1 },
-  { id: 'd6', name: 'Tesoura Íris', category: 'dierese', quadrant: 1 },
-  { id: 'd7', name: 'Descolador de Farabeuf', category: 'dierese', quadrant: 1 },
+  // DIÉRESE (10) - Quadrant 4
+  { id: 'd1', name: 'Bisturi nº 3', category: 'dierese', quadrant: 4 },
+  { id: 'd2', name: 'Bisturi nº 4', category: 'dierese', quadrant: 4 },
+  { id: 'd3', name: 'Tesoura de Metzenbaum', category: 'dierese', quadrant: 4 },
+  { id: 'd4', name: 'Tesoura de Mayo reta', category: 'dierese', quadrant: 4 },
+  { id: 'd5', name: 'Tesoura de Mayo curva', category: 'dierese', quadrant: 4 },
+  { id: 'd6', name: 'Tesoura Íris', category: 'dierese', quadrant: 4 },
+  { id: 'd7', name: 'Descolador de Farabeuf', category: 'dierese', quadrant: 4 },
+  { id: 'd8', name: 'Bisturi nº 7', category: 'dierese', quadrant: 4 },
+  { id: 'd9', name: 'Tesoura de Littauer', category: 'dierese', quadrant: 4 },
+  { id: 'd10', name: 'Rugina', category: 'dierese', quadrant: 4 },
 
-  // HEMOSTASIA (8)
+  // HEMOSTASIA (12) - Quadrant 2
   { id: 'h1', name: 'Pinça Kelly reta', category: 'hemostasia', quadrant: 2 },
   { id: 'h2', name: 'Pinça Kelly curva', category: 'hemostasia', quadrant: 2 },
   { id: 'h3', name: 'Pinça Halsted (Mosquito) reta', category: 'hemostasia', quadrant: 2 },
@@ -116,27 +119,39 @@ const INSTRUMENTS_DATA = [
   { id: 'h6', name: 'Pinça Kocher curva', category: 'hemostasia', quadrant: 2 },
   { id: 'h7', name: 'Pinça Mixter', category: 'hemostasia', quadrant: 2 },
   { id: 'h8', name: 'Pinça Crile', category: 'hemostasia', quadrant: 2 },
+  { id: 'h9', name: 'Pinça Rochester', category: 'hemostasia', quadrant: 2 },
+  { id: 'h10', name: 'Pinça Pean', category: 'hemostasia', quadrant: 2 },
+  { id: 'h11', name: 'Pinça Rochester-Carmalt', category: 'hemostasia', quadrant: 2 },
+  { id: 'h12', name: 'Pinça Satinsky', category: 'hemostasia', quadrant: 2 },
 
-  // PREENSÃO (6)
+  // PREENSÃO (10) - Quadrant 3
   { id: 'p1', name: 'Pinça Anatômica', category: 'preensao', quadrant: 3 },
   { id: 'p2', name: 'Pinça Dente de Rato', category: 'preensao', quadrant: 3 },
   { id: 'p3', name: 'Pinça de Adson com dente', category: 'preensao', quadrant: 3 },
   { id: 'p4', name: 'Pinça de Adson sem dente', category: 'preensao', quadrant: 3 },
   { id: 'p5', name: 'Pinça Backhaus', category: 'preensao', quadrant: 3 },
   { id: 'p6', name: 'Pinça Allis', category: 'preensao', quadrant: 3 },
+  { id: 'p7', name: 'Pinça Babcock', category: 'preensao', quadrant: 3 },
+  { id: 'p8', name: 'Pinça Foerster', category: 'preensao', quadrant: 3 },
+  { id: 'p9', name: 'Pinça Duval', category: 'preensao', quadrant: 3 },
+  { id: 'p10', name: 'Pinça Randall', category: 'preensao', quadrant: 3 },
 
-  // SÍNTESE E ESPECIAIS (4)
-  { id: 'sp1', name: 'Porta-agulhas de Mayo-Hegar', category: 'sintese', quadrant: 4 },
-  { id: 'sp2', name: 'Afastador de Farabeuf', category: 'sintese', quadrant: 4 },
-  { id: 'sp3', name: 'Afastador de Doyen', category: 'sintese', quadrant: 4 },
-  { id: 'sp4', name: 'Afastador de Gosset', category: 'sintese', quadrant: 4 }
+  // SÍNTESE (8) - Quadrant 1
+  { id: 's1', name: 'Porta-agulhas de Mayo-Hegar', category: 'sintese', quadrant: 1 },
+  { id: 's2', name: 'Porta-agulhas de Mathieu', category: 'sintese', quadrant: 1 },
+  { id: 's3', name: 'Porta-agulhas de Castroviejo', category: 'sintese', quadrant: 1 },
+  { id: 's4', name: 'Afastador de Farabeuf', category: 'sintese', quadrant: 1 },
+  { id: 's5', name: 'Afastador de Doyen', category: 'sintese', quadrant: 1 },
+  { id: 's6', name: 'Afastador de Gosset', category: 'sintese', quadrant: 1 },
+  { id: 's7', name: 'Afastador de Volkmann', category: 'sintese', quadrant: 1 },
+  { id: 's8', name: 'Afastador de Deaver', category: 'sintese', quadrant: 1 }
 ].map(item => ({ ...item, image: createPlaceholder(item.id, item.name) }));
 
 const quadrants = [
-  { id: 1, number: '1º', title: 'DIÉRESE', subtitle: 'Corte e divulsão' },
+  { id: 1, number: '1º', title: 'SÍNTESE', subtitle: 'Sutura e afastamento' },
   { id: 2, number: '2º', title: 'HEMOSTASIA', subtitle: 'Controle de sangramento' },
   { id: 3, number: '3º', title: 'PREENSÃO', subtitle: 'Pinçamento e manipulação' },
-  { id: 4, number: '4º', title: 'SÍNTESE', subtitle: 'Sutura e afastamento' }
+  { id: 4, number: '4º', title: 'DIÉRESE', subtitle: 'Corte e divulsão' }
 ];
 
 const SurgicalTrainingGame = () => {
@@ -231,7 +246,7 @@ const SurgicalTrainingGame = () => {
                 <p className="text-sm text-gray-600">
                   <strong className="text-green-700">Tempo cirúrgico:</strong>
                   <span className="ml-2 text-gray-800">{
-                    ['DIÉRESE', 'HEMOSTASIA', 'PREENSÃO', 'SÍNTESE'][detailsModal.quadrant - 1]
+                    ['SÍNTESE', 'HEMOSTASIA', 'PREENSÃO', 'DIÉRESE'][detailsModal.quadrant - 1]
                   }</span>
                 </p>
               </div>

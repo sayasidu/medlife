@@ -140,6 +140,9 @@ const SurgicalTrainingGame = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [detailsModal, setDetailsModal] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutos em segundos
+  const [gameStatus, setGameStatus] = useState(null); // null, 'success', 'timeout'
+  const [showResultModal, setShowResultModal] = useState(false);
 
   const getCorrectQuadrant = (instrumentId) => {
     for (const [quadrant, instruments] of Object.entries(allInstruments)) {
@@ -149,6 +152,28 @@ const SurgicalTrainingGame = () => {
     }
     return null;
   };
+
+  // useEffect para o temporizador
+  React.useEffect(() => {
+    if (gameStatus !== null || timeLeft <= 0) {
+      return; // Jogo já terminou
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setGameStatus('timeout');
+          setShowResultModal(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, gameStatus]);
+
 
   const handleDrop = (quadrant) => {
     if (!draggedItem) return;
@@ -193,12 +218,29 @@ const SurgicalTrainingGame = () => {
     });
     setScore(0);
     setAttempts(0);
+    setTimeLeft(180);
+    setGameStatus(null);
+    setShowResultModal(false);
     setFeedback(null);
   };
 
   const totalInstruments = Object.values(allInstruments).flat().length;
   const accuracy = attempts > 0 ? ((score / attempts) * 100).toFixed(1) : 0;
   const isComplete = availableInstruments.length === 0;
+
+  // useEffect para verificar conclusão
+  React.useEffect(() => {
+    const totalInsts = Object.values(allInstruments).flat().length;
+    if (availableInstruments.length === 0 && totalInsts > 0 && gameStatus === null) {
+      const performanceScore = (score / totalInsts) * 100;
+      if (performanceScore >= 80 && parseFloat(accuracy) >= 70) {
+        setGameStatus('success');
+      } else {
+        setGameStatus('success'); // Completou, mas com baixa performance
+      }
+      setShowResultModal(true);
+    }
+  }, [availableInstruments.length, gameStatus, score, accuracy]);
 
   const quadrants = [
     { id: 'q3_pega', number: '3', title: 'PEGA', subtitle: 'Pinças de preensão' },
@@ -222,22 +264,69 @@ const SurgicalTrainingGame = () => {
         </div>
       )}
 
-      {isComplete && (
+      {showResultModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <div className="text-center">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">Parabéns!</h2>
-              <p className="text-gray-600 mb-6">Você completou o treinamento!</p>
+              <div className="text-6xl mb-4">
+                {gameStatus === 'timeout' ? '⏰' : (accuracy >= 70 && (score / totalInstruments) * 100 >= 80) ? '🎉' : '📚'}
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                {gameStatus === 'timeout' ? 'Tempo Esgotado!' : 'Atividade Concluída!'}
+              </h2>
               <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6 mb-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <div className="text-sm text-gray-600">Tempo</div>
+                    <div className="text-2xl font-bold text-indigo-600">
+                      {Math.floor((180 - timeLeft) / 60)}:{String((180 - timeLeft) % 60).padStart(2, '0')}
+                    </div>
+                  </div>
                   <div>
                     <div className="text-sm text-gray-600">Precisão</div>
-                    <div className="text-3xl font-bold text-indigo-600">{accuracy}%</div>
+                    <div className="text-2xl font-bold text-indigo-600">{accuracy}%</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">Acertos</div>
+                    <div className="text-2xl font-bold text-green-600">{score}/{totalInstruments}</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Tentativas</div>
-                    <div className="text-3xl font-bold text-indigo-600">{attempts}</div>
+                    <div className="text-2xl font-bold text-orange-600">{attempts}</div>
+                  </div>
+                </div>
+                <div className="border-t border-indigo-200 pt-4">
+                  <div className="text-lg font-bold text-gray-800 mb-2">
+                    {(() => {
+                      const performanceScore = (score / totalInstruments) * 100;
+                      const timeUsed = 180 - timeLeft;
+                      
+                      if (gameStatus === 'timeout') {
+                        const messages = [
+                          '😰 Odenil pode te pegar, estude mais.',
+                          '😬 Thiago não aprovou isso.'
+                        ];
+                        return messages[Math.floor(Math.random() * messages.length)];
+                      }
+                      
+                      if (performanceScore >= 80 && accuracy >= 70 && timeUsed <= 120) {
+                        const messages = [
+                          '😊 Vinicius está feliz por você.',
+                          '⚡ Mais rápido que a perna do Kleber.'
+                        ];
+                        return messages[Math.floor(Math.random() * messages.length)];
+                      }
+                      
+                      if (performanceScore < 50 || accuracy < 50) {
+                        const messages = [
+                          '😰 Odenil pode te pegar, estude mais.',
+                          '😬 Thiago não aprovou isso.'
+                        ];
+                        return messages[Math.floor(Math.random() * messages.length)];
+                      }
+                      
+                      return '📖 Continue praticando para melhorar!';
+                    })()}
                   </div>
                 </div>
               </div>
@@ -284,6 +373,9 @@ const SurgicalTrainingGame = () => {
         <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl font-bold text-gray-800">Instrumentação Cirúrgica</div>
+            <div className={`text-2xl font-bold ${timeLeft <= 30 ? 'text-red-600 animate-pulse' : timeLeft <= 60 ? 'text-orange-600' : 'text-gray-800'}`}>
+              ⏱️ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+            </div>
             <button
               onClick={resetGame}
               className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"

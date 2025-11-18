@@ -49,4 +49,4 @@ const IMAGES = {
 };
 
 // Exportar para uso no HTML
-if (typeof window \!== 'undefined') { window.SURGICAL_IMAGES = IMAGES; }
+if (typeof window !== 'undefined') { window.SURGICAL_IMAGES = IMAGES; }

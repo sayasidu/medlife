@@ -8,19 +8,18 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel Standalone é ESSENCIAL para compilar JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Suprimir aviso do Tailwind CDN (adequado para demo/protótipo) -->
+    <!-- Suprimir aviso do Tailwind CDN ANTES de carregar o Tailwind -->
     <script>
         const originalWarn = console.warn;
         console.warn = function(...args) {
-            if (args[0]?.includes && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
+            const message = args[0];
+            if (typeof message === 'string' && message.includes('cdn.tailwindcss.com')) {
                 return;
             }
             originalWarn.apply(console, args);
         };
     </script>
-    <!-- Carregar as imagens primeiro -->
-    <script src="instrumentacao-images.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes slideIn {
             from {
@@ -71,44 +70,67 @@
     <script type="text/babel" data-type="module" data-presets="react">
 const { useState, useEffect } = React;
 
-// Usar as imagens do arquivo externo
-const IMAGES = window.SURGICAL_IMAGES || {};
+// Gerar placeholders SVG para as imagens (versão leve)
+const createPlaceholder = (id, name) => {
+  const colors = {
+    'd': '#3b82f6', // azul para diérese
+    'h': '#ef4444', // vermelho para hemostasia
+    'p': '#10b981', // verde para preensão
+    's': '#8b5cf6'  // roxo para síntese/especiais
+  };
+  const color = colors[id.charAt(0)] || '#6b7280';
+  const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('');
 
-// Data dos instrumentos (mantida inline pois é pequena)
+  return `data:image/svg+xml,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+      <rect width="200" height="200" fill="${color}" opacity="0.1"/>
+      <text x="100" y="100" text-anchor="middle" dominant-baseline="middle"
+            font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="${color}">
+        ${initials}
+      </text>
+      <text x="100" y="140" text-anchor="middle" dominant-baseline="middle"
+            font-family="Arial, sans-serif" font-size="12" fill="${color}" opacity="0.8">
+        ${name.length > 20 ? name.substring(0, 20) + '...' : name}
+      </text>
+    </svg>
+  `)}`;
+};
+
+// Data dos instrumentos com placeholders SVG
 const INSTRUMENTS_DATA = [
   // DIÉRESE (7)
-  { id: 'd1', name: 'Bisturi nº 3', category: 'dierese', quadrant: 1, image: IMAGES.d1 },
-  { id: 'd2', name: 'Bisturi nº 4', category: 'dierese', quadrant: 1, image: IMAGES.d2 },
-  { id: 'd3', name: 'Tesoura de Metzenbaum', category: 'dierese', quadrant: 1, image: IMAGES.d3 },
-  { id: 'd4', name: 'Tesoura de Mayo reta', category: 'dierese', quadrant: 1, image: IMAGES.d4 },
-  { id: 'd5', name: 'Tesoura de Mayo curva', category: 'dierese', quadrant: 1, image: IMAGES.d5 },
-  { id: 'd6', name: 'Tesoura Íris', category: 'dierese', quadrant: 1, image: IMAGES.d6 },
-  { id: 'd7', name: 'Descolador de Farabeuf', category: 'dierese', quadrant: 1, image: IMAGES.d7 },
-  
+  { id: 'd1', name: 'Bisturi nº 3', category: 'dierese', quadrant: 1 },
+  { id: 'd2', name: 'Bisturi nº 4', category: 'dierese', quadrant: 1 },
+  { id: 'd3', name: 'Tesoura de Metzenbaum', category: 'dierese', quadrant: 1 },
+  { id: 'd4', name: 'Tesoura de Mayo reta', category: 'dierese', quadrant: 1 },
+  { id: 'd5', name: 'Tesoura de Mayo curva', category: 'dierese', quadrant: 1 },
+  { id: 'd6', name: 'Tesoura Íris', category: 'dierese', quadrant: 1 },
+  { id: 'd7', name: 'Descolador de Farabeuf', category: 'dierese', quadrant: 1 },
+
   // HEMOSTASIA (8)
-  { id: 'h1', name: 'Pinça Kelly reta', category: 'hemostasia', quadrant: 2, image: IMAGES.h1 },
-  { id: 'h2', name: 'Pinça Kelly curva', category: 'hemostasia', quadrant: 2, image: IMAGES.h2 },
-  { id: 'h3', name: 'Pinça Halsted (Mosquito) reta', category: 'hemostasia', quadrant: 2, image: IMAGES.h3 },
-  { id: 'h4', name: 'Pinça Halsted (Mosquito) curva', category: 'hemostasia', quadrant: 2, image: IMAGES.h4 },
-  { id: 'h5', name: 'Pinça Kocher reta', category: 'hemostasia', quadrant: 2, image: IMAGES.h5 },
-  { id: 'h6', name: 'Pinça Kocher curva', category: 'hemostasia', quadrant: 2, image: IMAGES.h6 },
-  { id: 'h7', name: 'Pinça Mixter', category: 'hemostasia', quadrant: 2, image: IMAGES.h7 },
-  { id: 'h8', name: 'Pinça Crile', category: 'hemostasia', quadrant: 2, image: IMAGES.h8 },
-  
+  { id: 'h1', name: 'Pinça Kelly reta', category: 'hemostasia', quadrant: 2 },
+  { id: 'h2', name: 'Pinça Kelly curva', category: 'hemostasia', quadrant: 2 },
+  { id: 'h3', name: 'Pinça Halsted (Mosquito) reta', category: 'hemostasia', quadrant: 2 },
+  { id: 'h4', name: 'Pinça Halsted (Mosquito) curva', category: 'hemostasia', quadrant: 2 },
+  { id: 'h5', name: 'Pinça Kocher reta', category: 'hemostasia', quadrant: 2 },
+  { id: 'h6', name: 'Pinça Kocher curva', category: 'hemostasia', quadrant: 2 },
+  { id: 'h7', name: 'Pinça Mixter', category: 'hemostasia', quadrant: 2 },
+  { id: 'h8', name: 'Pinça Crile', category: 'hemostasia', quadrant: 2 },
+
   // PREENSÃO (6)
-  { id: 'p1', name: 'Pinça Anatômica', category: 'preensao', quadrant: 3, image: IMAGES.p1 },
-  { id: 'p2', name: 'Pinça Dente de Rato', category: 'preensao', quadrant: 3, image: IMAGES.p2 },
-  { id: 'p3', name: 'Pinça de Adson com dente', category: 'preensao', quadrant: 3, image: IMAGES.p3 },
-  { id: 'p4', name: 'Pinça de Adson sem dente', category: 'preensao', quadrant: 3, image: IMAGES.p4 },
-  { id: 'p5', name: 'Pinça Backhaus', category: 'preensao', quadrant: 3, image: IMAGES.p5 },
-  { id: 'p6', name: 'Pinça Allis', category: 'preensao', quadrant: 3, image: IMAGES.p6 },
-  
+  { id: 'p1', name: 'Pinça Anatômica', category: 'preensao', quadrant: 3 },
+  { id: 'p2', name: 'Pinça Dente de Rato', category: 'preensao', quadrant: 3 },
+  { id: 'p3', name: 'Pinça de Adson com dente', category: 'preensao', quadrant: 3 },
+  { id: 'p4', name: 'Pinça de Adson sem dente', category: 'preensao', quadrant: 3 },
+  { id: 'p5', name: 'Pinça Backhaus', category: 'preensao', quadrant: 3 },
+  { id: 'p6', name: 'Pinça Allis', category: 'preensao', quadrant: 3 },
+
   // SÍNTESE E ESPECIAIS (4)
-  { id: 'sp1', name: 'Porta-agulhas de Mayo-Hegar', category: 'sintese', quadrant: 4, image: IMAGES.sp1 },
-  { id: 'sp2', name: 'Afastador de Farabeuf', category: 'sintese', quadrant: 4, image: IMAGES.sp2 },
-  { id: 'sp3', name: 'Afastador de Doyen', category: 'sintese', quadrant: 4, image: IMAGES.sp3 },
-  { id: 'sp4', name: 'Afastador de Gosset', category: 'sintese', quadrant: 4, image: IMAGES.sp4 }
-];
+  { id: 'sp1', name: 'Porta-agulhas de Mayo-Hegar', category: 'sintese', quadrant: 4 },
+  { id: 'sp2', name: 'Afastador de Farabeuf', category: 'sintese', quadrant: 4 },
+  { id: 'sp3', name: 'Afastador de Doyen', category: 'sintese', quadrant: 4 },
+  { id: 'sp4', name: 'Afastador de Gosset', category: 'sintese', quadrant: 4 }
+].map(item => ({ ...item, image: createPlaceholder(item.id, item.name) }));
 
 const quadrants = [
   { id: 1, number: '1º', title: 'DIÉRESE', subtitle: 'Corte e divulsão' },

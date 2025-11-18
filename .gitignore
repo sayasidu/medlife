@@ -1,0 +1,13 @@
+# Arquivos de backup
+*.backup
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

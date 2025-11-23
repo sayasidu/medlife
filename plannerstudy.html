@@ -12,6 +12,9 @@
     <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1842,9 +1845,380 @@
         .hidden {
             display: none !important;
         }
+        /* ===== PROGRESS BARS (Metas) ===== */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #0891b2, #0284c7);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        /* ===== STREAK COUNTER ===== */
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .streak-fire {
+            font-size: 1.5rem;
+            animation: fire-flicker 1.5s infinite;
+        }
+
+        @keyframes fire-flicker {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* ===== GAMIFICATION ===== */
+        .xp-bar {
+            background: var(--bg-secondary);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            transition: width 0.5s ease;
+        }
+
+        .badge-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition);
+        }
+
+        .badge-item.unlocked {
+            border-color: var(--warning);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-item.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        /* ===== HEATMAP ===== */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(12px, 1fr));
+            gap: 3px;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+        }
+
+        .heatmap-day {
+            width: 12px;
+            height: 12px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .heatmap-day:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+
+        .heatmap-day.level-1 {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .heatmap-day.level-2 {
+            background: rgba(16, 185, 129, 0.6);
+        }
+
+        .heatmap-day.level-3 {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        .heatmap-day.level-4 {
+            background: rgba(16, 185, 129, 1);
+        }
+
+        /* ===== CALENDAR VISUAL MENSAL ===== */
+        .calendar-container {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day-name {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(2, 132, 199, 0.1));
+        }
+
+        .calendar-day.has-study {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        }
+
+        .calendar-day.has-study::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .calendar-day-hours {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        /* ===== INSIGHTS ===== */
+        .insights-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .insight-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+            transition: all var(--transition);
+        }
+
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .insight-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .insight-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        /* ===== FLASHCARDS ===== */
+        .flashcard {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        /* ===== MODO FOCO ===== */
+        .focus-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .focus-mode.active {
+            display: flex;
+        }
+
+        .focus-timer {
+            font-size: 8rem;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .focus-exit {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .focus-exit:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
     </style>
 </head>
 <body>
+        <!-- Flashcards Screen -->
+        <div id="flashcards" class="screen">
+            <div class="card">
+                <h2>Flashcards</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Crie flashcards para revisar seus conteúdos de forma eficiente
+                </p>
+                <div id="flashcardsList">
+                    <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                        Em breve! Sistema de flashcards em desenvolvimento.
+                    </p>
+                </div>
+            </div>
+
+
+        <!-- Achievements Screen -->
+        <div id="achievements" class="screen">
+            <div class="card">
+                <h2 style="display: flex; align-items: center; gap: 12px;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                    Conquistas e Badges
+                </h2>
+                <div id="badgesList" style="margin-top: 32px;">
+                    <!-- Badges serão renderizados aqui -->
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <!-- Focus Mode -->
+        <div id="focusMode" class="focus-mode">
+            <button class="focus-exit" onclick="app.exitFocusMode()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Sair do Modo Foco
+            </button>
+            <div class="focus-timer" id="focusTimerDisplay">25:00</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 1.2rem;">Modo Foco Ativado</div>
+        </div>
+
+
+
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -1882,7 +2256,9 @@
                         <span id="headerUserName"></span> - <span id="headerUserCourse"></span>
                     </p>
                     <p>Organize seu aprendizado de forma eficiente e moderna</p>
-                    <div class="header-actions">
+                    <div id="headerLevel"></div>
+                        <div id="headerStreak" style="display: none;"></div>
+                        <div class="header-actions">
                         <button class="btn btn-ghost" onclick="window.location.href='/'">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -1897,6 +2273,16 @@
                             </svg>
                             Exportar
                         </button>
+                        
+                        <label class="btn btn-ghost" style="cursor: pointer;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Importar
+                            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="app.handleImport(event)" />
+                        </label>
                         <div class="theme-toggle" onclick="app.toggleTheme()" role="button" aria-label="Toggle dark mode"></div>
                     </div>
                 </div>
@@ -2025,6 +2411,32 @@
                         </div>
                     </div>
 
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileDailyGoal">Meta Diária (horas)</label>
+                            <input
+                                type="number"
+                                id="profileDailyGoal"
+                                placeholder="Ex: 4"
+                                min="0"
+                                max="24"
+                                step="0.5"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="profileWeeklyGoal">Meta Semanal (horas)</label>
+                            <input
+                                type="number"
+                                id="profileWeeklyGoal"
+                                placeholder="Ex: 30"
+                                min="0"
+                                max="168"
+                                step="0.5"
+                            />
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-full">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -2075,6 +2487,13 @@
                 <!-- Main Content -->
                 <main>
                     <!-- Search Bar -->
+                    
+                <!-- Insights Automáticos -->
+                <div id="insightsSection" class="insights-container" style="display: none;">
+                    <!-- Insights serão gerados aqui -->
+                </div>
+
+
                     <div class="search-container">
                         <div class="search-wrapper">
                             <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2105,6 +2524,41 @@
                         </div>
                     </div>
 
+                    
+                <!-- Progresso das Metas -->
+                <div class="card" id="goalsProgressCard" style="display: none;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Progresso das Metas
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span style="font-weight: 600;">Meta Diária</span>
+                                <span id="dailyGoalText">0/0h</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div id="dailyGoalProgress" class="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                            <div id="dailyGoalPercentage" style="margin-top: 8px; font-size: 0.875rem; color: var(--text-secondary); text-align: center;">0% concluído</div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span style="font-weight: 600;">Meta Semanal</span>
+                                <span id="weeklyGoalText">0/0h</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div id="weeklyGoalProgress" class="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                            <div id="weeklyGoalPercentage" style="margin-top: 8px; font-size: 0.875rem; color: var(--text-secondary); text-align: center;">0% concluído</div>
+                        </div>
+                    </div>
+                </div>
+
+
                     <div id="contentList"></div>
                     <div id="emptyState" class="empty-state">
                         <div class="empty-state-icon">📚</div>
@@ -2112,28 +2566,38 @@
                         <p>Comece adicionando um novo conteúdo</p>
                     </div>
                 </main>
+            
+                <div class="chart-container">
+                    <h3>📈 Horas Estudadas - Últimos 30 Dias</h3>
+                    <canvas id="dailyHoursChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>🥧 Distribuição por Disciplina</h3>
+                    <canvas id="subjectsChart" width="400" height="200"></canvas>
+                </div>
+
             </div>
         </div>
 
         <!-- Weekly Agenda Screen -->
-        <div id="weeklyAgenda" class="screen">
+        <div id="calendar" class="screen">
             <div class="card">
-                <div class="weekly-agenda-header">
-                    <button class="btn btn-secondary btn-icon" onclick="app.previousWeek()" aria-label="Semana anterior">
+                <div class="calendar-header">
+                    <button class="btn btn-secondary btn-icon" onclick="app.previousMonth()" aria-label="Mês anterior">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                     </button>
-                    <div class="weekly-agenda-title">
-                        <h2 id="weekTitle">Agenda da Semana</h2>
-                        <p id="weekRange" class="text-secondary"></p>
+                    <div style="text-align: center; flex: 1;">
+                        <h2 id="calendarMonthTitle" style="margin: 0; font-size: 1.75rem;">Janeiro 2025</h2>
                     </div>
-                    <button class="btn btn-secondary btn-icon" onclick="app.nextWeek()" aria-label="Próxima semana">
+                    <button class="btn btn-secondary btn-icon" onclick="app.nextMonth()" aria-label="Próximo mês">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </button>
-                    <button class="btn btn-primary" onclick="app.goToCurrentWeek()" style="margin-left: auto;">
+                    <button class="btn btn-primary" onclick="app.goToToday()" style="margin-left: 16px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -2144,10 +2608,21 @@
                     </button>
                 </div>
 
-                <div class="weekly-planner">
-                    <div class="week-grid" id="weekGrid">
-                        <!-- Days will be rendered here by JavaScript -->
-                    </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-name">Dom</div>
+                    <div class="calendar-day-name">Seg</div>
+                    <div class="calendar-day-name">Ter</div>
+                    <div class="calendar-day-name">Qua</div>
+                    <div class="calendar-day-name">Qui</div>
+                    <div class="calendar-day-name">Sex</div>
+                    <div class="calendar-day-name">Sáb</div>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Days will be rendered here -->
+                </div>
+            </div>
+        </div>
                 </div>
 
                 <div id="emptyWeekState" class="empty-state" style="display: none;">
@@ -2163,6 +2638,7 @@
             <div class="card">
                 <h2>Adicionar Novo Conteúdo</h2>
                 <form id="contentForm">
+                    <input type="hidden" id="editingContentId" value="" />
                     <div class="form-group">
                         <label for="contentSubject">Disciplina *</label>
                         <select id="contentSubject" required>
@@ -2178,6 +2654,16 @@
                             placeholder="Digite o título do conteúdo"
                             required
                         />
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="contentDescription">Descrição/Notas (opcional)</label>
+                        <textarea
+                            id="contentDescription"
+                            placeholder="Digite notas ou descrição sobre este conteúdo"
+                            rows="3"
+                        ></textarea>
                     </div>
 
                     <div class="form-group">
@@ -2298,6 +2784,27 @@
                     <h4>Taxa de Conclusão</h4>
                     <div class="value" id="statRate">0%</div>
                 </div>
+
+
+                <div class="chart-container">
+                    <h3>📊 Heat Map - Últimos 90 Dias</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.875rem;">
+                        Visualize seus dias de estudo nos últimos 3 meses
+                    </p>
+                    <div id="heatmapContainer" class="heatmap-container">
+                        <!-- Heat map será gerado aqui -->
+                    </div>
+                    <div style="margin-top: 16px; display: flex; align-items: center; gap: 12px; justify-content: center; font-size: 0.875rem;">
+                        <span>Menos</span>
+                        <div class="heatmap-day" style="background: var(--bg-secondary);"></div>
+                        <div class="heatmap-day level-1"></div>
+                        <div class="heatmap-day level-2"></div>
+                        <div class="heatmap-day level-3"></div>
+                        <div class="heatmap-day level-4"></div>
+                        <span>Mais</span>
+                    </div>
+                </div>
+
                 <div class="stat-box">
                     <h4>Tempo Total</h4>
                     <div class="value" id="statTime">0h</div>
@@ -2406,6 +2913,12 @@
                     </div>
 
                     <div class="pomodoro-controls">
+                    <button class="btn btn-secondary" onclick="app.enterFocusMode()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        </svg>
+                        Modo Foco
+                    </button>
                         <button class="btn btn-primary" id="startPomodoroBtn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -2506,7 +3019,9 @@
                         name: '',
                         school: '',
                         course: '',
-                        period: ''
+                        period: '',
+                        dailyGoal: 0,
+                        weeklyGoal: 0
                     },
                     subjects: [],
                     contents: [],
@@ -2861,6 +3376,8 @@
                     };
 
                     this.data.studySessions.push(session);
+                this.addXP(10, \'Sessão de estudo concluída\');
+                this.calculateStreak();
 
                     // Create spaced repetition schedule if enabled
                     const enableReview = document.getElementById('enableSpacedReview').checked;
@@ -3003,6 +3520,7 @@
                 if (!review) return;
 
                 review.completed = true;
+                this.addXP(20, \'Revisão completada\');
                 review.type = type;
                 review.completedAt = new Date().toISOString();
 
@@ -3010,12 +3528,41 @@
                 this.renderReview();
                 this.showToast(`Revisão registrada como ${type}!`, 'success');
             }
+            /**
+             * Edit existing content - preenche o formulário com dados do conteúdo
+             */
+            editContent(id) {
+                const content = this.data.contents.find(c => c.id === id);
+                if (!content) return;
+
+                document.getElementById('contentSubject').value = content.subject;
+                document.getElementById('contentTitle').value = content.title;
+                document.getElementById('contentDescription').value = content.description || '';
+                document.getElementById('contentDifficulty').value = content.difficulty;
+                document.getElementById('editingContentId').value = id;
+
+                // Mudar texto do botão
+                const submitBtn = document.querySelector('#contentForm button[type="submit"]');
+                if (submitBtn) {
+                    const lastChild = submitBtn.lastChild;
+                    if (lastChild && lastChild.nodeType === 3) {
+                        lastChild.textContent = 'Atualizar Conteúdo';
+                    }
+                }
+
+                this.switchTab('addContent');
+            }
+
+
 
             /**
              * Handle add content form submission
              */
             handleAddContent(e) {
                 e.preventDefault();
+
+                const editingId = document.getElementById('editingContentId').value;
+                const isEditing = editingId !== '';
 
                 const subject = document.getElementById('contentSubject').value;
                 const title = document.getElementById('contentTitle').value.trim();
@@ -3036,16 +3583,28 @@
                     subject,
                     title,
                     difficulty,
+                    description: document.getElementById(\'contentDescription\')?.value?.trim() || \'\',
                     completed: false,
                     createdAt: new Date().toISOString()
                 };
 
-                this.data.contents.push(newContent);
+                if (isEditing) {
+                    const index = this.data.contents.findIndex(c => c.id == editingId);
+                    if (index !== -1) {
+                        newContent.id = parseInt(editingId);
+                        newContent.createdAt = this.data.contents[index].createdAt;
+                        newContent.completed = this.data.contents[index].completed;
+                        this.data.contents[index] = newContent;
+                    }
+                    document.getElementById('editingContentId').value = '';
+                } else {
+                    this.data.contents.push(newContent);
+                }
                 e.target.reset();
                 this.saveData();
                 this.render();
                 this.switchTab('dashboard');
-                this.showToast(`Conteúdo "${title}" adicionado com sucesso!`, 'success');
+                this.showToast(`Conteúdo "${title}" ${isEditing ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
             }
 
             /**
@@ -3106,6 +3665,8 @@
                     this.renderReview();
                 } else if (tabName === 'profile') {
                     this.renderProfile();
+                } else if (tabName === \'achievements\') {
+                    this.renderAchievements();
                 }
             }
 
@@ -3119,7 +3680,7 @@
                 if (this.searchQuery) {
                     filtered = filtered.filter(c =>
                         c.title.toLowerCase().includes(this.searchQuery) ||
-                        c.desc.toLowerCase().includes(this.searchQuery) ||
+                        (c.description?.toLowerCase()?.includes(this.searchQuery) || false) ||
                         c.subject.toLowerCase().includes(this.searchQuery)
                     );
                 }
@@ -3143,6 +3704,653 @@
 
                 return filtered;
             }
+            /**
+             * Calcular e exibir progresso das metas
+             */
+            renderGoalsProgress() {
+                const profile = this.data.profile;
+                if (!profile.dailyGoal && !profile.weeklyGoal) {
+                    document.getElementById('goalsProgressCard').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('goalsProgressCard').style.display = 'block';
+
+                // Calcular horas estudadas hoje
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todaySessions = this.data.studySessions.filter(s => {
+                    const sessionDate = new Date(s.date);
+                    sessionDate.setHours(0, 0, 0, 0);
+                    return sessionDate.getTime() === today.getTime();
+                });
+                const hoursToday = todaySessions.reduce((sum, s) => sum + s.duration, 0);
+
+                // Calcular horas estudadas esta semana
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - today.getDay());
+                const weekSessions = this.data.studySessions.filter(s => {
+                    const sessionDate = new Date(s.date);
+                    return sessionDate >= startOfWeek;
+                });
+                const hoursThisWeek = weekSessions.reduce((sum, s) => sum + s.duration, 0);
+
+                // Atualizar UI - Meta Diária
+                if (profile.dailyGoal > 0) {
+                    const dailyPercent = Math.min((hoursToday / profile.dailyGoal) * 100, 100);
+                    document.getElementById('dailyGoalProgress').style.width = dailyPercent + '%';
+                    document.getElementById('dailyGoalText').textContent = `${hoursToday.toFixed(1)}/${profile.dailyGoal}h`;
+                    document.getElementById('dailyGoalPercentage').textContent = `${dailyPercent.toFixed(0)}% concluído`;
+                }
+
+                // Atualizar UI - Meta Semanal
+                if (profile.weeklyGoal > 0) {
+                    const weeklyPercent = Math.min((hoursThisWeek / profile.weeklyGoal) * 100, 100);
+                    document.getElementById('weeklyGoalProgress').style.width = weeklyPercent + '%';
+                    document.getElementById('weeklyGoalText').textContent = `${hoursThisWeek.toFixed(1)}/${profile.weeklyGoal}h`;
+                    document.getElementById('weeklyGoalPercentage').textContent = `${weeklyPercent.toFixed(0)}% concluído`;
+                }
+            }
+            /**
+             * Calcular streak de dias consecutivos estudando
+             */
+            calculateStreak() {
+                const sessions = [...this.data.studySessions].sort((a, b) =>
+                    new Date(b.date) - new Date(a.date)
+                );
+
+                if (sessions.length === 0) {
+                    this.data.streak = { current: 0, best: 0, lastStudyDate: null };
+                    return;
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let currentStreak = 0;
+                let checkDate = new Date(today);
+                const studyDates = new Set();
+
+                // Criar set de datas com pelo menos 30min de estudo
+                sessions.forEach(s => {
+                    if (s.duration >= 0.5) {
+                        const date = new Date(s.date);
+                        date.setHours(0, 0, 0, 0);
+                        studyDates.add(date.getTime());
+                    }
+                });
+
+                // Calcular streak atual
+                while (studyDates.has(checkDate.getTime())) {
+                    currentStreak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                }
+
+                // Se não estudou hoje mas estudou ontem, ainda conta
+                if (currentStreak === 0) {
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (studyDates.has(yesterday.getTime())) {
+                        currentStreak = 1;
+                        checkDate = new Date(yesterday);
+                        checkDate.setDate(checkDate.getDate() - 1);
+                        while (studyDates.has(checkDate.getTime())) {
+                            currentStreak++;
+                            checkDate.setDate(checkDate.getDate() - 1);
+                        }
+                    }
+                }
+
+                this.data.streak.current = currentStreak;
+                if (currentStreak > (this.data.streak.best || 0)) {
+                    this.data.streak.best = currentStreak;
+                }
+                this.data.streak.lastStudyDate = sessions[0].date;
+
+                this.saveData();
+            }
+
+            /**
+             * Exibir streak no header
+             */
+            updateStreakDisplay() {
+                this.calculateStreak();
+                const streakElement = document.getElementById('headerStreak');
+                if (streakElement && this.data.streak.current > 0) {
+                    streakElement.innerHTML = `
+                        <div class="streak-badge">
+                            <span class="streak-fire">🔥</span>
+                            <span>${this.data.streak.current} dias</span>
+                        </div>
+                    `;
+                    streakElement.style.display = 'block';
+                } else if (streakElement) {
+                    streakElement.style.display = 'none';
+                }
+            }
+            /**
+             * Sistema de Gamificação - Adicionar XP
+             */
+            addXP(amount, reason) {
+                if (!this.data.gamification) {
+                    this.data.gamification = { xp: 0, level: 1, badges: [] };
+                }
+
+                this.data.gamification.xp += amount;
+
+                // Calcular nível (100 XP = nível 1, 250 XP = nível 2, etc)
+                const newLevel = Math.floor(this.data.gamification.xp / 100) + 1;
+                if (newLevel > this.data.gamification.level) {
+                    this.data.gamification.level = newLevel;
+                    this.showToast(`🎉 Level Up! Você alcançou o nível ${newLevel}!`, 'success');
+                }
+
+                this.checkBadges();
+                this.saveData();
+                this.updateGamificationDisplay();
+                this.generateInsights();
+            }
+
+            /**
+             * Verificar e desbloquear badges
+             */
+            checkBadges() {
+                const badges = [
+                    { id: 'first_session', name: 'Primeira Sessão', description: 'Complete sua primeira sessão de estudo', condition: () => this.data.studySessions.length >= 1 },
+                    { id: 'streak_7', name: '7 Dias Consecutivos', description: 'Estude por 7 dias seguidos', condition: () => this.data.streak.current >= 7 },
+                    { id: 'hours_100', name: '100 Horas', description: 'Acumule 100 horas de estudo', condition: () => this.getTotalHoursStudied() >= 100 },
+                    { id: 'level_5', name: 'Nível 5', description: 'Alcance o nível 5', condition: () => this.data.gamification.level >= 5 },
+                ];
+
+                badges.forEach(badge => {
+                    if (badge.condition() && !this.data.gamification.badges.includes(badge.id)) {
+                        this.data.gamification.badges.push(badge.id);
+                        this.showToast(`🏆 Novo Badge Desbloqueado: ${badge.name}!`, 'success');
+                    }
+                });
+            }
+
+            /**
+             * Calcular total de horas estudadas
+             */
+            getTotalHoursStudied() {
+                return this.data.studySessions.reduce((sum, s) => sum + s.duration, 0);
+            }
+
+            /**
+             * Atualizar display de gamificação
+             */
+            updateGamificationDisplay() {
+                if (!this.data.gamification) return;
+
+                const levelDisplay = document.getElementById('headerLevel');
+                if (levelDisplay) {
+                    levelDisplay.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 20px; border: 2px solid rgba(245, 158, 11, 0.3);">
+                            <span style="font-size: 1.2rem;">⭐</span>
+                            <span style="font-weight: 700;">Nível ${this.data.gamification.level}</span>
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">(${this.data.gamification.xp} XP)</span>
+                        </div>
+                    `;
+                }
+            }
+            /**
+             * Render achievements/badges
+             */
+            renderAchievements() {
+                const badgesList = document.getElementById('badgesList');
+                if (!badgesList) return;
+
+                const allBadges = [
+                    { id: 'first_session', name: '🎯 Primeira Sessão', description: 'Complete sua primeira sessão de estudo', icon: '🎯' },
+                    { id: 'streak_7', name: '🔥 7 Dias Consecutivos', description: 'Estude por 7 dias seguidos', icon: '🔥' },
+                    { id: 'hours_100', name: '⏱️ 100 Horas', description: 'Acumule 100 horas de estudo', icon: '⏱️' },
+                    { id: 'level_5', name: '⭐ Nível 5', description: 'Alcance o nível 5', icon: '⭐' },
+                    { id: 'streak_30', name: '💪 30 Dias Consecutivos', description: 'Estude por 30 dias seguidos', icon: '💪' },
+                    { id: 'hours_500', name: '🚀 500 Horas', description: 'Acumule 500 horas de estudo', icon: '🚀' },
+                ];
+
+                const unlockedBadges = this.data.gamification?.badges || [];
+
+                const badgesHTML = allBadges.map(badge => {
+                    const isUnlocked = unlockedBadges.includes(badge.id);
+                    return `
+                        <div class="badge-item ${isUnlocked ? 'unlocked' : 'locked'}">
+                            <div style="font-size: 3rem; margin-bottom: 8px;">${badge.icon}</div>
+                            <div style="font-weight: 700; margin-bottom: 4px;">${badge.name}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); text-align: center;">${badge.description}</div>
+                            ${isUnlocked ? '<div style="margin-top: 8px; color: var(--success); font-weight: 600;">✓ Desbloqueado</div>' : '<div style="margin-top: 8px; color: var(--text-light);">🔒 Bloqueado</div>'}
+                        </div>
+                    `;
+                }).join('');
+
+                badgesList.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                        ${badgesHTML}
+                    </div>
+                `;
+            }
+            /**
+             * Render heat map of study days (last 90 days)
+             */
+            renderHeatMap() {
+                const container = document.getElementById('heatmapContainer');
+                if (!container) return;
+
+                const today = new Date();
+                const days = [];
+
+                // Criar array de últimos 90 dias
+                for (let i = 89; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    date.setHours(0, 0, 0, 0);
+                    days.push(date);
+                }
+
+                // Calcular horas por dia
+                const hoursPerDay = {};
+                this.data.studySessions.forEach(session => {
+                    const sessionDate = new Date(session.date);
+                    sessionDate.setHours(0, 0, 0, 0);
+                    const key = sessionDate.toISOString().split('T')[0];
+                    hoursPerDay[key] = (hoursPerDay[key] || 0) + session.duration;
+                });
+
+                // Renderizar heat map
+                const html = days.map(date => {
+                    const key = date.toISOString().split('T')[0];
+                    const hours = hoursPerDay[key] || 0;
+
+                    let level = '';
+                    if (hours > 0 && hours < 2) level = 'level-1';
+                    else if (hours >= 2 && hours < 4) level = 'level-2';
+                    else if (hours >= 4 && hours < 6) level = 'level-3';
+                    else if (hours >= 6) level = 'level-4';
+
+                    const title = `${date.toLocaleDateString('pt-BR')}: ${hours.toFixed(1)}h`;
+
+                    return `<div class="heatmap-day ${level}" title="${title}"></div>`;
+                }).join('');
+
+                container.innerHTML = html;
+            }
+            /**
+             * Gerar insights automáticos baseados nos dados
+             */
+            generateInsights() {
+                const container = document.getElementById('insightsSection');
+                if (!container) return;
+
+                const insights = [];
+
+                // Insight 1: Disciplina mais estudada
+                const subjectHours = {};
+                this.data.studySessions.forEach(s => {
+                    const content = this.data.contents.find(c => c.id === s.contentId);
+                    if (content) {
+                        subjectHours[content.subject] = (subjectHours[content.subject] || 0) + s.duration;
+                    }
+                });
+
+                const topSubject = Object.entries(subjectHours).sort((a, b) => b[1] - a[1])[0];
+                if (topSubject) {
+                    insights.push({
+                        icon: '📚',
+                        text: `Você estuda mais <strong>${topSubject[0]}</strong> (${topSubject[1].toFixed(1)}h total)`
+                    });
+                }
+
+                // Insight 2: Streak atual
+                if (this.data.streak?.current > 0) {
+                    insights.push({
+                        icon: '🔥',
+                        text: `Parabéns! Você está em uma sequência de <strong>${this.data.streak.current} ${this.data.streak.current === 1 ? 'dia' : 'dias'}</strong> estudando`
+                    });
+                }
+
+                // Insight 3: Revisões atrasadas
+                const overdueReviews = this.data.reviews.filter(r => {
+                    if (r.completed) return false;
+                    const dueDate = new Date(r.dueDate);
+                    return dueDate < new Date();
+                }).length;
+
+                if (overdueReviews > 0) {
+                    insights.push({
+                        icon: '⚠️',
+                        text: `Você tem <strong>${overdueReviews} ${overdueReviews === 1 ? 'revisão atrasada' : 'revisões atrasadas'}</strong>`
+                    });
+                }
+
+                // Insight 4: Total de horas estudadas
+                const totalHours = this.getTotalHoursStudied();
+                if (totalHours > 0) {
+                    insights.push({
+                        icon: '⏱️',
+                        text: `Total acumulado: <strong>${totalHours.toFixed(1)} horas</strong> de estudo`
+                    });
+                }
+
+                if (insights.length > 0) {
+                    container.style.display = 'grid';
+                    container.innerHTML = insights.map(insight => `
+                        <div class="insight-card">
+                            <div class="insight-icon">${insight.icon}</div>
+                            <div class="insight-text">${insight.text}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+            /**
+             * Entrar em modo foco (tela cheia com timer)
+             */
+            enterFocusMode() {
+                const focusMode = document.getElementById('focusMode');
+                if (focusMode) {
+                    focusMode.classList.add('active');
+                    this.updateFocusTimer();
+                }
+            }
+
+            /**
+             * Sair do modo foco
+             */
+            exitFocusMode() {
+                const focusMode = document.getElementById('focusMode');
+                if (focusMode) {
+                    focusMode.classList.remove('active');
+                }
+            }
+
+            /**
+             * Atualizar timer no modo foco
+             */
+            updateFocusTimer() {
+                const display = document.getElementById('focusTimerDisplay');
+                if (display && this.pomodoroActive) {
+                    const minutes = Math.floor(this.pomodoroTimeLeft / 60);
+                    const seconds = this.pomodoroTimeLeft % 60;
+                    display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    if (document.getElementById('focusMode').classList.contains('active')) {
+                        setTimeout(() => this.updateFocusTimer(), 1000);
+                    }
+                }
+            }
+            /**
+             * Calendário Mensal - Variáveis
+             */
+            currentMonth = new Date().getMonth();
+            currentYear = new Date().getFullYear();
+
+            /**
+             * Renderizar calendário mensal
+             */
+            renderCalendar() {
+                const grid = document.getElementById('calendarGrid');
+                if (!grid) return;
+
+                // Atualizar título
+                const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                                   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                const title = document.getElementById('calendarMonthTitle');
+                if (title) {
+                    title.textContent = `${monthNames[this.currentMonth]} ${this.currentYear}`;
+                }
+
+                // Calcular primeiro e último dia do mês
+                const firstDay = new Date(this.currentYear, this.currentMonth, 1);
+                const lastDay = new Date(this.currentYear, this.currentMonth + 1, 0);
+
+                // Calcular horas por dia
+                const hoursPerDay = {};
+                this.data.studySessions.forEach(session => {
+                    const sessionDate = new Date(session.date);
+                    const key = sessionDate.toISOString().split('T')[0];
+                    hoursPerDay[key] = (hoursPerDay[key] || 0) + session.duration;
+                });
+
+                // Gerar dias
+                const days = [];
+                const startDay = firstDay.getDay(); // 0 = Dom, 1 = Seg, etc
+
+                // Adicionar dias do mês anterior (em branco)
+                for (let i = 0; i < startDay; i++) {
+                    const prevMonthDay = new Date(this.currentYear, this.currentMonth, -startDay + i + 1);
+                    days.push({
+                        date: prevMonthDay,
+                        isCurrentMonth: false
+                    });
+                }
+
+                // Adicionar dias do mês atual
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const date = new Date(this.currentYear, this.currentMonth, day);
+                    days.push({
+                        date: date,
+                        isCurrentMonth: true
+                    });
+                }
+
+                // Adicionar dias do próximo mês para completar o grid
+                const remaining = 42 - days.length; // 6 semanas x 7 dias
+                for (let i = 1; i <= remaining; i++) {
+                    const nextMonthDay = new Date(this.currentYear, this.currentMonth + 1, i);
+                    days.push({
+                        date: nextMonthDay,
+                        isCurrentMonth: false
+                    });
+                }
+
+                // Renderizar
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const html = days.map(day => {
+                    const key = day.date.toISOString().split('T')[0];
+                    const hours = hoursPerDay[key] || 0;
+                    const isToday = day.date.getTime() === today.getTime();
+                    const hasStudy = hours > 0;
+
+                    let classes = 'calendar-day';
+                    if (!day.isCurrentMonth) classes += ' other-month';
+                    if (isToday) classes += ' today';
+                    if (hasStudy) classes += ' has-study';
+
+                    return `
+                        <div class="${classes}">
+                            <div class="calendar-day-number">${day.date.getDate()}</div>
+                            ${hours > 0 ? `<div class="calendar-day-hours">${hours.toFixed(1)}h</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                grid.innerHTML = html;
+            }
+
+            /**
+             * Navegar para mês anterior
+             */
+            previousMonth() {
+                this.currentMonth--;
+                if (this.currentMonth < 0) {
+                    this.currentMonth = 11;
+                    this.currentYear--;
+                }
+                this.renderCalendar();
+            }
+
+            /**
+             * Navegar para próximo mês
+             */
+            nextMonth() {
+                this.currentMonth++;
+                if (this.currentMonth > 11) {
+                    this.currentMonth = 0;
+                    this.currentYear++;
+                }
+                this.renderCalendar();
+            }
+
+            /**
+             * Ir para o mês atual
+             */
+            goToToday() {
+                const today = new Date();
+                this.currentMonth = today.getMonth();
+                this.currentYear = today.getFullYear();
+                this.renderCalendar();
+            }
+            /**
+             * Renderizar gráficos Chart.js
+             */
+            renderCharts() {
+                this.renderDailyHoursChart();
+                this.renderSubjectsChart();
+            }
+
+            /**
+             * Gráfico de horas diárias (últimos 30 dias)
+             */
+            renderDailyHoursChart() {
+                const canvas = document.getElementById('dailyHoursChart');
+                if (!canvas) return;
+
+                // Destruir chart anterior se existir
+                if (this.dailyHoursChartInstance) {
+                    this.dailyHoursChartInstance.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
+                const days = [];
+                const hours = [];
+
+                // Últimos 30 dias
+                for (let i = 29; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const key = date.toISOString().split('T')[0];
+
+                    const dayHours = this.data.studySessions
+                        .filter(s => s.date === key)
+                        .reduce((sum, s) => sum + s.duration, 0);
+
+                    days.push(date.getDate() + '/' + (date.getMonth() + 1));
+                    hours.push(dayHours);
+                }
+
+                this.dailyHoursChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: days,
+                        datasets: [{
+                            label: 'Horas Estudadas',
+                            data: hours,
+                            borderColor: '#0891b2',
+                            backgroundColor: 'rgba(8, 145, 178, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + 'h';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Gráfico de pizza - Distribuição por disciplina
+             */
+            renderSubjectsChart() {
+                const canvas = document.getElementById('subjectsChart');
+                if (!canvas) return;
+
+                // Destruir chart anterior se existir
+                if (this.subjectsChartInstance) {
+                    this.subjectsChartInstance.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
+
+                // Calcular horas por disciplina
+                const subjectHours = {};
+                this.data.studySessions.forEach(s => {
+                    const content = this.data.contents.find(c => c.id === s.contentId);
+                    if (content) {
+                        subjectHours[content.subject] = (subjectHours[content.subject] || 0) + s.duration;
+                    }
+                });
+
+                const labels = Object.keys(subjectHours);
+                const data = Object.values(subjectHours);
+
+                const colors = [
+                    '#0891b2', '#0284c7', '#14b8a6', '#10b981', '#f59e0b',
+                    '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
+                ];
+
+                this.subjectsChartInstance = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed.toFixed(1) + 'h';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             /**
              * Render all components
@@ -3154,6 +4362,9 @@
                 this.renderReview();
                 this.renderStudySessions();
                 this.renderWeeklyAgenda();
+                this.renderGoalsProgress();
+                this.updateStreakDisplay();
+                this.updateGamificationDisplay();
                 this.updateSelects();
                 this.updateHeaderStats();
             }
@@ -3170,6 +4381,8 @@
                     document.getElementById('profileSchool').value = profile.school;
                     document.getElementById('profileCourse').value = profile.course;
                     document.getElementById('profilePeriod').value = profile.period;
+                    document.getElementById('profileDailyGoal').value = profile.dailyGoal || 0;
+                    document.getElementById('profileWeeklyGoal').value = profile.weeklyGoal || 0;
 
                     document.getElementById('displayName').textContent = profile.name;
                     document.getElementById('displaySchool').textContent = profile.school;
@@ -3543,6 +4756,10 @@
                 document.getElementById('statTotal').textContent = total;
                 document.getElementById('statCompleted').textContent = completed;
                 document.getElementById('statRate').textContent = rate + '%';
+
+                this.renderHeatMap();
+
+                this.renderCharts();
                 document.getElementById('statTime').textContent = totalStudyHours > 0
                     ? `${totalStudyHours}h ${totalStudyMinutes}min`
                     : `${totalStudyMinutes}min`;

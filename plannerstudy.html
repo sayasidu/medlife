@@ -6963,7 +6963,7 @@
             /**
              * Show confirmation dialog using custom modal
              * @param {string} message - Message to display
-             * @returns {Promise<boolean>} - Promise that resolves to true if confirmed, false otherwise
+             * @returns {Promise} - Promise that resolves to true if confirmed, false otherwise
              */
             showPomodoroConfirm(message) {
                 return new Promise((resolve) => {
@@ -7022,7 +7022,7 @@
             /**
              * Show alert dialog using custom modal
              * @param {string} message - Message to display
-             * @returns {Promise<void>} - Promise that resolves when user closes the alert
+             * @returns {Promise} - Promise that resolves when user closes the alert
              */
             showPomodoroAlert(message) {
                 return new Promise((resolve) => {

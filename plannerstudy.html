@@ -3401,7 +3401,7 @@
                     };
 
                     this.data.studySessions.push(session);
-                this.addXP(10, \'Sessão de estudo concluída\');
+                this.addXP(10, 'Sessão de estudo concluída');
                 this.calculateStreak();
 
                     // Create spaced repetition schedule if enabled
@@ -3545,7 +3545,7 @@
                 if (!review) return;
 
                 review.completed = true;
-                this.addXP(20, \'Revisão completada\');
+                this.addXP(20, 'Revisão completada');
                 review.type = type;
                 review.completedAt = new Date().toISOString();
 
@@ -3608,7 +3608,7 @@
                     subject,
                     title,
                     difficulty,
-                    description: document.getElementById(\'contentDescription\')?.value?.trim() || \'\',
+                    description: document.getElementById('contentDescription')?.value?.trim() || '',
                     completed: false,
                     createdAt: new Date().toISOString()
                 };
@@ -3690,7 +3690,7 @@
                     this.renderReview();
                 } else if (tabName === 'profile') {
                     this.renderProfile();
-                } else if (tabName === \'achievements\') {
+                } else if (tabName === 'achievements') {
                     this.renderAchievements();
                 }
             }

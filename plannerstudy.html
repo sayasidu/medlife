@@ -2488,20 +2488,12 @@
                     <div class="subject-list">
                         <h3>Disciplinas</h3>
                         <div id="subjectsList"></div>
-                        <div class="form-group mt-4">
-                            <input
-                                type="text"
-                                id="newSubject"
-                                placeholder="Nova disciplina..."
-                                aria-label="Nome da nova disciplina"
-                            />
-                        </div>
-                        <button class="btn btn-primary btn-full btn-small" onclick="app.addSubject()">
+                        <button class="btn btn-primary btn-full btn-small mt-4" onclick="app.showSubjectForm()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            Adicionar
+                            Nova Disciplina
                         </button>
                     </div>
                 </aside>
@@ -2603,6 +2595,46 @@
         </div>
 
         <!-- Weekly Agenda Screen -->
+        <div id="weeklyAgenda" class="screen">
+            <div class="card">
+                <div class="calendar-header">
+                    <button class="btn btn-secondary btn-icon" onclick="app.previousWeek()" aria-label="Semana anterior">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <div style="text-align: center; flex: 1;">
+                        <h2 id="weekRange" style="margin: 0; font-size: 1.5rem;">Carregando...</h2>
+                    </div>
+                    <button class="btn btn-secondary btn-icon" onclick="app.nextWeek()" aria-label="Próxima semana">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="btn btn-primary" onclick="app.currentWeekOffset = 0; app.renderWeeklyAgenda();" style="margin-left: 16px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Esta Semana
+                    </button>
+                </div>
+
+                <div class="week-grid" id="weekGrid">
+                    <!-- Week days will be rendered here -->
+                </div>
+
+                <div id="emptyWeekState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📅</div>
+                    <p>Nenhuma revisão agendada para esta semana</p>
+                    <p>Continue estudando para gerar novas revisões!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Screen -->
         <div id="calendar" class="screen">
             <div class="card">
                 <div class="calendar-header">
@@ -2642,15 +2674,6 @@
 
                 <div class="calendar-grid" id="calendarGrid">
                     <!-- Days will be rendered here -->
-                </div>
-            </div>
-        </div>
-                </div>
-
-                <div id="emptyWeekState" class="empty-state" style="display: none;">
-                    <div class="empty-state-icon">📅</div>
-                    <p>Nenhuma revisão agendada para esta semana</p>
-                    <p>Continue estudando para gerar novas revisões!</p>
                 </div>
             </div>
         </div>
@@ -3028,6 +3051,98 @@
         </div>
     </div>
 
+    <!-- Subject Form Modal -->
+    <div class="modal-overlay" id="subjectFormModal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="subjectFormTitle">Nova Disciplina</h2>
+                <button class="modal-close" onclick="app.closeSubjectForm()" aria-label="Fechar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="subjectForm" onsubmit="app.handleSubjectForm(event)">
+                <input type="hidden" id="editingSubjectId" value="" />
+
+                <div class="form-group">
+                    <label for="subjectName">Nome da Disciplina *</label>
+                    <input
+                        type="text"
+                        id="subjectName"
+                        placeholder="Ex: Anatomia, Fisiologia..."
+                        required
+                    />
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="subjectStartTime">Horário de Início</label>
+                        <input
+                            type="time"
+                            id="subjectStartTime"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subjectEndTime">Horário de Término</label>
+                        <input
+                            type="time"
+                            id="subjectEndTime"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dias da Semana</label>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="1" />
+                            <span>Segunda</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="2" />
+                            <span>Terça</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="3" />
+                            <span>Quarta</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="4" />
+                            <span>Quinta</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="5" />
+                            <span>Sexta</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="6" />
+                            <span>Sábado</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="weekDays" value="0" />
+                            <span>Domingo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span id="subjectFormSubmitText">Adicionar Disciplina</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="app.closeSubjectForm()">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         /**
          * Modern Study Planner Application
@@ -3198,6 +3313,18 @@
                             settings: loadedData.settings || { theme: 'light' }
                         };
 
+                        // Migração de dados: converter subjects antigas (strings) para nova estrutura (objetos)
+                        if (this.data.subjects.length > 0 && typeof this.data.subjects[0] === 'string') {
+                            this.data.subjects = this.data.subjects.map((subjectName, index) => ({
+                                id: Date.now() + index,
+                                name: subjectName,
+                                startTime: '',
+                                endTime: '',
+                                weekDays: []
+                            }));
+                            this.saveData(); // Salvar migração
+                        }
+
                         // Migração de dados: corrigir sessões antigas
                         this.data.studySessions = this.data.studySessions.map((session, index) => {
                             // Garantir que a sessão tenha um ID válido
@@ -3227,7 +3354,12 @@
                                 course: '',
                                 period: ''
                             },
-                            subjects: ['Matemática', 'Português', 'História', 'Biologia'],
+                            subjects: [
+                                { id: 1, name: 'Matemática', startTime: '', endTime: '', weekDays: [] },
+                                { id: 2, name: 'Português', startTime: '', endTime: '', weekDays: [] },
+                                { id: 3, name: 'História', startTime: '', endTime: '', weekDays: [] },
+                                { id: 4, name: 'Biologia', startTime: '', endTime: '', weekDays: [] }
+                            ],
                             contents: [
                                 {
                                     id: Date.now(),
@@ -3273,44 +3405,147 @@
             }
 
             /**
-             * Add a new subject
+             * Show subject form modal (for add/edit)
              */
-            addSubject() {
-                const input = document.getElementById('newSubject');
-                const subject = input.value.trim();
+            showSubjectForm(subjectId = null) {
+                const modal = document.getElementById('subjectFormModal');
+                const title = document.getElementById('subjectFormTitle');
+                const submitText = document.getElementById('subjectFormSubmitText');
+                const editingIdInput = document.getElementById('editingSubjectId');
 
-                if (!subject) {
+                // Reset form
+                document.getElementById('subjectForm').reset();
+                document.querySelectorAll('input[name="weekDays"]').forEach(cb => cb.checked = false);
+
+                if (subjectId) {
+                    // Edit mode
+                    const subject = this.data.subjects.find(s => s.id === subjectId);
+                    if (subject) {
+                        title.textContent = 'Editar Disciplina';
+                        submitText.textContent = 'Salvar Alterações';
+                        editingIdInput.value = subjectId;
+                        document.getElementById('subjectName').value = subject.name;
+                        document.getElementById('subjectStartTime').value = subject.startTime || '';
+                        document.getElementById('subjectEndTime').value = subject.endTime || '';
+
+                        // Check the weekdays
+                        subject.weekDays.forEach(day => {
+                            const checkbox = document.querySelector(`input[name="weekDays"][value="${day}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                } else {
+                    // Add mode
+                    title.textContent = 'Nova Disciplina';
+                    submitText.textContent = 'Adicionar Disciplina';
+                    editingIdInput.value = '';
+                }
+
+                modal.style.display = 'flex';
+            }
+
+            /**
+             * Close subject form modal
+             */
+            closeSubjectForm() {
+                const modal = document.getElementById('subjectFormModal');
+                modal.style.display = 'none';
+                document.getElementById('subjectForm').reset();
+            }
+
+            /**
+             * Handle subject form submission
+             */
+            handleSubjectForm(e) {
+                e.preventDefault();
+
+                const editingId = document.getElementById('editingSubjectId').value;
+                const name = document.getElementById('subjectName').value.trim();
+                const startTime = document.getElementById('subjectStartTime').value;
+                const endTime = document.getElementById('subjectEndTime').value;
+
+                // Get selected weekdays
+                const weekDays = Array.from(document.querySelectorAll('input[name="weekDays"]:checked'))
+                    .map(cb => parseInt(cb.value));
+
+                if (!name) {
                     this.showToast('Digite um nome para a disciplina', 'warning');
                     return;
                 }
 
-                if (this.data.subjects.includes(subject)) {
-                    this.showToast('Esta disciplina já existe', 'warning');
+                // Check for duplicate names (excluding current subject when editing)
+                const duplicate = this.data.subjects.find(s =>
+                    s.name.toLowerCase() === name.toLowerCase() &&
+                    s.id !== parseInt(editingId)
+                );
+
+                if (duplicate) {
+                    this.showToast('Já existe uma disciplina com este nome', 'warning');
                     return;
                 }
 
-                this.data.subjects.push(subject);
-                input.value = '';
+                if (editingId) {
+                    // Edit existing subject
+                    const subject = this.data.subjects.find(s => s.id === parseInt(editingId));
+                    if (subject) {
+                        const oldName = subject.name;
+                        subject.name = name;
+                        subject.startTime = startTime;
+                        subject.endTime = endTime;
+                        subject.weekDays = weekDays;
+
+                        // Update contents that reference this subject
+                        this.data.contents.forEach(content => {
+                            if (content.subject === oldName) {
+                                content.subject = name;
+                            }
+                        });
+
+                        this.showToast('Disciplina atualizada com sucesso!', 'success');
+                    }
+                } else {
+                    // Add new subject
+                    const newSubject = {
+                        id: Date.now(),
+                        name: name,
+                        startTime: startTime,
+                        endTime: endTime,
+                        weekDays: weekDays
+                    };
+                    this.data.subjects.push(newSubject);
+                    this.showToast(`Disciplina "${name}" adicionada com sucesso!`, 'success');
+                }
+
                 this.saveData();
                 this.render();
-                this.showToast(`Disciplina "${subject}" adicionada com sucesso!`, 'success');
+                this.closeSubjectForm();
+            }
+
+            /**
+             * Edit a subject
+             */
+            editSubject(subjectId) {
+                this.showSubjectForm(subjectId);
             }
 
             /**
              * Remove a subject
              */
-            removeSubject(subject) {
-                const contentsCount = this.data.contents.filter(c => c.subject === subject).length;
+            removeSubject(subjectId) {
+                const subject = this.data.subjects.find(s => s.id === subjectId);
+                if (!subject) return;
+
+                const contentsCount = this.data.contents.filter(c => c.subject === subject.name).length;
                 const message = contentsCount > 0
-                    ? `Remover "${subject}" e seus ${contentsCount} conteúdo(s)?`
-                    : `Remover a disciplina "${subject}"?`;
+                    ? `Remover "${subject.name}" e seus ${contentsCount} conteúdo(s)?`
+                    : `Remover a disciplina "${subject.name}"?`;
 
                 this.showModal('Confirmar Remoção', message, () => {
-                    this.data.subjects = this.data.subjects.filter(s => s !== subject);
-                    this.data.contents = this.data.contents.filter(c => c.subject !== subject);
+                    this.data.subjects = this.data.subjects.filter(s => s.id !== subjectId);
+                    this.data.contents = this.data.contents.filter(c => c.subject !== subject.name);
                     this.saveData();
                     this.render();
-                    this.showToast(`Disciplina "${subject}" removida`, 'success');
+                    this.showToast(`Disciplina "${subject.name}" removida`, 'success');
                 });
             }
 
@@ -4514,21 +4749,64 @@
                     return;
                 }
 
+                const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
                 list.innerHTML = this.data.subjects.map(subject => {
-                    const count = this.data.contents.filter(c => c.subject === subject).length;
+                    const count = this.data.contents.filter(c => c.subject === subject.name).length;
+
+                    // Format time display
+                    let timeDisplay = '';
+                    if (subject.startTime && subject.endTime) {
+                        timeDisplay = `${subject.startTime} - ${subject.endTime}`;
+                    } else if (subject.startTime) {
+                        timeDisplay = subject.startTime;
+                    }
+
+                    // Format weekdays display
+                    let weekDaysDisplay = '';
+                    if (subject.weekDays && subject.weekDays.length > 0) {
+                        weekDaysDisplay = subject.weekDays
+                            .sort((a, b) => a - b)
+                            .map(day => dayNames[day])
+                            .join(', ');
+                    }
+
                     return `
-                        <div class="subject-item">
-                            <span>${subject} ${count > 0 ? `(${count})` : ''}</span>
-                            <button
-                                class="subject-item-delete"
-                                onclick="app.removeSubject('${subject.replace(/'/g, "\\'")}')"
-                                aria-label="Remover ${subject}"
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
+                        <div class="subject-item" style="display: flex; flex-direction: column; gap: 4px; padding: 12px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">
+                                        ${subject.name} ${count > 0 ? `<span style="color: var(--text-secondary); font-weight: 400;">(${count})</span>` : ''}
+                                    </div>
+                                    ${timeDisplay ? `<div style="font-size: 0.875rem; color: var(--text-secondary);">⏰ ${timeDisplay}</div>` : ''}
+                                    ${weekDaysDisplay ? `<div style="font-size: 0.875rem; color: var(--text-secondary);">📅 ${weekDaysDisplay}</div>` : ''}
+                                </div>
+                                <div style="display: flex; gap: 4px;">
+                                    <button
+                                        class="subject-item-delete"
+                                        onclick="app.editSubject(${subject.id})"
+                                        aria-label="Editar ${subject.name}"
+                                        title="Editar"
+                                        style="background: var(--primary); opacity: 0.9;"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        class="subject-item-delete"
+                                        onclick="app.removeSubject(${subject.id})"
+                                        aria-label="Remover ${subject.name}"
+                                        title="Remover"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -4929,7 +5207,7 @@
             updateSelects() {
                 const select = document.getElementById('contentSubject');
                 select.innerHTML = '<option value="">Selecione uma disciplina</option>' +
-                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s)}">${this.escapeHtml(s)}</option>`).join('');
+                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s.name)}">${this.escapeHtml(s.name)}</option>`).join('');
 
                 const studySelect = document.getElementById('studyContent');
                 studySelect.innerHTML = '<option value="">Selecione um conteúdo</option>' +
@@ -4945,7 +5223,7 @@
             updatePomodoroSelects(selectedSubject = null) {
                 const subjectSelect = document.getElementById('pomodoroSubject');
                 subjectSelect.innerHTML = '<option value="">Selecione uma matéria</option>' +
-                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s)}">${this.escapeHtml(s)}</option>`).join('');
+                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s.name)}">${this.escapeHtml(s.name)}</option>`).join('');
 
                 // If a subject is pre-selected, set it
                 if (selectedSubject) {

@@ -3320,8 +3320,8 @@
                         <div class="form-group" style="margin: 0;">
                             <label for="scheduleInterval">Intervalo (minutos)</label>
                             <select id="scheduleInterval">
-                                <option value="30">30 minutos</option>
-                                <option value="60" selected>1 hora</option>
+                                <option value="30" selected>30 minutos</option>
+                                <option value="60">1 hora</option>
                                 <option value="90">1h 30min</option>
                                 <option value="120">2 horas</option>
                             </select>
@@ -6185,7 +6185,7 @@
 
                 const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                 const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
-                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '30');
 
                 const days = ['Horário', 'DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
                 const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
@@ -6336,7 +6336,7 @@
 
                 const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                 const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
-                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '30');
                 const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
 
                 // 1. Identificar todas as células livres (sem aulas fixas)
@@ -6708,7 +6708,7 @@
                     const subjectColors = this.getSubjectColors();
                     const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                     const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
-                    const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                    const interval = parseInt(document.getElementById('scheduleInterval')?.value || '30');
                     const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
 
                     // Renderizar aulas fixas (classes)
@@ -6858,7 +6858,7 @@
                 // Obter horário de início
                 const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                 const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
-                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '30');
                 const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
                 const sessionStartTime = timeSlots[timeIndex];
 
@@ -6920,7 +6920,7 @@
 
                 const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                 const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
-                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '30');
                 const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
                 const sessionStartTime = timeSlots[timeIndex];
 

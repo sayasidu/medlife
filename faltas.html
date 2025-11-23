@@ -890,6 +890,18 @@
                             <input type="text" id="curso" required placeholder="Nome do curso">
                         </div>
                         <div class="form-group">
+                            <label for="semestreAtual">Semestre Atual do Curso *</label>
+                            <input type="number" id="semestreAtual" required placeholder="Ex: 3" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="totalSemestres">Total de Semestres *</label>
+                            <input type="number" id="totalSemestres" required placeholder="Ex: 10" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="anoFormatura">Ano de Formatura *</label>
+                            <input type="number" id="anoFormatura" required placeholder="Ex: 2028" min="2024" max="2099">
+                        </div>
+                        <div class="form-group">
                             <label for="dataInicio">Data de Início *</label>
                             <input type="date" id="dataInicio" required>
                         </div>
@@ -902,7 +914,9 @@
                 </form>
                 <div id="infoSemestreAtual" style="margin-top: 20px; display: none;">
                     <div class="info-card">
-                        <strong>Semestre Atual:</strong> <span id="textoSemestreAtual"></span>
+                        <p><strong>Semestre Atual:</strong> <span id="textoSemestreAtual"></span></p>
+                        <p><strong>Semestre do Curso:</strong> <span id="textoSemestreAtualCurso"></span> de <span id="textoTotalSemestres"></span></p>
+                        <p><strong>Ano de Formatura:</strong> <span id="textoAnoFormatura"></span></p>
                     </div>
                 </div>
             </div>
@@ -1163,6 +1177,9 @@
                 nomeAluno: document.getElementById('nomeAluno').value,
                 universidade: document.getElementById('universidade').value,
                 curso: document.getElementById('curso').value,
+                semestreAtual: parseInt(document.getElementById('semestreAtual').value),
+                totalSemestres: parseInt(document.getElementById('totalSemestres').value),
+                anoFormatura: parseInt(document.getElementById('anoFormatura').value),
                 dataInicio: document.getElementById('dataInicio').value,
                 dataFim: document.getElementById('dataFim').value
             };
@@ -1172,6 +1189,9 @@
             document.getElementById('infoSemestreAtual').style.display = 'block';
             document.getElementById('textoSemestreAtual').textContent =
                 `${dadosSemestre.nomeAluno} - ${dadosSemestre.curso} (${formatarData(dadosSemestre.dataInicio)} a ${formatarData(dadosSemestre.dataFim)})`;
+            document.getElementById('textoSemestreAtualCurso').textContent = dadosSemestre.semestreAtual || '-';
+            document.getElementById('textoTotalSemestres').textContent = dadosSemestre.totalSemestres || '-';
+            document.getElementById('textoAnoFormatura').textContent = dadosSemestre.anoFormatura || '-';
 
             mostrarAlerta('Dados do semestre salvos com sucesso!', 'success');
         }
@@ -1749,12 +1769,18 @@
                 document.getElementById('nomeAluno').value = dadosSemestre.nomeAluno;
                 document.getElementById('universidade').value = dadosSemestre.universidade;
                 document.getElementById('curso').value = dadosSemestre.curso;
+                document.getElementById('semestreAtual').value = dadosSemestre.semestreAtual || '';
+                document.getElementById('totalSemestres').value = dadosSemestre.totalSemestres || '';
+                document.getElementById('anoFormatura').value = dadosSemestre.anoFormatura || '';
                 document.getElementById('dataInicio').value = dadosSemestre.dataInicio;
                 document.getElementById('dataFim').value = dadosSemestre.dataFim;
 
                 document.getElementById('infoSemestreAtual').style.display = 'block';
                 document.getElementById('textoSemestreAtual').textContent =
                     `${dadosSemestre.nomeAluno} - ${dadosSemestre.curso} (${formatarData(dadosSemestre.dataInicio)} a ${formatarData(dadosSemestre.dataFim)})`;
+                document.getElementById('textoSemestreAtualCurso').textContent = dadosSemestre.semestreAtual || '-';
+                document.getElementById('textoTotalSemestres').textContent = dadosSemestre.totalSemestres || '-';
+                document.getElementById('textoAnoFormatura').textContent = dadosSemestre.anoFormatura || '-';
             }
 
             if (materiasSalvas) {

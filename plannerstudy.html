@@ -3149,6 +3149,9 @@
          * Built with ES6+ JavaScript, using class-based architecture
          */
 
+        // Declarar app no escopo global para event handlers inline
+        let app;
+
         class StudyPlannerApp {
             constructor() {
                 this.data = {
@@ -3164,6 +3167,11 @@
                     contents: [],
                     studySessions: [],
                     reviews: [],
+                    streak: {
+                        current: 0,
+                        best: 0,
+                        lastStudyDate: null
+                    },
                     settings: {
                         theme: 'light'
                     }
@@ -3323,6 +3331,11 @@
                             contents: loadedData.contents || [],
                             studySessions: loadedData.studySessions || [],
                             reviews: loadedData.reviews || [],
+                            streak: loadedData.streak || {
+                                current: 0,
+                                best: 0,
+                                lastStudyDate: null
+                            },
                             settings: loadedData.settings || { theme: 'light' }
                         };
 
@@ -3575,6 +3588,8 @@
                 this.data.profile.currentSemester = parseInt(document.getElementById('profileCurrentSemester').value);
                 this.data.profile.totalSemesters = parseInt(document.getElementById('profileTotalSemesters').value);
                 this.data.profile.graduationYear = parseInt(document.getElementById('profileGraduationYear').value);
+                this.data.profile.dailyGoal = parseFloat(document.getElementById('profileDailyGoal').value) || 0;
+                this.data.profile.weeklyGoal = parseFloat(document.getElementById('profileWeeklyGoal').value) || 0;
 
                 this.saveData();
                 this.renderProfile();
@@ -4028,6 +4043,11 @@
              * Calcular streak de dias consecutivos estudando
              */
             calculateStreak() {
+                // Garantir que o objeto streak existe
+                if (!this.data.streak) {
+                    this.data.streak = { current: 0, best: 0, lastStudyDate: null };
+                }
+
                 const sessions = [...this.data.studySessions].sort((a, b) =>
                     new Date(b.date) - new Date(a.date)
                 );
@@ -6365,7 +6385,7 @@
         }
 
         // Initialize the application
-        const app = new StudyPlannerApp();
+        app = new StudyPlannerApp();
         window.app = app; // Make app globally accessible for Pomodoro integration
         const pomodoroTimer = new PomodoroTimer();
         window.pomodoroTimer = pomodoroTimer; // Make timer globally accessible

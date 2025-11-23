@@ -50,26 +50,95 @@
             margin-bottom: 10px;
         }
 
-        /* Seção Fixa - Dados do Semestre */
-        .secao-semestre {
+        /* Tabs Navigation */
+        .tabs-container {
             background: var(--cor-branco);
-            padding: 25px;
             margin: 20px 0;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            overflow: hidden;
         }
 
-        .secao-semestre h2 {
+        .tabs-nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid var(--cor-borda);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--cor-texto);
+            transition: all 0.3s;
+            position: relative;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover {
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .tab-button.active {
             color: var(--cor-primaria);
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid var(--cor-primaria);
-            padding-bottom: 10px;
+            background: var(--cor-branco);
         }
 
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--cor-primaria);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Headers */
+        .section-header {
+            color: var(--cor-primaria);
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--cor-primaria);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Styles */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -159,23 +228,20 @@
             font-size: 0.9em;
         }
 
-        /* Seção de Cadastro de Matérias */
-        .secao-materias {
-            background: var(--cor-branco);
-            padding: 25px;
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
             margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .secao-materias h2 {
-            color: var(--cor-primaria);
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid var(--cor-primaria);
-            padding-bottom: 10px;
+        .info-card strong {
+            font-size: 1.1em;
         }
 
+        /* Checkbox e Radio Styles */
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -227,7 +293,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
-            margin-top: 30px;
         }
 
         .card-materia {
@@ -396,11 +461,6 @@
             animation: fadeIn 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .modal-content {
             background-color: var(--cor-branco);
             margin: 5% auto;
@@ -474,22 +534,6 @@
         }
 
         /* Calendário */
-        .calendario {
-            background: var(--cor-branco);
-            padding: 25px;
-            margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .calendario h2 {
-            color: var(--cor-primaria);
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid var(--cor-primaria);
-            padding-bottom: 10px;
-        }
-
         .calendario-header {
             display: flex;
             justify-content: space-between;
@@ -630,19 +674,6 @@
         }
 
         /* Info resumo */
-        .info-resumo {
-            background: var(--cor-branco);
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .info-resumo h3 {
-            color: var(--cor-primaria);
-            margin-bottom: 15px;
-        }
-
         .resumo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -650,22 +681,85 @@
         }
 
         .resumo-item {
-            padding: 15px;
-            background: var(--cor-fundo);
-            border-radius: 8px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--cor-branco), #f8f9fa);
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--cor-primaria);
+            transition: transform 0.3s;
+        }
+
+        .resumo-item:hover {
+            transform: translateY(-5px);
         }
 
         .resumo-numero {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: var(--cor-primaria);
+            margin-bottom: 10px;
         }
 
         .resumo-label {
-            font-size: 0.9em;
+            font-size: 1em;
             color: #666;
-            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Controles de ordenação */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--cor-fundo);
+            border-radius: 8px;
+        }
+
+        .sort-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sort-control label {
+            font-weight: 600;
+        }
+
+        .sort-control select {
+            padding: 8px 12px;
+            border: 2px solid var(--cor-borda);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        /* Badge de notificação */
+        .notification-badge {
+            background: var(--cor-critico);
+            color: white;
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
         }
 
         /* Responsividade */
@@ -676,6 +770,20 @@
 
             header h1 {
                 font-size: 1.5em;
+            }
+
+            .tabs-nav {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                min-width: 100px;
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+
+            .tab-content {
+                padding: 20px 15px;
             }
 
             .form-grid {
@@ -712,6 +820,11 @@
             .resumo-grid {
                 grid-template-columns: 1fr;
             }
+
+            .controls-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
 
         /* Loading */
@@ -728,184 +841,212 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
     </style>
 </head>
 <body>
     <header>
         <h1>📚 Sistema de Controle de Faltas</h1>
-        <p>Gerencie suas faltas acadêmicas de forma inteligente</p>
+        <p>Gerencie suas faltas acadêmicas de forma inteligente e moderna</p>
     </header>
 
     <div class="container">
-        <!-- SEÇÃO 1: DADOS DO SEMESTRE -->
-        <section class="secao-semestre" id="secaoSemestre">
-            <h2>Dados do Semestre</h2>
-            <form id="formSemestre">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="nomeAluno">Nome do Aluno *</label>
-                        <input type="text" id="nomeAluno" required placeholder="Seu nome completo">
-                    </div>
-                    <div class="form-group">
-                        <label for="universidade">Universidade/Instituição *</label>
-                        <input type="text" id="universidade" required placeholder="Nome da instituição">
-                    </div>
-                    <div class="form-group">
-                        <label for="curso">Curso *</label>
-                        <input type="text" id="curso" required placeholder="Nome do curso">
-                    </div>
-                    <div class="form-group">
-                        <label for="dataInicio">Data de Início *</label>
-                        <input type="date" id="dataInicio" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dataFim">Data de Fim *</label>
-                        <input type="date" id="dataFim" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Salvar Dados do Semestre</button>
-            </form>
-            <div id="infoSemestreAtual" style="margin-top: 20px; display: none;">
-                <div class="alert alert-success">
-                    <strong>Semestre Atual:</strong> <span id="textoSemestreAtual"></span>
-                </div>
+        <!-- SISTEMA DE ABAS -->
+        <div class="tabs-container">
+            <!-- Navegação das Abas -->
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="dados-semestre">
+                    📋 Dados do Semestre
+                </button>
+                <button class="tab-button" data-tab="cadastrar-materia">
+                    ➕ Cadastrar Matéria
+                </button>
+                <button class="tab-button" data-tab="minhas-materias">
+                    📚 Minhas Matérias
+                    <span class="notification-badge" id="badgeMaterias" style="display: none;">0</span>
+                </button>
+                <button class="tab-button" data-tab="calendario">
+                    📅 Calendário
+                </button>
+                <button class="tab-button" data-tab="resumo">
+                    📊 Resumo
+                </button>
             </div>
-        </section>
 
-        <!-- SEÇÃO 2: CADASTRO DE MATÉRIAS -->
-        <section class="secao-materias">
-            <h2>Cadastrar Nova Matéria</h2>
-            <form id="formMateria">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="nomeMateria">Nome da Matéria *</label>
-                        <input type="text" id="nomeMateria" required placeholder="Ex: Cálculo I">
-                    </div>
-                    <div class="form-group">
-                        <label for="totalAulas">Total de Aulas no Semestre *</label>
-                        <input type="number" id="totalAulas" required min="1" placeholder="Ex: 60">
-                    </div>
-                    <div class="form-group">
-                        <label for="percentualFaltas">% Máximo de Faltas *</label>
-                        <input type="number" id="percentualFaltas" required min="1" max="100" value="25" placeholder="Ex: 25">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="resetBimestral">
-                        <label for="resetBimestral">As faltas resetam por bimestre?</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Dia(s) da Semana *</label>
-                    <div class="dias-semana">
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="0"> Domingo
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="1"> Segunda
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="2"> Terça
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="3"> Quarta
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="4"> Quinta
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="5"> Sexta
-                        </label>
-                        <label class="dia-checkbox">
-                            <input type="checkbox" name="diasSemana" value="6"> Sábado
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Horário da Aula</label>
-                    <div class="horario-group">
+            <!-- Conteúdo da Aba 1: Dados do Semestre -->
+            <div class="tab-content active" id="dados-semestre">
+                <h2 class="section-header">📋 Dados do Semestre</h2>
+                <form id="formSemestre">
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label for="horarioInicio">Início</label>
-                            <input type="time" id="horarioInicio">
+                            <label for="nomeAluno">Nome do Aluno *</label>
+                            <input type="text" id="nomeAluno" required placeholder="Seu nome completo">
                         </div>
                         <div class="form-group">
-                            <label for="horarioFim">Fim</label>
-                            <input type="time" id="horarioFim">
+                            <label for="universidade">Universidade/Instituição *</label>
+                            <input type="text" id="universidade" required placeholder="Nome da instituição">
+                        </div>
+                        <div class="form-group">
+                            <label for="curso">Curso *</label>
+                            <input type="text" id="curso" required placeholder="Nome do curso">
+                        </div>
+                        <div class="form-group">
+                            <label for="dataInicio">Data de Início *</label>
+                            <input type="date" id="dataInicio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataFim">Data de Fim *</label>
+                            <input type="date" id="dataFim" required>
                         </div>
                     </div>
-                </div>
-
-                <button type="submit" class="btn btn-success" style="margin-top: 20px;">Adicionar Matéria</button>
-            </form>
-        </section>
-
-        <!-- SEÇÃO 3: RESUMO -->
-        <div id="resumoContainer" style="display: none;">
-            <div class="info-resumo">
-                <h3>Resumo Geral</h3>
-                <div class="resumo-grid">
-                    <div class="resumo-item">
-                        <div class="resumo-numero" id="totalMaterias">0</div>
-                        <div class="resumo-label">Matérias Cadastradas</div>
-                    </div>
-                    <div class="resumo-item">
-                        <div class="resumo-numero" id="totalFaltasDadas">0</div>
-                        <div class="resumo-label">Total de Faltas Dadas</div>
-                    </div>
-                    <div class="resumo-item">
-                        <div class="resumo-numero" id="totalFaltasPermitidas">0</div>
-                        <div class="resumo-label">Total de Faltas Permitidas</div>
-                    </div>
-                    <div class="resumo-item">
-                        <div class="resumo-numero" id="materiasRisco">0</div>
-                        <div class="resumo-label">Matérias em Risco</div>
+                    <button type="submit" class="btn btn-primary">Salvar Dados do Semestre</button>
+                </form>
+                <div id="infoSemestreAtual" style="margin-top: 20px; display: none;">
+                    <div class="info-card">
+                        <strong>Semestre Atual:</strong> <span id="textoSemestreAtual"></span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SEÇÃO 4: LISTA DE MATÉRIAS -->
-        <div id="listaMaterias" class="lista-materias"></div>
+            <!-- Conteúdo da Aba 2: Cadastrar Matéria -->
+            <div class="tab-content" id="cadastrar-materia">
+                <h2 class="section-header">➕ Cadastrar Nova Matéria</h2>
+                <form id="formMateria">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nomeMateria">Nome da Matéria *</label>
+                            <input type="text" id="nomeMateria" required placeholder="Ex: Cálculo I">
+                        </div>
+                        <div class="form-group">
+                            <label for="totalAulas">Total de Aulas no Semestre *</label>
+                            <input type="number" id="totalAulas" required min="1" placeholder="Ex: 60">
+                        </div>
+                        <div class="form-group">
+                            <label for="percentualFaltas">% Máximo de Faltas *</label>
+                            <input type="number" id="percentualFaltas" required min="1" max="100" value="25" placeholder="Ex: 25">
+                        </div>
+                    </div>
 
-        <!-- SEÇÃO 5: CALENDÁRIO -->
-        <div id="calendarioContainer" style="display: none;">
-            <section class="calendario">
-                <h2>Calendário de Aulas e Faltas</h2>
-                <div class="calendario-header">
-                    <button class="btn btn-secondary btn-small" id="mesAnterior">← Anterior</button>
-                    <div class="mes-ano" id="mesAnoAtual"></div>
-                    <button class="btn btn-secondary btn-small" id="mesSeguinte">Próximo →</button>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="resetBimestral">
+                            <label for="resetBimestral">As faltas resetam por bimestre?</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dia(s) da Semana *</label>
+                        <div class="dias-semana">
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="0"> Domingo
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="1"> Segunda
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="2"> Terça
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="3"> Quarta
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="4"> Quinta
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="5"> Sexta
+                            </label>
+                            <label class="dia-checkbox">
+                                <input type="checkbox" name="diasSemana" value="6"> Sábado
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Horário da Aula</label>
+                        <div class="horario-group">
+                            <div class="form-group">
+                                <label for="horarioInicio">Início</label>
+                                <input type="time" id="horarioInicio">
+                            </div>
+                            <div class="form-group">
+                                <label for="horarioFim">Fim</label>
+                                <input type="time" id="horarioFim">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="margin-top: 20px;">Adicionar Matéria</button>
+                </form>
+            </div>
+
+            <!-- Conteúdo da Aba 3: Minhas Matérias -->
+            <div class="tab-content" id="minhas-materias">
+                <h2 class="section-header">📚 Minhas Matérias</h2>
+
+                <div class="controls-bar" id="controlsBar" style="display: none;">
+                    <div class="sort-control">
+                        <label for="ordenacao">Ordenar por:</label>
+                        <select id="ordenacao">
+                            <option value="nome">Nome (A-Z)</option>
+                            <option value="nome-desc">Nome (Z-A)</option>
+                            <option value="status">Status (Crítico primeiro)</option>
+                            <option value="faltas">Faltas Restantes (Menor primeiro)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span id="totalMateriasTexto"></span>
+                    </div>
                 </div>
-                <div class="calendario-grid" id="calendarioGrid">
-                    <!-- Dias da semana -->
-                    <div class="calendario-dia-semana">Dom</div>
-                    <div class="calendario-dia-semana">Seg</div>
-                    <div class="calendario-dia-semana">Ter</div>
-                    <div class="calendario-dia-semana">Qua</div>
-                    <div class="calendario-dia-semana">Qui</div>
-                    <div class="calendario-dia-semana">Sex</div>
-                    <div class="calendario-dia-semana">Sáb</div>
+
+                <div id="listaMaterias" class="lista-materias"></div>
+            </div>
+
+            <!-- Conteúdo da Aba 4: Calendário -->
+            <div class="tab-content" id="calendario">
+                <h2 class="section-header">📅 Calendário de Aulas e Faltas</h2>
+                <div id="calendarioContent">
+                    <div class="calendario-header">
+                        <button class="btn btn-secondary btn-small" id="mesAnterior">← Anterior</button>
+                        <div class="mes-ano" id="mesAnoAtual"></div>
+                        <button class="btn btn-secondary btn-small" id="mesSeguinte">Próximo →</button>
+                    </div>
+                    <div class="calendario-grid" id="calendarioGrid">
+                        <!-- Dias da semana -->
+                        <div class="calendario-dia-semana">Dom</div>
+                        <div class="calendario-dia-semana">Seg</div>
+                        <div class="calendario-dia-semana">Ter</div>
+                        <div class="calendario-dia-semana">Qua</div>
+                        <div class="calendario-dia-semana">Qui</div>
+                        <div class="calendario-dia-semana">Sex</div>
+                        <div class="calendario-dia-semana">Sáb</div>
+                    </div>
+                    <div class="legenda-calendario" id="legendaCalendario"></div>
                 </div>
-                <div class="legenda-calendario" id="legendaCalendario"></div>
-            </section>
+            </div>
+
+            <!-- Conteúdo da Aba 5: Resumo -->
+            <div class="tab-content" id="resumo">
+                <h2 class="section-header">📊 Resumo Geral</h2>
+                <div id="resumoContent">
+                    <div class="resumo-grid">
+                        <div class="resumo-item">
+                            <div class="resumo-numero" id="totalMaterias">0</div>
+                            <div class="resumo-label">Matérias Cadastradas</div>
+                        </div>
+                        <div class="resumo-item">
+                            <div class="resumo-numero" id="totalFaltasDadas">0</div>
+                            <div class="resumo-label">Total de Faltas Dadas</div>
+                        </div>
+                        <div class="resumo-item">
+                            <div class="resumo-numero" id="totalFaltasPermitidas">0</div>
+                            <div class="resumo-label">Total de Faltas Permitidas</div>
+                        </div>
+                        <div class="resumo-item">
+                            <div class="resumo-numero" id="materiasRisco" style="color: var(--cor-critico);">0</div>
+                            <div class="resumo-label">Matérias em Risco</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -944,6 +1085,7 @@
         let materiaAtualModal = null;
         let mesAtual = new Date().getMonth();
         let anoAtual = new Date().getFullYear();
+        let ordenacaoAtual = 'nome';
 
         const CORES_MATERIAS = [
             '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
@@ -959,11 +1101,22 @@
 
         // ==================== EVENTOS ====================
         function inicializarEventos() {
+            // Tabs
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => switchTab(button.dataset.tab));
+            });
+
             // Form Semestre
             document.getElementById('formSemestre').addEventListener('submit', salvarDadosSemestre);
 
             // Form Matéria
             document.getElementById('formMateria').addEventListener('submit', adicionarMateria);
+
+            // Ordenação
+            document.getElementById('ordenacao').addEventListener('change', (e) => {
+                ordenacaoAtual = e.target.value;
+                renderizarMaterias();
+            });
 
             // Modal
             document.getElementById('fecharModal').addEventListener('click', fecharModal);
@@ -980,6 +1133,26 @@
                     fecharModal();
                 }
             });
+        }
+
+        // ==================== TABS ====================
+        function switchTab(tabId) {
+            // Remover active de todos os botões e conteúdos
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Adicionar active ao botão e conteúdo selecionado
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            // Atualizar interface específica da aba
+            if (tabId === 'calendario') {
+                atualizarCalendario();
+            } else if (tabId === 'resumo') {
+                atualizarResumo();
+            } else if (tabId === 'minhas-materias') {
+                renderizarMaterias();
+            }
         }
 
         // ==================== SEMESTRE ====================
@@ -1009,6 +1182,7 @@
 
             if (!dadosSemestre) {
                 mostrarAlerta('Por favor, preencha os dados do semestre primeiro!', 'danger');
+                switchTab('dados-semestre');
                 return;
             }
 
@@ -1048,6 +1222,9 @@
             atualizarInterface();
 
             mostrarAlerta(`Matéria "${materia.nome}" adicionada com sucesso!`, 'success');
+
+            // Mudar para a aba de matérias
+            switchTab('minhas-materias');
         }
 
         function editarMateria(id) {
@@ -1069,8 +1246,8 @@
             // Remover matéria antiga
             excluirMateria(id, true);
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            mostrarAlerta('Edite os dados e clique em "Adicionar Matéria" para salvar', 'info');
+            switchTab('cadastrar-materia');
+            mostrarAlerta('Edite os dados e clique em "Adicionar Matéria" para salvar', 'warning');
         }
 
         function excluirMateria(id, semConfirmacao = false) {
@@ -1147,6 +1324,45 @@
                     }
                 }
             });
+        }
+
+        // ==================== ORDENAÇÃO ====================
+        function ordenarMaterias() {
+            let materiasOrdenadas = [...materias];
+
+            switch(ordenacaoAtual) {
+                case 'nome':
+                    materiasOrdenadas.sort((a, b) => a.nome.localeCompare(b.nome));
+                    break;
+                case 'nome-desc':
+                    materiasOrdenadas.sort((a, b) => b.nome.localeCompare(a.nome));
+                    break;
+                case 'status':
+                    materiasOrdenadas.sort((a, b) => {
+                        const statusA = calcularStatus(a);
+                        const statusB = calcularStatus(b);
+                        const prioridade = { 'critico': 0, 'atencao': 1, 'seguro': 2 };
+                        return prioridade[statusA] - prioridade[statusB];
+                    });
+                    break;
+                case 'faltas':
+                    materiasOrdenadas.sort((a, b) => {
+                        const faltasA = a.faltasPermitidas - a.faltasDadas;
+                        const faltasB = b.faltasPermitidas - b.faltasDadas;
+                        return faltasA - faltasB;
+                    });
+                    break;
+            }
+
+            return materiasOrdenadas;
+        }
+
+        function calcularStatus(materia) {
+            const percentualUsado = (materia.faltasDadas / materia.faltasPermitidas) * 100;
+
+            if (percentualUsado >= 75) return 'critico';
+            if (percentualUsado >= 50) return 'atencao';
+            return 'seguro';
         }
 
         // ==================== PLANEJAMENTO DE FALTAS ====================
@@ -1371,43 +1587,53 @@
             atualizarBimestres();
             renderizarMaterias();
             atualizarResumo();
-            atualizarCalendario();
+            atualizarBadges();
+        }
 
-            // Mostrar/ocultar seções
-            const temMaterias = materias.length > 0;
-            document.getElementById('resumoContainer').style.display = temMaterias ? 'block' : 'none';
-            document.getElementById('calendarioContainer').style.display = temMaterias ? 'block' : 'none';
+        function atualizarBadges() {
+            const badge = document.getElementById('badgeMaterias');
+            if (materias.length > 0) {
+                badge.textContent = materias.length;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         function renderizarMaterias() {
             const container = document.getElementById('listaMaterias');
+            const controlsBar = document.getElementById('controlsBar');
 
             if (materias.length === 0) {
+                controlsBar.style.display = 'none';
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div style="font-size: 3em;">📚</div>
+                        <div class="icon">📚</div>
                         <h3>Nenhuma matéria cadastrada</h3>
-                        <p>Adicione sua primeira matéria usando o formulário acima</p>
+                        <p>Adicione sua primeira matéria na aba "Cadastrar Matéria"</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = materias.map(materia => {
+            controlsBar.style.display = 'flex';
+            document.getElementById('totalMateriasTexto').textContent =
+                `${materias.length} matéria${materias.length !== 1 ? 's' : ''} cadastrada${materias.length !== 1 ? 's' : ''}`;
+
+            const materiasOrdenadas = ordenarMaterias();
+
+            container.innerHTML = materiasOrdenadas.map(materia => {
                 const faltasRestantes = materia.faltasPermitidas - materia.faltasDadas;
                 const percentualUsado = (materia.faltasDadas / materia.faltasPermitidas) * 100;
 
-                let status = 'seguro';
-                let statusTexto = 'Seguro';
+                const status = calcularStatus(materia);
 
+                let statusTexto = 'Seguro';
                 if (percentualUsado >= 100) {
-                    status = 'critico';
                     statusTexto = 'Limite Atingido';
-                } else if (percentualUsado >= 75) {
-                    status = 'critico';
+                } else if (status === 'critico') {
                     statusTexto = 'Crítico';
-                } else if (percentualUsado >= 50) {
-                    status = 'atencao';
+                } else if (status === 'atencao') {
                     statusTexto = 'Atenção';
                 }
 
@@ -1465,7 +1691,7 @@
                             </div>
 
                             <div class="progress-bar">
-                                <div class="progress-fill ${status}" style="width: ${percentualUsado}%"></div>
+                                <div class="progress-fill ${status}" style="width: ${Math.min(percentualUsado, 100)}%"></div>
                             </div>
 
                             <div style="text-align: center; margin-top: 8px; font-weight: 600; color: var(--cor-${status});">

@@ -2288,6 +2288,97 @@
             font-size: 0.875rem;
         }
 
+        /* Schedule - Fixed Classes vs Study Sessions */
+        .schedule-cell.class-fixed {
+            border: 3px solid currentColor !important;
+            font-weight: 700;
+            cursor: not-allowed;
+        }
+
+        .schedule-cell.class-fixed:hover {
+            transform: none;
+        }
+
+        .schedule-cell.study-session {
+            border: 2px dashed currentColor !important;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+
+        .schedule-cell.study-session:hover .schedule-remove-btn {
+            display: flex;
+        }
+
+        .schedule-cell-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-align: center;
+            position: relative;
+        }
+
+        .schedule-cell-icon {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .schedule-cell-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .schedule-cell-name {
+            font-size: 0.85rem;
+            font-weight: inherit;
+            line-height: 1.2;
+        }
+
+        .schedule-cell-type {
+            font-size: 0.65rem;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .schedule-remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            line-height: 1;
+            transition: all var(--transition-fast);
+            z-index: 10;
+        }
+
+        .schedule-remove-btn:hover {
+            background: rgba(220, 38, 38, 1);
+            transform: scale(1.1);
+        }
+
+        .schedule-cell.empty:hover::after {
+            content: '+';
+            position: absolute;
+            font-size: 2rem;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
         .schedule-legend-color {
             width: 24px;
             height: 24px;
@@ -3188,20 +3279,20 @@
                             Organize automaticamente seus horários de estudo semanais
                         </p>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-secondary" id="editScheduleBtn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Editar Manual
-                        </button>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                         <button class="btn btn-primary" id="generateScheduleBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="23 4 23 10 17 10"></polyline>
                                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                             </svg>
-                            Gerar Automático
+                            Gerar Estudos Automaticamente
+                        </button>
+                        <button class="btn btn-danger" id="clearStudiesBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            Limpar Estudos
                         </button>
                         <button class="btn btn-success" id="exportSchedulePDFBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3395,6 +3486,64 @@
                         <span id="subjectFormSubmitText">Adicionar Disciplina</span>
                     </button>
                     <button type="button" class="btn btn-secondary" id="btnCancelSubjectForm">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Study Modal -->
+    <div class="modal-overlay" id="addStudyModal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Adicionar Estudo Manual</h2>
+                <button class="modal-close" id="btnCloseAddStudyHeader" aria-label="Fechar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="addStudyForm">
+                <input type="hidden" id="studyDay" value="" />
+                <input type="hidden" id="studyTimeIndex" value="" />
+
+                <div class="form-group">
+                    <label for="studySubjectSelect">Disciplina *</label>
+                    <select id="studySubjectSelect" required style="width: 100%; padding: 12px; border: 2px solid #e0f2fe; border-radius: 8px; font-size: 1rem; background: white;">
+                        <option value="">Selecione uma disciplina</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studyDuration">Duração *</label>
+                    <select id="studyDuration" required style="width: 100%; padding: 12px; border: 2px solid #e0f2fe; border-radius: 8px; font-size: 1rem; background: white;">
+                        <option value="30">30 minutos</option>
+                        <option value="60" selected>1 hora</option>
+                        <option value="90">1 hora e 30 minutos</option>
+                        <option value="120">2 horas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studyTypeSelect">Tipo de Estudo *</label>
+                    <select id="studyTypeSelect" required style="width: 100%; padding: 12px; border: 2px solid #e0f2fe; border-radius: 8px; font-size: 1rem; background: white;">
+                        <option value="Leitura">📖 Leitura</option>
+                        <option value="Exercícios">✍️ Exercícios</option>
+                        <option value="Revisão">🔄 Revisão</option>
+                        <option value="Prática">🎯 Prática</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Adicionar
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelAddStudy">
                         Cancelar
                     </button>
                 </div>
@@ -3598,6 +3747,38 @@
                 if (scheduleInterval) {
                     scheduleInterval.addEventListener('change', () => this.renderScheduleGrid());
                 }
+
+                // Clear studies button
+                const clearStudiesBtn = document.getElementById('clearStudiesBtn');
+                if (clearStudiesBtn) {
+                    clearStudiesBtn.addEventListener('click', () => this.clearStudySessions());
+                }
+
+                // Add study modal event listeners
+                const btnCloseAddStudyHeader = document.getElementById('btnCloseAddStudyHeader');
+                if (btnCloseAddStudyHeader) {
+                    btnCloseAddStudyHeader.addEventListener('click', () => this.closeAddStudyModal());
+                }
+
+                const btnCancelAddStudy = document.getElementById('btnCancelAddStudy');
+                if (btnCancelAddStudy) {
+                    btnCancelAddStudy.addEventListener('click', () => this.closeAddStudyModal());
+                }
+
+                const addStudyForm = document.getElementById('addStudyForm');
+                if (addStudyForm) {
+                    addStudyForm.addEventListener('submit', (e) => this.handleAddStudyForm(e));
+                }
+
+                // Close modal when clicking outside
+                const addStudyModal = document.getElementById('addStudyModal');
+                if (addStudyModal) {
+                    addStudyModal.addEventListener('click', (e) => {
+                        if (e.target === addStudyModal) {
+                            this.closeAddStudyModal();
+                        }
+                    });
+                }
             }
 
             /**
@@ -3625,7 +3806,11 @@
                                 best: 0,
                                 lastStudyDate: null
                             },
-                            settings: loadedData.settings || { theme: 'light' }
+                            settings: loadedData.settings || { theme: 'light' },
+                            studySchedule: loadedData.studySchedule || {
+                                classes: [],
+                                studySessions: []
+                            }
                         };
 
                         // Migração de dados: converter subjects antigas (strings) para nova estrutura (objetos)
@@ -3697,6 +3882,10 @@
                             reviews: [],
                             settings: {
                                 theme: 'light'
+                            },
+                            studySchedule: {
+                                classes: [],
+                                studySessions: []
                             }
                         };
                         this.saveData();
@@ -6026,6 +6215,21 @@
                 });
 
                 grid.innerHTML = html;
+
+                // Adicionar eventos de clique nas células vazias
+                document.querySelectorAll('.schedule-cell').forEach(cell => {
+                    cell.addEventListener('click', () => {
+                        const day = parseInt(cell.dataset.day);
+                        const timeIndex = parseInt(cell.dataset.time);
+                        // Verificar se a célula está vazia antes de abrir modal
+                        if (!cell.classList.contains('class-fixed') && !cell.classList.contains('study-session')) {
+                            this.showAddStudyModal(day, timeIndex);
+                        }
+                    });
+                });
+
+                // Carregar horários salvos
+                this.loadScheduleFromStorage();
             }
 
             /**
@@ -6048,6 +6252,33 @@
                 }
 
                 return slots;
+            }
+
+            /**
+             * Initialize schedule data from subjects
+             * Extract fixed classes from subjects with weekDays and time information
+             */
+            initializeScheduleData() {
+                const classes = [];
+
+                // Extrair aulas fixas das disciplinas
+                this.data.subjects.forEach(subject => {
+                    if (subject.weekDays && subject.weekDays.length > 0 && subject.startTime && subject.endTime) {
+                        subject.weekDays.forEach(day => {
+                            classes.push({
+                                subject: subject.name,
+                                day: parseInt(day),
+                                startTime: subject.startTime,
+                                endTime: subject.endTime,
+                                type: 'class'
+                            });
+                        });
+                    }
+                });
+
+                // Atualizar studySchedule mantendo as sessões de estudo existentes
+                this.data.studySchedule.classes = classes;
+                this.saveData();
             }
 
             /**
@@ -6090,6 +6321,7 @@
 
             /**
              * Generate automatic schedule
+             * Implements intelligent logic to distribute study sessions
              */
             generateSchedule() {
                 if (this.data.subjects.length === 0) {
@@ -6097,49 +6329,175 @@
                     return;
                 }
 
-                const schedule = this.createOptimizedSchedule();
-                this.applyScheduleToGrid(schedule);
-                this.saveScheduleToStorage(schedule);
-                this.showToast('Horário gerado com sucesso!', 'success');
-            }
+                // Limpar estudos automáticos existentes (manter apenas manuais)
+                if (this.data.studySchedule && this.data.studySchedule.studySessions) {
+                    this.data.studySchedule.studySessions = this.data.studySchedule.studySessions.filter(s => s.isManual);
+                }
 
-            /**
-             * Create optimized schedule
-             */
-            createOptimizedSchedule() {
                 const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
                 const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
                 const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
-
                 const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
-                const schedule = {};
-                const subjectColors = this.getSubjectColors();
 
-                // Get subjects with their priorities (based on content count and study sessions)
-                const subjectPriorities = this.calculateSubjectPriorities();
-
-                // Distribute subjects across the week
-                let subjectIndex = 0;
-                const subjects = [...this.data.subjects].sort((a, b) => {
-                    return (subjectPriorities[b.name] || 0) - (subjectPriorities[a.name] || 0);
-                });
-
-                for (let day = 1; day <= 5; day++) { // Monday to Friday
+                // 1. Identificar todas as células livres (sem aulas fixas)
+                const freeCells = [];
+                for (let day = 0; day < 7; day++) {
                     for (let timeIndex = 0; timeIndex < timeSlots.length; timeIndex++) {
-                        // Skip early morning and late evening slots
-                        if (timeIndex % 3 === 0 && timeIndex < timeSlots.length - 1) {
-                            const subject = subjects[subjectIndex % subjects.length];
-                            const cellKey = `${day}-${timeIndex}`;
-                            schedule[cellKey] = {
-                                subject: subject.name,
-                                color: subjectColors[subject.name]
-                            };
-                            subjectIndex++;
+                        const time = timeSlots[timeIndex];
+
+                        // Verificar se há aula fixa neste horário
+                        const hasClass = this.data.studySchedule.classes.some(
+                            c => c.day === day && c.startTime === time
+                        );
+
+                        if (!hasClass) {
+                            freeCells.push({ day, timeIndex, time });
                         }
                     }
                 }
 
-                return schedule;
+                if (freeCells.length === 0) {
+                    this.showToast('Não há horários livres disponíveis', 'warning');
+                    return;
+                }
+
+                // 2. Calcular horas planejadas para cada disciplina (baseado em conteúdos pendentes)
+                const subjectGoals = {};
+                let totalGoalHours = 0;
+
+                this.data.subjects.forEach(subject => {
+                    const pendingContents = this.data.contents.filter(
+                        c => c.subject === subject.name && !c.completed
+                    ).length;
+
+                    // Cada conteúdo pendente = 2h de estudo por semana
+                    const weeklyHours = Math.max(2, pendingContents * 2);
+                    const slots = Math.ceil(weeklyHours / (interval / 60));
+
+                    subjectGoals[subject.name] = {
+                        weeklyHours,
+                        slots,
+                        difficulty: this.getSubjectDifficulty(subject.name),
+                        allocated: 0
+                    };
+
+                    totalGoalHours += weeklyHours;
+                });
+
+                // 3. Validar se há espaço suficiente
+                const availableHours = freeCells.length * (interval / 60);
+                if (totalGoalHours > availableHours * 1.5) {
+                    this.showToast('Aviso: Muitas horas planejadas. O horário pode ficar sobrecarregado.', 'warning');
+                }
+
+                // 4. Distribuir estudos de forma inteligente
+                const studyTypes = ['Leitura', 'Exercícios', 'Revisão', 'Prática'];
+                const newStudySessions = [];
+
+                // Ordenar disciplinas por prioridade (mais conteúdos pendentes primeiro)
+                const sortedSubjects = Object.keys(subjectGoals).sort((a, b) => {
+                    return subjectGoals[b].slots - subjectGoals[a].slots;
+                });
+
+                // Distribuir estudos
+                let cellIndex = 0;
+                let currentSubjectIndex = 0;
+                const sessionsPerDay = {};
+
+                while (cellIndex < freeCells.length && currentSubjectIndex < sortedSubjects.length * 20) {
+                    const subject = sortedSubjects[currentSubjectIndex % sortedSubjects.length];
+                    const goal = subjectGoals[subject];
+
+                    // Verificar se já alocou todas as sessões para esta disciplina
+                    if (goal.allocated >= goal.slots) {
+                        currentSubjectIndex++;
+                        continue;
+                    }
+
+                    const cell = freeCells[cellIndex];
+                    const dayCount = sessionsPerDay[cell.day] || 0;
+
+                    // Validações:
+                    // - Máximo 4 sessões de estudo por dia
+                    // - Não sobrecarregar um dia
+                    if (dayCount >= 4) {
+                        cellIndex++;
+                        continue;
+                    }
+
+                    // Preferir manhãs (antes das 12h) para disciplinas difíceis
+                    const hourNum = parseInt(cell.time.split(':')[0]);
+                    const isMorning = hourNum >= 7 && hourNum < 12;
+
+                    if (goal.difficulty === 'hard' && !isMorning && cellIndex < freeCells.length - 10) {
+                        cellIndex++;
+                        continue;
+                    }
+
+                    // Definir tipo de estudo baseado na sequência
+                    const studyType = studyTypes[goal.allocated % studyTypes.length];
+
+                    // Criar sessão de estudo
+                    newStudySessions.push({
+                        subject,
+                        day: cell.day,
+                        startTime: cell.time,
+                        duration: interval,
+                        studyType,
+                        isManual: false
+                    });
+
+                    goal.allocated++;
+                    sessionsPerDay[cell.day] = dayCount + 1;
+                    cellIndex++;
+                    currentSubjectIndex++;
+                }
+
+                // 5. Adicionar revisões no fim de semana
+                const weekendCells = freeCells.filter(c => c.day === 0 || c.day === 6);
+                weekendCells.slice(0, 4).forEach((cell, index) => {
+                    const subject = sortedSubjects[index % sortedSubjects.length];
+                    newStudySessions.push({
+                        subject,
+                        day: cell.day,
+                        startTime: cell.time,
+                        duration: interval,
+                        studyType: 'Revisão',
+                        isManual: false
+                    });
+                });
+
+                // 6. Salvar e renderizar
+                if (!this.data.studySchedule.studySessions) {
+                    this.data.studySchedule.studySessions = [];
+                }
+                this.data.studySchedule.studySessions.push(...newStudySessions);
+
+                this.saveData();
+                this.renderScheduleGrid();
+
+                // 7. Feedback ao usuário
+                const subjectsWithoutStudy = sortedSubjects.filter(s => subjectGoals[s].allocated === 0);
+                if (subjectsWithoutStudy.length > 0) {
+                    this.showToast(`Horário gerado! Aviso: ${subjectsWithoutStudy.join(', ')} não receberam estudos.`, 'warning');
+                } else {
+                    this.showToast(`Horário gerado com sucesso! ${newStudySessions.length} sessões de estudo criadas.`, 'success');
+                }
+            }
+
+            /**
+             * Get subject difficulty based on content difficulty
+             */
+            getSubjectDifficulty(subjectName) {
+                const contents = this.data.contents.filter(c => c.subject === subjectName);
+                if (contents.length === 0) return 'medium';
+
+                const hardCount = contents.filter(c => c.difficulty === 'hard').length;
+                const mediumCount = contents.filter(c => c.difficulty === 'medium').length;
+
+                if (hardCount > contents.length / 2) return 'hard';
+                if (mediumCount > contents.length / 2) return 'medium';
+                return 'easy';
             }
 
             /**
@@ -6342,14 +6700,270 @@
              */
             loadScheduleFromStorage() {
                 try {
-                    const saved = localStorage.getItem('studySchedule');
-                    if (saved) {
-                        const schedule = JSON.parse(saved);
-                        this.applyScheduleToGrid(schedule);
+                    // Inicializar dados de horário (extrair aulas fixas das disciplinas)
+                    this.initializeScheduleData();
+
+                    if (!this.data.studySchedule) return;
+
+                    const subjectColors = this.getSubjectColors();
+                    const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
+                    const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
+                    const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                    const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
+
+                    // Renderizar aulas fixas (classes)
+                    if (this.data.studySchedule.classes) {
+                        this.data.studySchedule.classes.forEach(classItem => {
+                            const { subject, day, startTime: classStart, endTime: classEnd } = classItem;
+                            const color = subjectColors[subject] || '#0891b2';
+
+                            // Encontrar índices de tempo para a aula
+                            const startIndex = timeSlots.findIndex(t => t === classStart);
+                            const endIndex = timeSlots.findIndex(t => t === classEnd);
+
+                            if (startIndex !== -1) {
+                                // Renderizar a aula na célula correspondente
+                                const cell = document.getElementById(`cell-${day}-${startIndex}`);
+                                if (cell) {
+                                    cell.classList.add('filled', 'class-fixed');
+                                    cell.style.background = color;
+                                    cell.style.border = `3px solid ${color}`;
+                                    cell.innerHTML = `
+                                        <div class="schedule-item" style="display: flex; flex-direction: column; gap: 4px;">
+                                            <div style="font-size: 1.2em;">📚</div>
+                                            <div style="font-weight: 700; font-size: 0.75em;">AULA</div>
+                                            <div style="font-weight: 600;">${this.escapeHtml(subject)}</div>
+                                            <div style="font-size: 0.75em; opacity: 0.9;">${classStart} - ${classEnd}</div>
+                                        </div>
+                                    `;
+                                }
+                            }
+                        });
+                    }
+
+                    // Renderizar sessões de estudo (studySessions)
+                    if (this.data.studySchedule.studySessions) {
+                        this.data.studySchedule.studySessions.forEach((session, index) => {
+                            const { subject, day, startTime: sessionStart, studyType, duration } = session;
+                            const color = subjectColors[subject] || '#0891b2';
+
+                            // Encontrar índice de tempo para a sessão
+                            const startIndex = timeSlots.findIndex(t => t === sessionStart);
+
+                            if (startIndex !== -1) {
+                                const cell = document.getElementById(`cell-${day}-${startIndex}`);
+                                if (cell && !cell.classList.contains('class-fixed')) {
+                                    // Cor clara com transparência
+                                    const lightColor = this.hexToRgba(color, 0.3);
+
+                                    cell.classList.add('filled', 'study-session');
+                                    cell.style.background = lightColor;
+                                    cell.style.border = `2px dashed ${color}`;
+                                    cell.innerHTML = `
+                                        <div class="schedule-item" style="display: flex; flex-direction: column; gap: 4px; position: relative; width: 100%; cursor: pointer;">
+                                            <button onclick="app.removeStudySession(${day}, ${startIndex})"
+                                                    style="position: absolute; top: 2px; right: 2px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 4px; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0;"
+                                                    title="Remover estudo">×</button>
+                                            <div style="font-size: 1.2em;">✏️</div>
+                                            <div style="font-weight: 700; font-size: 0.75em; color: ${color};">ESTUDO</div>
+                                            <div style="font-weight: 600; color: ${color};">${this.escapeHtml(subject)}</div>
+                                            <div style="font-size: 0.75em; color: ${color};">${this.escapeHtml(studyType)}</div>
+                                            <div style="font-size: 0.7em; color: ${color}; opacity: 0.8;">${duration || 60}min</div>
+                                        </div>
+                                    `;
+
+                                    // Adicionar evento de clique para integração com Pomodoro
+                                    cell.addEventListener('click', (e) => {
+                                        // Não disparar se clicou no botão de remover
+                                        if (e.target.tagName !== 'BUTTON') {
+                                            this.startPomodoroFromSchedule(subject, studyType);
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 } catch (error) {
                     console.error('Error loading schedule:', error);
                 }
+            }
+
+            /**
+             * Helper function to convert hex color to rgba
+             */
+            hexToRgba(hex, alpha) {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+
+            /**
+             * Show modal to add manual study session
+             */
+            showAddStudyModal(day, timeIndex) {
+                const modal = document.getElementById('addStudyModal');
+                if (!modal) return;
+
+                // Preencher dropdown com disciplinas
+                const subjectSelect = document.getElementById('studySubjectSelect');
+                if (subjectSelect) {
+                    subjectSelect.innerHTML = '<option value="">Selecione uma disciplina</option>';
+                    this.data.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.name;
+                        option.textContent = subject.name;
+                        subjectSelect.appendChild(option);
+                    });
+                }
+
+                // Armazenar day e timeIndex nos campos hidden
+                document.getElementById('studyDay').value = day;
+                document.getElementById('studyTimeIndex').value = timeIndex;
+
+                // Mostrar modal
+                modal.style.display = 'flex';
+            }
+
+            /**
+             * Close add study modal
+             */
+            closeAddStudyModal() {
+                const modal = document.getElementById('addStudyModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    document.getElementById('addStudyForm').reset();
+                }
+            }
+
+            /**
+             * Handle add study form submission
+             */
+            handleAddStudyForm(e) {
+                e.preventDefault();
+
+                // Obter valores do formulário
+                const day = parseInt(document.getElementById('studyDay').value);
+                const timeIndex = parseInt(document.getElementById('studyTimeIndex').value);
+                const subject = document.getElementById('studySubjectSelect').value;
+                const duration = parseInt(document.getElementById('studyDuration').value);
+                const studyType = document.getElementById('studyTypeSelect').value;
+
+                // Validar
+                if (!subject) {
+                    this.showToast('Selecione uma disciplina', 'error');
+                    return;
+                }
+
+                // Obter horário de início
+                const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
+                const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
+                const sessionStartTime = timeSlots[timeIndex];
+
+                if (!sessionStartTime) {
+                    this.showToast('Horário inválido', 'error');
+                    return;
+                }
+
+                // Criar nova sessão de estudo
+                const newSession = {
+                    subject,
+                    day,
+                    startTime: sessionStartTime,
+                    duration,
+                    studyType,
+                    isManual: true
+                };
+
+                // Adicionar à lista de sessões de estudo
+                if (!this.data.studySchedule.studySessions) {
+                    this.data.studySchedule.studySessions = [];
+                }
+                this.data.studySchedule.studySessions.push(newSession);
+
+                // Salvar e re-renderizar
+                this.saveData();
+                this.renderScheduleGrid();
+
+                // Fechar modal
+                this.closeAddStudyModal();
+
+                this.showToast('Estudo adicionado com sucesso!', 'success');
+            }
+
+            /**
+             * Clear all study sessions (keep classes)
+             */
+            clearStudySessions() {
+                if (!confirm('Tem certeza que deseja limpar todos os estudos? As aulas fixas serão mantidas.')) {
+                    return;
+                }
+
+                // Remover apenas studySessions, manter classes
+                if (this.data.studySchedule) {
+                    this.data.studySchedule.studySessions = [];
+                    this.saveData();
+                    this.renderScheduleGrid();
+                    this.showToast('Estudos limpos com sucesso!', 'success');
+                }
+            }
+
+            /**
+             * Remove specific study session
+             */
+            removeStudySession(day, timeIndex) {
+                if (!this.data.studySchedule || !this.data.studySchedule.studySessions) {
+                    return;
+                }
+
+                const startTime = document.getElementById('scheduleStartTime')?.value || '07:00';
+                const endTime = document.getElementById('scheduleEndTime')?.value || '22:00';
+                const interval = parseInt(document.getElementById('scheduleInterval')?.value || '60');
+                const timeSlots = this.generateTimeSlots(startTime, endTime, interval);
+                const sessionStartTime = timeSlots[timeIndex];
+
+                // Encontrar e remover a sessão
+                const index = this.data.studySchedule.studySessions.findIndex(
+                    session => session.day === day && session.startTime === sessionStartTime
+                );
+
+                if (index !== -1) {
+                    this.data.studySchedule.studySessions.splice(index, 1);
+                    this.saveData();
+                    this.renderScheduleGrid();
+                    this.showToast('Estudo removido', 'success');
+                }
+            }
+
+            /**
+             * Start Pomodoro from schedule
+             * Integrates schedule with Pomodoro timer
+             */
+            startPomodoroFromSchedule(subject, studyType) {
+                // Mudar para aba Pomodoro
+                this.switchTab('pomodoro');
+
+                // Preencher campos do Pomodoro
+                setTimeout(() => {
+                    const pomodoroSubject = document.getElementById('pomodoroSubject');
+                    if (pomodoroSubject) {
+                        pomodoroSubject.value = subject;
+                        // Trigger change event to update content select
+                        pomodoroSubject.dispatchEvent(new Event('change'));
+                    }
+
+                    // Focar no botão de iniciar após um pequeno delay para garantir que a UI foi atualizada
+                    setTimeout(() => {
+                        const startBtn = document.querySelector('#pomodoro .btn-primary');
+                        if (startBtn) {
+                            startBtn.focus();
+                        }
+                    }, 100);
+
+                    this.showToast(`Pomodoro configurado para ${subject} - ${studyType}`, 'success');
+                }, 100);
             }
 
             /**
@@ -6363,8 +6977,9 @@
                 const scheduleGrid = document.getElementById('scheduleGrid').cloneNode(true);
                 const legend = document.getElementById('scheduleLegend').cloneNode(true);
 
-                // Remove editing classes
+                // Remove editing classes and remove buttons
                 scheduleGrid.querySelectorAll('.editing').forEach(el => el.classList.remove('editing'));
+                scheduleGrid.querySelectorAll('button').forEach(btn => btn.remove());
 
                 printWindow.document.write(`
                     <!DOCTYPE html>
@@ -6427,6 +7042,16 @@
                                 color: white;
                                 font-weight: 600;
                             }
+                            /* Diferenciação visual: Aulas fixas */
+                            .schedule-cell.class-fixed {
+                                border: 3px solid !important;
+                                font-weight: 700;
+                            }
+                            /* Diferenciação visual: Sessões de estudo */
+                            .schedule-cell.study-session {
+                                border: 2px dashed !important;
+                                opacity: 0.85;
+                            }
                             .schedule-item {
                                 width: 100%;
                                 height: 100%;
@@ -6436,6 +7061,8 @@
                                 padding: 8px;
                                 border-radius: 6px;
                                 text-align: center;
+                                flex-direction: column;
+                                gap: 4px;
                             }
                             .schedule-legend-item {
                                 display: inline-flex;
@@ -6452,6 +7079,41 @@
                                 height: 24px;
                                 border-radius: 6px;
                             }
+                            .legend-section {
+                                margin-top: 20px;
+                                padding: 15px;
+                                background: #f8fafc;
+                                border-radius: 8px;
+                            }
+                            .legend-section h3 {
+                                color: #0891b2;
+                                margin-bottom: 10px;
+                                font-size: 1rem;
+                            }
+                            .legend-types {
+                                display: flex;
+                                gap: 20px;
+                                margin-top: 10px;
+                            }
+                            .legend-type {
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                            }
+                            .legend-box-fixed {
+                                width: 40px;
+                                height: 30px;
+                                background: #0891b2;
+                                border: 3px solid #0891b2;
+                                border-radius: 4px;
+                            }
+                            .legend-box-study {
+                                width: 40px;
+                                height: 30px;
+                                background: rgba(8, 145, 178, 0.3);
+                                border: 2px dashed #0891b2;
+                                border-radius: 4px;
+                            }
                             @media print {
                                 body { padding: 0; }
                             }
@@ -6460,6 +7122,21 @@
                     <body>
                         <h1>📅 Grade de Horários - MedLife Study Planner</h1>
                         ${scheduleGrid.outerHTML}
+
+                        <div class="legend-section">
+                            <h3>Legenda de Tipos</h3>
+                            <div class="legend-types">
+                                <div class="legend-type">
+                                    <div class="legend-box-fixed"></div>
+                                    <span>📚 Aulas Fixas (borda sólida)</span>
+                                </div>
+                                <div class="legend-type">
+                                    <div class="legend-box-study"></div>
+                                    <span>✏️ Sessões de Estudo (borda pontilhada)</span>
+                                </div>
+                            </div>
+                        </div>
+
                         ${legend.outerHTML}
                         <script>
                             window.onload = function() {

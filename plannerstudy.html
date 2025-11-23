@@ -2411,6 +2411,26 @@
                         </div>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileCurrentSemester">Semestre Atual do Curso *</label>
+                            <input type="number" id="profileCurrentSemester" placeholder="Ex: 3" min="1" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profileTotalSemesters">Total de Semestres *</label>
+                            <input type="number" id="profileTotalSemesters" placeholder="Ex: 10" min="1" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileGraduationYear">Ano de Formatura *</label>
+                            <input type="number" id="profileGraduationYear" placeholder="Ex: 2028" min="2024" max="2099" required />
+                        </div>
+                        <div class="form-group"></div>
+                    </div>
+
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -2452,7 +2472,9 @@
                         <p style="margin-bottom: 8px;"><strong>Nome:</strong> <span id="displayName"></span></p>
                         <p style="margin-bottom: 8px;"><strong>Universidade/Escola:</strong> <span id="displaySchool"></span></p>
                         <p style="margin-bottom: 8px;"><strong>Curso:</strong> <span id="displayCourse"></span></p>
-                        <p><strong>Semestre/Bimestre:</strong> <span id="displayPeriod"></span></p>
+                        <p style="margin-bottom: 8px;"><strong>Semestre/Bimestre:</strong> <span id="displayPeriod"></span></p>
+                        <p style="margin-bottom: 8px;"><strong>Semestre do Curso:</strong> <span id="displayCurrentSemester"></span> de <span id="displayTotalSemesters"></span></p>
+                        <p><strong>Ano de Formatura:</strong> <span id="displayGraduationYear"></span></p>
                     </div>
                 </div>
             </div>
@@ -3302,6 +3324,9 @@
                 this.data.profile.school = document.getElementById('profileSchool').value.trim();
                 this.data.profile.course = document.getElementById('profileCourse').value.trim();
                 this.data.profile.period = document.getElementById('profilePeriod').value.trim();
+                this.data.profile.currentSemester = parseInt(document.getElementById('profileCurrentSemester').value);
+                this.data.profile.totalSemesters = parseInt(document.getElementById('profileTotalSemesters').value);
+                this.data.profile.graduationYear = parseInt(document.getElementById('profileGraduationYear').value);
 
                 this.saveData();
                 this.renderProfile();
@@ -4381,6 +4406,9 @@
                     document.getElementById('profileSchool').value = profile.school;
                     document.getElementById('profileCourse').value = profile.course;
                     document.getElementById('profilePeriod').value = profile.period;
+                    document.getElementById('profileCurrentSemester').value = profile.currentSemester || '';
+                    document.getElementById('profileTotalSemesters').value = profile.totalSemesters || '';
+                    document.getElementById('profileGraduationYear').value = profile.graduationYear || '';
                     document.getElementById('profileDailyGoal').value = profile.dailyGoal || 0;
                     document.getElementById('profileWeeklyGoal').value = profile.weeklyGoal || 0;
 
@@ -4388,6 +4416,9 @@
                     document.getElementById('displaySchool').textContent = profile.school;
                     document.getElementById('displayCourse').textContent = profile.course;
                     document.getElementById('displayPeriod').textContent = profile.period;
+                    document.getElementById('displayCurrentSemester').textContent = profile.currentSemester || '-';
+                    document.getElementById('displayTotalSemesters').textContent = profile.totalSemesters || '-';
+                    document.getElementById('displayGraduationYear').textContent = profile.graduationYear || '-';
 
                     // Atualizar header com nome e curso
                     document.getElementById('headerUserName').textContent = profile.name;

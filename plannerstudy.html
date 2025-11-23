@@ -4435,6 +4435,8 @@
                     this.renderAchievements();
                 } else if (tabName === 'schedule') {
                     this.renderSchedule();
+                } else if (tabName === 'dashboard') {
+                    this.renderGoalsProgress();
                 }
             }
 
@@ -4492,7 +4494,7 @@
                     sessionDate.setHours(0, 0, 0, 0);
                     return sessionDate.getTime() === today.getTime();
                 });
-                const hoursToday = todaySessions.reduce((sum, s) => sum + s.duration, 0);
+                const hoursToday = todaySessions.reduce((sum, s) => sum + s.duration, 0) / 60;
 
                 // Calcular horas estudadas esta semana
                 const startOfWeek = new Date(today);
@@ -4501,7 +4503,7 @@
                     const sessionDate = new Date(s.date);
                     return sessionDate >= startOfWeek;
                 });
-                const hoursThisWeek = weekSessions.reduce((sum, s) => sum + s.duration, 0);
+                const hoursThisWeek = weekSessions.reduce((sum, s) => sum + s.duration, 0) / 60;
 
                 // Atualizar UI - Meta Diária
                 if (profile.dailyGoal > 0) {

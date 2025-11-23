@@ -2488,7 +2488,7 @@
                     <div class="subject-list">
                         <h3>Disciplinas</h3>
                         <div id="subjectsList"></div>
-                        <button class="btn btn-primary btn-full btn-small mt-4" onclick="app.showSubjectForm()">
+                        <button class="btn btn-primary btn-full btn-small mt-4" id="btnAddSubject">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -3056,14 +3056,14 @@
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h2 id="subjectFormTitle">Nova Disciplina</h2>
-                <button class="modal-close" onclick="app.closeSubjectForm()" aria-label="Fechar">
+                <button class="modal-close" id="btnCloseSubjectFormHeader" aria-label="Fechar">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
-            <form id="subjectForm" onsubmit="app.handleSubjectForm(event)">
+            <form id="subjectForm">
                 <input type="hidden" id="editingSubjectId" value="" />
 
                 <div class="form-group">
@@ -3135,7 +3135,7 @@
                         </svg>
                         <span id="subjectFormSubmitText">Adicionar Disciplina</span>
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="app.closeSubjectForm()">
+                    <button type="button" class="btn btn-secondary" id="btnCancelSubjectForm">
                         Cancelar
                     </button>
                 </div>
@@ -3258,14 +3258,6 @@
                     }
                 });
 
-                // Enter key on subject input
-                document.getElementById('newSubject').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        this.addSubject();
-                    }
-                });
-
                 // Pomodoro subject change
                 document.getElementById('pomodoroSubject').addEventListener('change', (e) => {
                     this.updatePomodoroSelects(e.target.value);
@@ -3288,6 +3280,27 @@
                     const options = document.getElementById('spacedReviewOptions');
                     options.style.display = e.target.checked ? 'block' : 'none';
                 });
+
+                // Subject form buttons
+                const btnAddSubject = document.getElementById('btnAddSubject');
+                if (btnAddSubject) {
+                    btnAddSubject.addEventListener('click', () => this.showSubjectForm());
+                }
+
+                const btnCloseSubjectFormHeader = document.getElementById('btnCloseSubjectFormHeader');
+                if (btnCloseSubjectFormHeader) {
+                    btnCloseSubjectFormHeader.addEventListener('click', () => this.closeSubjectForm());
+                }
+
+                const btnCancelSubjectForm = document.getElementById('btnCancelSubjectForm');
+                if (btnCancelSubjectForm) {
+                    btnCancelSubjectForm.addEventListener('click', () => this.closeSubjectForm());
+                }
+
+                const subjectForm = document.getElementById('subjectForm');
+                if (subjectForm) {
+                    subjectForm.addEventListener('submit', (e) => this.handleSubjectForm(e));
+                }
             }
 
             /**

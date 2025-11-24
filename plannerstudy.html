@@ -4126,6 +4126,7 @@
                             duration: durationMinutes
                         };
                         this.showToast(`Sessão atualizada com sucesso!`, 'success');
+                        this.renderGoalsProgress();
                     }
                 } else {
                     // Create new session
@@ -4231,6 +4232,7 @@
                         this.saveData();
                         this.renderStudySessions();
                         this.renderStats();
+                        this.renderGoalsProgress();
                         this.showToast('Sessão de estudo excluída com sucesso!', 'success');
                     }
                 );
@@ -4486,25 +4488,24 @@
 
                 document.getElementById('goalsProgressCard').style.display = 'block';
 
-                // Calcular horas estudadas hoje
+                // Calcular horas estudadas hoje - usando formatDateLocal para evitar problemas de timezone
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todaySessions = this.data.studySessions.filter(s => {
-                    const sessionDate = new Date(s.date);
-                    sessionDate.setHours(0, 0, 0, 0);
-                    return sessionDate.getTime() === today.getTime();
-                });
-                const hoursToday = todaySessions.reduce((sum, s) => sum + s.duration, 0) / 60;
+                const todayStr = this.formatDateLocal(today);
 
-                // Calcular horas estudadas esta semana
-                const startOfWeek = new Date(today);
-                startOfWeek.setDate(today.getDate() - today.getDay());
-                const weekSessions = this.data.studySessions.filter(s => {
-                    const sessionDate = new Date(s.date);
-                    sessionDate.setHours(0, 0, 0, 0);
-                    return sessionDate >= startOfWeek;
+                const todaySessions = this.data.studySessions.filter(s => {
+                    return s.date === todayStr;
                 });
-                const hoursThisWeek = weekSessions.reduce((sum, s) => sum + s.duration, 0) / 60;
+                const hoursToday = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0) / 60;
+
+                // Calcular horas estudadas nos últimos 7 dias
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // 6 dias atrás + hoje = 7 dias
+                const sevenDaysAgoStr = this.formatDateLocal(sevenDaysAgo);
+
+                const weekSessions = this.data.studySessions.filter(s => {
+                    return s.date >= sevenDaysAgoStr && s.date <= todayStr;
+                });
+                const hoursThisWeek = weekSessions.reduce((sum, s) => sum + (s.duration || 0), 0) / 60;
 
                 // Atualizar UI - Meta Diária
                 if (profile.dailyGoal > 0) {
@@ -4512,6 +4513,11 @@
                     document.getElementById('dailyGoalProgress').style.width = dailyPercent + '%';
                     document.getElementById('dailyGoalText').textContent = `${hoursToday.toFixed(1)}/${profile.dailyGoal}h`;
                     document.getElementById('dailyGoalPercentage').textContent = `${dailyPercent.toFixed(0)}% concluído`;
+                } else {
+                    // Se não há meta diária, esconder ou mostrar valores zerados
+                    document.getElementById('dailyGoalProgress').style.width = '0%';
+                    document.getElementById('dailyGoalText').textContent = '0/0h';
+                    document.getElementById('dailyGoalPercentage').textContent = '0% concluído';
                 }
 
                 // Atualizar UI - Meta Semanal
@@ -4520,6 +4526,11 @@
                     document.getElementById('weeklyGoalProgress').style.width = weeklyPercent + '%';
                     document.getElementById('weeklyGoalText').textContent = `${hoursThisWeek.toFixed(1)}/${profile.weeklyGoal}h`;
                     document.getElementById('weeklyGoalPercentage').textContent = `${weeklyPercent.toFixed(0)}% concluído`;
+                } else {
+                    // Se não há meta semanal, esconder ou mostrar valores zerados
+                    document.getElementById('weeklyGoalProgress').style.width = '0%';
+                    document.getElementById('weeklyGoalText').textContent = '0/0h';
+                    document.getElementById('weeklyGoalPercentage').textContent = '0% concluído';
                 }
             }
             /**

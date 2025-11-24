@@ -4501,6 +4501,7 @@
                 startOfWeek.setDate(today.getDate() - today.getDay());
                 const weekSessions = this.data.studySessions.filter(s => {
                     const sessionDate = new Date(s.date);
+                    sessionDate.setHours(0, 0, 0, 0);
                     return sessionDate >= startOfWeek;
                 });
                 const hoursThisWeek = weekSessions.reduce((sum, s) => sum + s.duration, 0) / 60;
@@ -4548,7 +4549,7 @@
 
                 // Criar set de datas com pelo menos 30min de estudo
                 sessions.forEach(s => {
-                    if (s.duration >= 0.5) {
+                    if (s.duration >= 30) {
                         const date = new Date(s.date);
                         date.setHours(0, 0, 0, 0);
                         studyDates.add(date.getTime());

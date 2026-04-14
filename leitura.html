@@ -1,259 +1,746 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de Velocidade de Leitura</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, system-ui, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e8e8f0; min-height: 100vh; padding: 20px; }
-  .container { max-width: 560px; margin: 0 auto; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; backdrop-filter: blur(10px); }
-  h1 { font-size: 22px; margin-bottom: 6px; color: #fff; }
-  .subtitle { font-size: 13px; color: #9ca3af; margin-bottom: 20px; }
-  .motivacional { background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15)); border: 1px solid rgba(236,72,153,0.3); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: 14px; text-align: center; color: #fbcfe8; line-height: 1.5; animation: pop 0.4s ease; }
-  @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
-  .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #8b5cf6; margin-bottom: 12px; font-weight: 600; }
-  label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 6px; margin-top: 10px; }
-  label:first-of-type { margin-top: 0; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  input[type="number"] { width: 100%; padding: 11px 13px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 15px; font-family: inherit; }
-  input[type="number"]:focus { outline: none; border-color: #8b5cf6; background: rgba(139, 92, 246, 0.08); }
-  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  input[type="number"] { -moz-appearance: textfield; }
-  button { width: 100%; padding: 13px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 14px; font-family: inherit; }
-  button.secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
-  .result-box { background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.1)); border: 1px solid rgba(139,92,246,0.3); border-radius: 10px; padding: 16px; margin-top: 14px; }
-  .stat { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .stat:last-child { border-bottom: none; }
-  .stat-label { font-size: 13px; color: #9ca3af; }
-  .stat-value { font-size: 16px; color: #fff; font-weight: 600; }
-  .stat-value.big { font-size: 24px; color: #a78bfa; }
-  .progress-bar { height: 10px; background: rgba(0,0,0,0.4); border-radius: 5px; overflow: hidden; margin: 14px 0 6px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 0.4s ease; }
-  .progress-text { font-size: 12px; color: #cbd5e1; text-align: center; margin-bottom: 4px; }
-  .saved-badge { display: inline-block; font-size: 10px; background: rgba(34,197,94,0.2); color: #4ade80; padding: 3px 8px; border-radius: 10px; margin-left: 8px; }
-  .hint { font-size: 11px; color: #6b7280; margin-top: 6px; font-style: italic; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Velocidade de Leitura - Estudante Sara</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Calculadora de velocidade de leitura para estudantes de medicina. Calibre seu ritmo, acompanhe o progresso e saiba quanto tempo falta para terminar seu material.">
+    <meta name="keywords" content="calculadora leitura, velocidade de leitura, estudante medicina, páginas por minuto, tempo de leitura, produtividade estudantil">
+    <meta name="author" content="Estudante Sara">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Calculadora de Velocidade de Leitura - Estudante Sara">
+    <meta property="og:description" content="Calcule sua velocidade de leitura e acompanhe o progresso do seu material de estudo.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sayasidu.github.io/medlife/leitura.html">
+    <meta property="og:image" content="https://sayasidu.github.io/medlife/favicon.png">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: linear-gradient(135deg, #ede9fe 0%, #fce7f3 50%, #e0e7ff 100%);
+            --surface: #ffffff;
+            --surface-glass: rgba(255, 255, 255, 0.7);
+            --surface-section: rgba(139, 92, 246, 0.04);
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --primary-light: #a78bfa;
+            --secondary: #ec4899;
+            --text: #1e1b4b;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --border: rgba(139, 92, 246, 0.15);
+            --border-light: rgba(139, 92, 246, 0.08);
+            --input-bg: rgba(139, 92, 246, 0.05);
+            --input-bg-focus: rgba(139, 92, 246, 0.1);
+            --shadow: 0 8px 32px rgba(139, 92, 246, 0.12);
+            --shadow-sm: 0 2px 8px rgba(139, 92, 246, 0.08);
+            --result-bg: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.06));
+            --result-border: rgba(139, 92, 246, 0.2);
+            --motivacional-bg: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1));
+            --motivacional-border: rgba(236, 72, 153, 0.2);
+            --motivacional-text: #9d174d;
+            --progress-track: rgba(139, 92, 246, 0.12);
+            --progress-fill: linear-gradient(90deg, #8b5cf6, #ec4899);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-text: #16a34a;
+            --hint-color: #9ca3af;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --surface: rgba(255, 255, 255, 0.06);
+            --surface-glass: rgba(255, 255, 255, 0.04);
+            --surface-section: rgba(255, 255, 255, 0.03);
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border: rgba(255, 255, 255, 0.1);
+            --border-light: rgba(255, 255, 255, 0.06);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-bg-focus: rgba(139, 92, 246, 0.12);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --result-bg: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1));
+            --result-border: rgba(139, 92, 246, 0.3);
+            --motivacional-bg: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.15));
+            --motivacional-border: rgba(236, 72, 153, 0.3);
+            --motivacional-text: #fbcfe8;
+            --progress-track: rgba(0, 0, 0, 0.4);
+            --success-bg: rgba(34, 197, 94, 0.2);
+            --success-text: #4ade80;
+            --hint-color: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding: 6px 0;
+            transition: opacity var(--transition);
+        }
+
+        .back-link:hover {
+            opacity: 0.75;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: var(--shadow);
+            transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .theme-toggle {
+            background: var(--surface-section);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 18px;
+            line-height: 1;
+            transition: background var(--transition), border-color var(--transition);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--input-bg-focus);
+            border-color: var(--border);
+        }
+
+        .saved-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--success-bg);
+            color: var(--success-text);
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .saved-badge.visible {
+            opacity: 1;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .motivacional {
+            background: var(--motivacional-bg);
+            border: 1px solid var(--motivacional-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            color: var(--motivacional-text);
+            line-height: 1.5;
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .section {
+            background: var(--surface-section);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            margin-top: 12px;
+        }
+
+        label:first-of-type {
+            margin-top: 0;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 11px 13px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--input-bg-focus);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        input[type="number"]::placeholder {
+            color: var(--text-light);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 14px;
+            font-family: inherit;
+            transition: transform 0.15s ease, opacity var(--transition), background var(--transition);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: var(--surface-section);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--input-bg-focus);
+        }
+
+        .result-box {
+            background: var(--result-bg);
+            border: 1px solid var(--result-border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-size: 16px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .stat-value.big {
+            font-size: 24px;
+            color: var(--primary-light);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--progress-track);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 14px 0 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--progress-fill);
+            border-radius: 5px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--hint-color);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .hint.warning {
+            color: #f87171;
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 19px;
+            }
+
+            .stat-value.big {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>📚 Calculadora de Leitura <span id="savedBadge" class="saved-badge" style="display:none">salvo</span></h1>
-  <p class="subtitle">Calibre uma vez. Depois é só ir atualizando a página atual.</p>
+    <main class="container" role="main">
+        <a href="index.html" class="back-link" aria-label="Voltar ao blog">← Voltar ao Blog</a>
 
-  <div id="motivacional" class="motivacional">☕ Bora, futura doutora! Respira fundo e começa. O livro não vai se ler sozinho.</div>
+        <header>
+            <h1>
+                Calculadora de Leitura
+                <span id="savedBadge" class="saved-badge" aria-live="polite">salvo</span>
+            </h1>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </header>
+        <p class="subtitle">Calibre uma vez. Depois é só ir atualizando a página atual.</p>
 
-  <div class="section">
-    <div class="section-title">1. Calibração + tempo total</div>
-    <label>Quantas páginas você leu no teste?</label>
-    <input type="number" id="testPages" placeholder="Ex: 10" min="0.1" step="0.1">
-    <label>Tempo gasto (min : seg)</label>
-    <div class="row">
-      <input type="number" id="testMin" placeholder="Min" min="0">
-      <input type="number" id="testSec" placeholder="Seg" min="0" max="59">
-    </div>
-    <label>Total de páginas do livro/material</label>
-    <input type="number" id="totalPages" placeholder="Ex: 450" min="1">
-    <button onclick="calcularTotal()">Calcular tempo total</button>
-    <div id="resultadoTotal"></div>
-  </div>
+        <div id="motivacional" class="motivacional" aria-live="polite" role="status">
+            Bora, futura doutora! Respira fundo e começa. O livro não vai se ler sozinho.
+        </div>
 
-  <div class="section">
-    <div class="section-title">2. Acompanhamento — onde você parou</div>
-    <label>Página atual</label>
-    <input type="number" id="currentPage" placeholder="Ex: 87" min="0">
-    <p class="hint">Atualiza sozinho enquanto você digita.</p>
-    <div id="resultadoProgresso"></div>
-  </div>
+        <section class="section" aria-labelledby="calibracao-titulo">
+            <div class="section-title" id="calibracao-titulo">1. Calibração + tempo total</div>
 
-  <button class="secondary" onclick="limpar()">Limpar tudo</button>
-</div>
+            <label for="testPages">Quantas páginas você leu no teste?</label>
+            <input type="number" id="testPages" placeholder="Ex: 10" min="0.1" step="0.1" inputmode="decimal">
+
+            <label for="testMin">Tempo gasto (min : seg)</label>
+            <div class="row">
+                <input type="number" id="testMin" placeholder="Min" min="0" inputmode="numeric" aria-label="Minutos do teste">
+                <input type="number" id="testSec" placeholder="Seg" min="0" max="59" inputmode="numeric" aria-label="Segundos do teste">
+            </div>
+
+            <label for="totalPages">Total de páginas do livro/material</label>
+            <input type="number" id="totalPages" placeholder="Ex: 450" min="1" inputmode="numeric">
+
+            <button class="btn btn-primary" id="btnCalcular" type="button">Calcular tempo total</button>
+            <div id="resultadoTotal" aria-live="polite"></div>
+        </section>
+
+        <section class="section" aria-labelledby="acompanhamento-titulo">
+            <div class="section-title" id="acompanhamento-titulo">2. Acompanhamento — onde você parou</div>
+
+            <label for="currentPage">Página atual</label>
+            <input type="number" id="currentPage" placeholder="Ex: 87" min="0" inputmode="numeric">
+            <p class="hint">Atualiza sozinho enquanto você digita.</p>
+            <div id="resultadoProgresso" aria-live="polite"></div>
+        </section>
+
+        <button class="btn btn-secondary" id="btnLimpar" type="button">Limpar tudo</button>
+    </main>
 
 <script>
-const KEY = 'reading-calc-data-v2';
-let velocidadeMinPorPag = null;
-let totalPagsCache = null;
+(function () {
+    'use strict';
 
-const FRASES = {
-  inicio: [
-    "☕ Bora, futura doutora! O livro não se lê sozinho.",
-    "🧠 Neurônio acordado? Então partiu.",
-    "📖 Primeira página é a mais pesada. Depois desanda.",
-    "💪 Modo estudante ativado. Café na mão, foco no olho."
-  ],
-  comecou: [
-    "🚀 Já saiu do zero! Pior parte ficou pra trás.",
-    "👀 Tá indo... não para agora que tá bom.",
-    "🔥 Ritmo pegando. Continua!",
-    "☕ Mais um gole, mais uma página. Simples assim."
-  ],
-  quarto: [
-    "🎯 25% já era! Olha você sendo produtiva.",
-    "💅 Tá voando, hein? Continua nessa pegada.",
-    "📚 1/4 do caminho. Bora pro próximo marco!",
-    "🧃 Pausa pra água NÃO é pausa pra TikTok. Volta aqui."
-  ],
-  metade: [
-    "🏆 METADE! Agora é ladeira abaixo.",
-    "🎉 50%! Você oficialmente leu mais da metade.",
-    "🔥 Do meio pra frente é só orgulho. Continua!",
-    "💀 Desistir agora? Depois de TUDO isso? Nem pensar."
-  ],
-  reta: [
-    "⚡ 75%! Tá vendo a linha de chegada?",
-    "🏃‍♀️ Reta final! Não afrouxa agora.",
-    "💎 Falta pouco, muito pouco. Foco!",
-    "🎯 Já investiu tanto, vai largar agora? Claro que não."
-  ],
-  quase: [
-    "🔥 TÁ NO FIM! Fecha esse livro hoje!",
-    "🚨 Últimas páginas! Não dorme em cima!",
-    "👑 Falta nadinha. Termina e senta na gloria.",
-    "💥 Cê tá a um suspiro de finalizar. VAI!"
-  ],
-  fim: [
-    "🎊 TERMINOU! Aplausos de pé pra doutora Sarinha!",
-    "🏆 Livro finalizado! Agora pode se gabar.",
-    "✨ Concluído! Anota aí na lista de vitórias.",
-    "👑 Terminou. Respira. Bebe água. Próximo!"
-  ]
-};
+    const KEY = 'reading-calc-data-v2';
+    const THEME_KEY = 'reading-calc-theme';
 
-function fraseAleatoria(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    let velocidadeMinPorPag = null;
+    let totalPagsCache = null;
 
-function atualizarMotivacional(progresso) {
-  const el = document.getElementById('motivacional');
-  let frase;
-  if (progresso === null) frase = fraseAleatoria(FRASES.inicio);
-  else if (progresso >= 100) frase = fraseAleatoria(FRASES.fim);
-  else if (progresso >= 90) frase = fraseAleatoria(FRASES.quase);
-  else if (progresso >= 70) frase = fraseAleatoria(FRASES.reta);
-  else if (progresso >= 45) frase = fraseAleatoria(FRASES.metade);
-  else if (progresso >= 20) frase = fraseAleatoria(FRASES.quarto);
-  else if (progresso > 0) frase = fraseAleatoria(FRASES.comecou);
-  else frase = fraseAleatoria(FRASES.inicio);
+    // --- DOM refs ---
+    const $ = (id) => document.getElementById(id);
+    const els = {
+        testPages: $('testPages'),
+        testMin: $('testMin'),
+        testSec: $('testSec'),
+        totalPages: $('totalPages'),
+        currentPage: $('currentPage'),
+        resultadoTotal: $('resultadoTotal'),
+        resultadoProgresso: $('resultadoProgresso'),
+        motivacional: $('motivacional'),
+        savedBadge: $('savedBadge'),
+        btnCalcular: $('btnCalcular'),
+        btnLimpar: $('btnLimpar'),
+        themeToggle: $('themeToggle'),
+        themeIcon: $('themeIcon'),
+    };
 
-  if (el.textContent.trim() !== frase.trim()) {
-    el.style.animation = 'none';
-    el.offsetHeight;
-    el.textContent = frase;
-    el.style.animation = 'pop 0.4s ease';
-  }
-}
+    // --- Frases motivacionais ---
+    const FRASES = {
+        inicio: [
+            "Bora, futura doutora! O livro não se lê sozinho.",
+            "Neurônio acordado? Então partiu.",
+            "Primeira página é a mais pesada. Depois desanda.",
+            "Modo estudante ativado. Café na mão, foco no olho."
+        ],
+        comecou: [
+            "Já saiu do zero! Pior parte ficou pra trás.",
+            "Tá indo... não para agora que tá bom.",
+            "Ritmo pegando. Continua!",
+            "Mais um gole, mais uma página. Simples assim."
+        ],
+        quarto: [
+            "25% já era! Olha você sendo produtiva.",
+            "Tá voando, hein? Continua nessa pegada.",
+            "1/4 do caminho. Bora pro próximo marco!",
+            "Pausa pra água NÃO é pausa pra TikTok. Volta aqui."
+        ],
+        metade: [
+            "METADE! Agora é ladeira abaixo.",
+            "50%! Você oficialmente leu mais da metade.",
+            "Do meio pra frente é só orgulho. Continua!",
+            "Desistir agora? Depois de TUDO isso? Nem pensar."
+        ],
+        reta: [
+            "75%! Tá vendo a linha de chegada?",
+            "Reta final! Não afrouxa agora.",
+            "Falta pouco, muito pouco. Foco!",
+            "Já investiu tanto, vai largar agora? Claro que não."
+        ],
+        quase: [
+            "TÁ NO FIM! Fecha esse livro hoje!",
+            "Últimas páginas! Não dorme em cima!",
+            "Falta nadinha. Termina e senta na glória.",
+            "Cê tá a um suspiro de finalizar. VAI!"
+        ],
+        fim: [
+            "TERMINOU! Aplausos de pé pra doutora Sarinha!",
+            "Livro finalizado! Agora pode se gabar.",
+            "Concluído! Anota aí na lista de vitórias.",
+            "Terminou. Respira. Bebe água. Próximo!"
+        ]
+    };
 
-async function salvar() {
-  const data = {
-    testPages: document.getElementById('testPages').value,
-    testMin: document.getElementById('testMin').value,
-    testSec: document.getElementById('testSec').value,
-    totalPages: document.getElementById('totalPages').value,
-    currentPage: document.getElementById('currentPage').value
-  };
-  try {
-    await window.storage.set(KEY, JSON.stringify(data));
-    const badge = document.getElementById('savedBadge');
-    badge.style.display = 'inline-block';
-    setTimeout(() => badge.style.display = 'none', 1200);
-  } catch(e) {}
-}
-
-async function carregar() {
-  try {
-    const r = await window.storage.get(KEY);
-    if (r && r.value) {
-      const d = JSON.parse(r.value);
-      if (d.testPages) document.getElementById('testPages').value = d.testPages;
-      if (d.testMin) document.getElementById('testMin').value = d.testMin;
-      if (d.testSec) document.getElementById('testSec').value = d.testSec;
-      if (d.totalPages) document.getElementById('totalPages').value = d.totalPages;
-      if (d.currentPage) document.getElementById('currentPage').value = d.currentPage;
-      if (d.testPages && (d.testMin || d.testSec) && d.totalPages) {
-        calcularTotal();
-        if (d.currentPage) calcularProgresso();
-      }
+    // --- Tema claro/escuro ---
+    function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            els.themeIcon.textContent = '☀️';
+        }
     }
-  } catch(e) {}
-}
 
-function formatTempo(h) {
-  if (h < 0) h = 0;
-  const totalMin = Math.round(h * 60);
-  const H = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  if (H === 0) return `${m} min`;
-  if (m === 0) return `${H}h`;
-  return `${H}h ${m}min`;
-}
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+            document.documentElement.removeAttribute('data-theme');
+            els.themeIcon.textContent = '🌙';
+            localStorage.setItem(THEME_KEY, 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            els.themeIcon.textContent = '☀️';
+            localStorage.setItem(THEME_KEY, 'dark');
+        }
+    }
 
-function calcularTotal() {
-  const testPages = parseFloat(document.getElementById('testPages').value);
-  const testMin = parseInt(document.getElementById('testMin').value) || 0;
-  const testSec = parseInt(document.getElementById('testSec').value) || 0;
-  const totalPages = parseInt(document.getElementById('totalPages').value);
-  const resDiv = document.getElementById('resultadoTotal');
+    // --- Utilitários ---
+    function fraseAleatoria(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-  if (!testPages || (testMin === 0 && testSec === 0) || !totalPages) { resDiv.innerHTML = ''; return; }
+    function formatTempo(horas) {
+        if (horas < 0) horas = 0;
+        const totalMin = Math.round(horas * 60);
+        const h = Math.floor(totalMin / 60);
+        const m = totalMin % 60;
+        if (h === 0) return m + ' min';
+        if (m === 0) return h + 'h';
+        return h + 'h ' + m + 'min';
+    }
 
-  const tempoTestMin = testMin + (testSec / 60);
-  velocidadeMinPorPag = tempoTestMin / testPages;
-  totalPagsCache = totalPages;
-  const pagPorMin = testPages / tempoTestMin;
-  const tempoTotalH = (totalPages * velocidadeMinPorPag) / 60;
-  const segPorPag = velocidadeMinPorPag * 60;
+    function atualizarMotivacional(progresso) {
+        let frase;
+        if (progresso === null || progresso === 0) frase = fraseAleatoria(FRASES.inicio);
+        else if (progresso >= 100) frase = fraseAleatoria(FRASES.fim);
+        else if (progresso >= 90) frase = fraseAleatoria(FRASES.quase);
+        else if (progresso >= 70) frase = fraseAleatoria(FRASES.reta);
+        else if (progresso >= 45) frase = fraseAleatoria(FRASES.metade);
+        else if (progresso >= 20) frase = fraseAleatoria(FRASES.quarto);
+        else frase = fraseAleatoria(FRASES.comecou);
 
-  resDiv.innerHTML = `
-    <div class="result-box">
-      <div class="stat"><span class="stat-label">Velocidade</span><span class="stat-value">${pagPorMin.toFixed(2)} pág/min</span></div>
-      <div class="stat"><span class="stat-label">Tempo por página</span><span class="stat-value">${segPorPag.toFixed(0)} seg</span></div>
-      <div class="stat" style="padding-top:12px"><span class="stat-label">⏱ Tempo total estimado</span><span class="stat-value big">${formatTempo(tempoTotalH)}</span></div>
-    </div>`;
+        if (els.motivacional.textContent.trim() !== frase.trim()) {
+            els.motivacional.style.animation = 'none';
+            els.motivacional.offsetHeight; // force reflow
+            els.motivacional.textContent = frase;
+            els.motivacional.style.animation = 'pop 0.4s ease';
+        }
+    }
 
-  salvar();
-  if (document.getElementById('currentPage').value) calcularProgresso();
-  else atualizarMotivacional(null);
-}
+    // --- Persistência (localStorage) ---
+    function salvar() {
+        var data = {
+            testPages: els.testPages.value,
+            testMin: els.testMin.value,
+            testSec: els.testSec.value,
+            totalPages: els.totalPages.value,
+            currentPage: els.currentPage.value
+        };
+        try {
+            localStorage.setItem(KEY, JSON.stringify(data));
+            els.savedBadge.classList.add('visible');
+            setTimeout(function () {
+                els.savedBadge.classList.remove('visible');
+            }, 1200);
+        } catch (e) { /* quota exceeded — silently fail */ }
+    }
 
-function calcularProgresso() {
-  const resDiv = document.getElementById('resultadoProgresso');
-  if (velocidadeMinPorPag === null || totalPagsCache === null) {
-    resDiv.innerHTML = '<p class="hint" style="color:#f87171">⚠ Calibre primeiro lá em cima.</p>'; return;
-  }
-  const currentPage = parseInt(document.getElementById('currentPage').value);
-  if (isNaN(currentPage)) { resDiv.innerHTML = ''; atualizarMotivacional(null); return; }
+    function carregar() {
+        try {
+            var raw = localStorage.getItem(KEY);
+            if (!raw) return;
+            var d = JSON.parse(raw);
+            if (d.testPages) els.testPages.value = d.testPages;
+            if (d.testMin) els.testMin.value = d.testMin;
+            if (d.testSec) els.testSec.value = d.testSec;
+            if (d.totalPages) els.totalPages.value = d.totalPages;
+            if (d.currentPage) els.currentPage.value = d.currentPage;
+            if (d.testPages && (d.testMin || d.testSec) && d.totalPages) {
+                calcularTotal();
+                if (d.currentPage) calcularProgresso();
+            }
+        } catch (e) { /* corrupted data — ignore */ }
+    }
 
-  const lidas = Math.min(currentPage, totalPagsCache);
-  const restante = Math.max(0, totalPagsCache - currentPage);
-  const tempoRestanteH = (restante * velocidadeMinPorPag) / 60;
-  const tempoJaLidoH = (lidas * velocidadeMinPorPag) / 60;
-  const progresso = totalPagsCache > 0 ? (lidas / totalPagsCache * 100) : 0;
+    // --- Cálculos ---
+    function calcularTotal() {
+        var testPages = parseFloat(els.testPages.value);
+        var testMin = parseInt(els.testMin.value, 10) || 0;
+        var testSec = parseInt(els.testSec.value, 10) || 0;
+        var totalPages = parseInt(els.totalPages.value, 10);
 
-  resDiv.innerHTML = `
-    <div class="result-box">
-      <div class="progress-text">Página ${lidas} de ${totalPagsCache}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,progresso)}%"></div></div>
-      <div class="progress-text" style="color:#9ca3af">${progresso.toFixed(1)}% concluído</div>
-      <div style="margin-top:14px">
-        <div class="stat"><span class="stat-label">Páginas restantes</span><span class="stat-value">${restante}</span></div>
-        <div class="stat"><span class="stat-label">Tempo já investido</span><span class="stat-value">${formatTempo(tempoJaLidoH)}</span></div>
-        <div class="stat" style="padding-top:12px"><span class="stat-label">⏳ Falta para terminar</span><span class="stat-value big">${formatTempo(tempoRestanteH)}</span></div>
-      </div>
-    </div>`;
+        if (!testPages || (testMin === 0 && testSec === 0) || !totalPages) {
+            els.resultadoTotal.innerHTML = '';
+            return;
+        }
 
-  atualizarMotivacional(progresso);
-  salvar();
-}
+        var tempoTestMin = testMin + (testSec / 60);
+        velocidadeMinPorPag = tempoTestMin / testPages;
+        totalPagsCache = totalPages;
+        var pagPorMin = testPages / tempoTestMin;
+        var tempoTotalH = (totalPages * velocidadeMinPorPag) / 60;
+        var segPorPag = velocidadeMinPorPag * 60;
 
-async function limpar() {
-  ['testPages','testMin','testSec','totalPages','currentPage'].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('resultadoTotal').innerHTML = '';
-  document.getElementById('resultadoProgresso').innerHTML = '';
-  velocidadeMinPorPag = null; totalPagsCache = null;
-  atualizarMotivacional(null);
-  try { await window.storage.delete(KEY); } catch(e) {}
-}
+        els.resultadoTotal.innerHTML =
+            '<div class="result-box">' +
+                '<div class="stat">' +
+                    '<span class="stat-label">Velocidade</span>' +
+                    '<span class="stat-value">' + pagPorMin.toFixed(2) + ' pág/min</span>' +
+                '</div>' +
+                '<div class="stat">' +
+                    '<span class="stat-label">Tempo por página</span>' +
+                    '<span class="stat-value">' + segPorPag.toFixed(0) + ' seg</span>' +
+                '</div>' +
+                '<div class="stat" style="padding-top:12px">' +
+                    '<span class="stat-label">Tempo total estimado</span>' +
+                    '<span class="stat-value big">' + formatTempo(tempoTotalH) + '</span>' +
+                '</div>' +
+            '</div>';
 
-document.getElementById('currentPage').addEventListener('input', calcularProgresso);
-carregar();
+        salvar();
+        if (els.currentPage.value) {
+            calcularProgresso();
+        } else {
+            atualizarMotivacional(null);
+        }
+    }
+
+    function calcularProgresso() {
+        if (velocidadeMinPorPag === null || totalPagsCache === null) {
+            els.resultadoProgresso.innerHTML = '<p class="hint warning">Calibre primeiro lá em cima.</p>';
+            return;
+        }
+
+        var currentPage = parseInt(els.currentPage.value, 10);
+        if (isNaN(currentPage)) {
+            els.resultadoProgresso.innerHTML = '';
+            atualizarMotivacional(null);
+            return;
+        }
+
+        var lidas = Math.min(currentPage, totalPagsCache);
+        var restante = Math.max(0, totalPagsCache - currentPage);
+        var tempoRestanteH = (restante * velocidadeMinPorPag) / 60;
+        var tempoJaLidoH = (lidas * velocidadeMinPorPag) / 60;
+        var progresso = totalPagsCache > 0 ? (lidas / totalPagsCache * 100) : 0;
+        var progressoClamped = Math.min(100, progresso);
+
+        els.resultadoProgresso.innerHTML =
+            '<div class="result-box">' +
+                '<div class="progress-text">Página ' + lidas + ' de ' + totalPagsCache + '</div>' +
+                '<div class="progress-bar" role="progressbar" aria-valuenow="' + Math.round(progressoClamped) + '" aria-valuemin="0" aria-valuemax="100">' +
+                    '<div class="progress-fill" style="width:' + progressoClamped + '%"></div>' +
+                '</div>' +
+                '<div class="progress-text" style="color:var(--text-light)">' + progresso.toFixed(1) + '% concluído</div>' +
+                '<div style="margin-top:14px">' +
+                    '<div class="stat">' +
+                        '<span class="stat-label">Páginas restantes</span>' +
+                        '<span class="stat-value">' + restante + '</span>' +
+                    '</div>' +
+                    '<div class="stat">' +
+                        '<span class="stat-label">Tempo já investido</span>' +
+                        '<span class="stat-value">' + formatTempo(tempoJaLidoH) + '</span>' +
+                    '</div>' +
+                    '<div class="stat" style="padding-top:12px">' +
+                        '<span class="stat-label">Falta para terminar</span>' +
+                        '<span class="stat-value big">' + formatTempo(tempoRestanteH) + '</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+        atualizarMotivacional(progresso);
+        salvar();
+    }
+
+    function limpar() {
+        els.testPages.value = '';
+        els.testMin.value = '';
+        els.testSec.value = '';
+        els.totalPages.value = '';
+        els.currentPage.value = '';
+        els.resultadoTotal.innerHTML = '';
+        els.resultadoProgresso.innerHTML = '';
+        velocidadeMinPorPag = null;
+        totalPagsCache = null;
+        atualizarMotivacional(null);
+        try { localStorage.removeItem(KEY); } catch (e) {}
+    }
+
+    // --- Event listeners ---
+    els.btnCalcular.addEventListener('click', calcularTotal);
+    els.btnLimpar.addEventListener('click', limpar);
+    els.currentPage.addEventListener('input', calcularProgresso);
+    els.themeToggle.addEventListener('click', toggleTheme);
+
+    // --- Init ---
+    initTheme();
+    carregar();
+})();
 </script>
 </body>
 </html>

@@ -249,7 +249,8 @@
             gap: 10px;
         }
 
-        input[type="number"] {
+        input[type="number"],
+        input[type="text"] {
             width: 100%;
             padding: 11px 13px;
             background: var(--input-bg);
@@ -261,14 +262,16 @@
             transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
         }
 
-        input[type="number"]:focus {
+        input[type="number"]:focus,
+        input[type="text"]:focus {
             outline: none;
             border-color: var(--primary);
             background: var(--input-bg-focus);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
         }
 
-        input[type="number"]::placeholder {
+        input[type="number"]::placeholder,
+        input[type="text"]::placeholder {
             color: var(--text-light);
         }
 
@@ -516,6 +519,100 @@
             border-color: var(--border);
         }
 
+        /* --- Book tabs --- */
+        .book-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .book-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--text-secondary);
+            background: var(--surface-section);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all var(--transition);
+            max-width: 180px;
+        }
+
+        .book-tab:hover {
+            border-color: var(--border);
+            background: var(--input-bg-focus);
+        }
+
+        .book-tab.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            border-color: transparent;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        }
+
+        .book-tab-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-tab-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
+            line-height: 1;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            color: inherit;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            flex-shrink: 0;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .book-tab.active .book-tab-remove {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .book-tab-remove:hover {
+            opacity: 1;
+        }
+
+        .book-tab-add {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            line-height: 1;
+            color: var(--primary);
+            background: var(--surface-section);
+            border: 1.5px dashed var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition);
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .book-tab-add:hover {
+            background: var(--input-bg-focus);
+            border-color: var(--primary);
+        }
+
         @media (max-width: 700px) {
             .page-wrapper {
                 flex-direction: column;
@@ -568,12 +665,17 @@
         </header>
         <p class="subtitle">Calibre uma vez. Depois é só ir atualizando a página atual.</p>
 
+        <div class="book-tabs" id="bookTabs"></div>
+
         <div id="motivacional" class="motivacional" aria-live="polite" role="status">
             Bora, futura doutora! Respira fundo e começa. O livro não vai se ler sozinho.
         </div>
 
         <section class="section" aria-labelledby="calibracao-titulo">
             <div class="section-title" id="calibracao-titulo">1. Calibração + tempo total</div>
+
+            <label for="bookName">Nome do livro/material</label>
+            <input type="text" id="bookName" placeholder="Ex: Harrison — Cap. 5">
 
             <label for="testPages">Quantas páginas você leu no teste?</label>
             <input type="number" id="testPages" placeholder="Ex: 10" min="0.1" step="0.1" inputmode="decimal">
@@ -613,16 +715,21 @@
 (function () {
     'use strict';
 
-    const KEY = 'reading-calc-data-v2';
+    const OLD_KEY = 'reading-calc-data-v2';
+    const BOOKS_KEY = 'reading-calc-books-v1';
     const THEME_KEY = 'reading-calc-theme';
     const HISTORY_KEY = 'reading-history';
 
+    let activeBookIndex = 0;
+    let books = [];
     let velocidadeMinPorPag = null;
     let totalPagsCache = null;
 
     // --- DOM refs ---
     const $ = (id) => document.getElementById(id);
     const els = {
+        bookTabs: $('bookTabs'),
+        bookName: $('bookName'),
         testPages: $('testPages'),
         testMin: $('testMin'),
         testSec: $('testSec'),
@@ -722,6 +829,12 @@
         return h + 'h ' + m + 'min';
     }
 
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     function atualizarMotivacional(progresso) {
         let frase;
         if (progresso === null || progresso === 0) frase = fraseAleatoria(FRASES.inicio);
@@ -740,43 +853,192 @@
         }
     }
 
-    // --- Persistência (localStorage) ---
-    function salvar() {
-        var data = {
+    // --- Gerenciamento de múltiplos livros ---
+    function createEmptyBook(name) {
+        return {
+            name: name || '',
+            testPages: '',
+            testMin: '',
+            testSec: '',
+            totalPages: '',
+            currentPage: ''
+        };
+    }
+
+    function saveCurrentBookToMemory() {
+        if (!books[activeBookIndex]) return;
+        books[activeBookIndex] = {
+            name: els.bookName.value,
             testPages: els.testPages.value,
             testMin: els.testMin.value,
             testSec: els.testSec.value,
             totalPages: els.totalPages.value,
             currentPage: els.currentPage.value
         };
+    }
+
+    function loadBookToForm(index) {
+        var book = books[index];
+        if (!book) return;
+        els.bookName.value = book.name || '';
+        els.testPages.value = book.testPages || '';
+        els.testMin.value = book.testMin || '';
+        els.testSec.value = book.testSec || '';
+        els.totalPages.value = book.totalPages || '';
+        els.currentPage.value = book.currentPage || '';
+    }
+
+    function recalcularAtual() {
+        velocidadeMinPorPag = null;
+        totalPagsCache = null;
+        els.resultadoTotal.innerHTML = '';
+        els.resultadoProgresso.innerHTML = '';
+
+        var tp = parseFloat(els.testPages.value);
+        var tm = parseInt(els.testMin.value, 10) || 0;
+        var ts = parseInt(els.testSec.value, 10) || 0;
+        var total = parseInt(els.totalPages.value, 10);
+
+        if (tp && (tm > 0 || ts > 0) && total) {
+            calcularTotal(true);
+            if (els.currentPage.value) calcularProgresso(true);
+        } else {
+            atualizarMotivacional(null);
+        }
+    }
+
+    function switchBook(index) {
+        saveCurrentBookToMemory();
+        activeBookIndex = index;
+        loadBookToForm(index);
+        renderBookTabs();
+        recalcularAtual();
+        salvarBooks();
+    }
+
+    function addBook() {
+        saveCurrentBookToMemory();
+        var num = books.length + 1;
+        books.push(createEmptyBook('Livro ' + num));
+        activeBookIndex = books.length - 1;
+        loadBookToForm(activeBookIndex);
+        renderBookTabs();
+        velocidadeMinPorPag = null;
+        totalPagsCache = null;
+        els.resultadoTotal.innerHTML = '';
+        els.resultadoProgresso.innerHTML = '';
+        atualizarMotivacional(null);
+        salvarBooks();
+        els.bookName.focus();
+    }
+
+    function removeBook(index) {
+        if (books.length <= 1) return;
+        books.splice(index, 1);
+        if (activeBookIndex >= books.length) activeBookIndex = books.length - 1;
+        loadBookToForm(activeBookIndex);
+        renderBookTabs();
+        recalcularAtual();
+        salvarBooks();
+    }
+
+    function renderBookTabs() {
+        var html = '';
+        for (var i = 0; i < books.length; i++) {
+            var isActive = i === activeBookIndex;
+            var name = books[i].name || ('Livro ' + (i + 1));
+            html += '<button class="book-tab' + (isActive ? ' active' : '') + '" data-book-index="' + i + '" type="button">' +
+                '<span class="book-tab-name">' + escapeHtml(name) + '</span>' +
+                (books.length > 1 ? '<span class="book-tab-remove" data-remove-index="' + i + '" title="Remover livro">&times;</span>' : '') +
+            '</button>';
+        }
+        html += '<button class="book-tab-add" id="btnAddBook" type="button" title="Adicionar outro livro">+</button>';
+        els.bookTabs.innerHTML = html;
+
+        // Bind tab click events
+        var tabs = els.bookTabs.querySelectorAll('.book-tab');
+        for (var j = 0; j < tabs.length; j++) {
+            (function(tab) {
+                tab.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('book-tab-remove')) return;
+                    var idx = parseInt(tab.getAttribute('data-book-index'), 10);
+                    if (idx !== activeBookIndex) switchBook(idx);
+                });
+            })(tabs[j]);
+        }
+
+        // Bind remove button events
+        var removeBtns = els.bookTabs.querySelectorAll('.book-tab-remove');
+        for (var k = 0; k < removeBtns.length; k++) {
+            (function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var idx = parseInt(btn.getAttribute('data-remove-index'), 10);
+                    removeBook(idx);
+                });
+            })(removeBtns[k]);
+        }
+
+        $('btnAddBook').addEventListener('click', addBook);
+    }
+
+    // --- Persistência (localStorage) ---
+    function salvarBooks() {
         try {
-            localStorage.setItem(KEY, JSON.stringify(data));
+            localStorage.setItem(BOOKS_KEY, JSON.stringify({
+                activeBookIndex: activeBookIndex,
+                books: books
+            }));
             els.savedBadge.classList.add('visible');
             setTimeout(function () {
                 els.savedBadge.classList.remove('visible');
             }, 1200);
-        } catch (e) { /* quota exceeded — silently fail */ }
+        } catch (e) {}
     }
 
-    function carregar() {
+    function salvar() {
+        saveCurrentBookToMemory();
+        salvarBooks();
+    }
+
+    function carregarBooks() {
         try {
-            var raw = localStorage.getItem(KEY);
-            if (!raw) return;
-            var d = JSON.parse(raw);
-            if (d.testPages) els.testPages.value = d.testPages;
-            if (d.testMin) els.testMin.value = d.testMin;
-            if (d.testSec) els.testSec.value = d.testSec;
-            if (d.totalPages) els.totalPages.value = d.totalPages;
-            if (d.currentPage) els.currentPage.value = d.currentPage;
-            if (d.testPages && (d.testMin || d.testSec) && d.totalPages) {
-                calcularTotal();
-                if (d.currentPage) calcularProgresso();
+            var raw = localStorage.getItem(BOOKS_KEY);
+            if (raw) {
+                var data = JSON.parse(raw);
+                books = data.books || [createEmptyBook('Livro 1')];
+                activeBookIndex = data.activeBookIndex || 0;
+                if (activeBookIndex >= books.length) activeBookIndex = 0;
+                return;
             }
-        } catch (e) { /* corrupted data — ignore */ }
+
+            // Migrar do formato antigo
+            var oldRaw = localStorage.getItem(OLD_KEY);
+            if (oldRaw) {
+                var d = JSON.parse(oldRaw);
+                books = [{
+                    name: 'Livro 1',
+                    testPages: d.testPages || '',
+                    testMin: d.testMin || '',
+                    testSec: d.testSec || '',
+                    totalPages: d.totalPages || '',
+                    currentPage: d.currentPage || ''
+                }];
+                activeBookIndex = 0;
+                salvarBooks();
+                return;
+            }
+
+            books = [createEmptyBook('Livro 1')];
+            activeBookIndex = 0;
+        } catch (e) {
+            books = [createEmptyBook('Livro 1')];
+            activeBookIndex = 0;
+        }
     }
 
     // --- Cálculos ---
-    function calcularTotal() {
+    function calcularTotal(silent) {
         var testPages = parseFloat(els.testPages.value);
         var testMin = parseInt(els.testMin.value, 10) || 0;
         var testSec = parseInt(els.testSec.value, 10) || 0;
@@ -810,16 +1072,18 @@
                 '</div>' +
             '</div>';
 
-        salvar();
-        salvarNoHistorico();
+        if (!silent) {
+            salvar();
+            salvarNoHistorico();
+        }
         if (els.currentPage.value) {
-            calcularProgresso();
+            calcularProgresso(silent);
         } else {
             atualizarMotivacional(null);
         }
     }
 
-    function calcularProgresso() {
+    function calcularProgresso(silent) {
         if (velocidadeMinPorPag === null || totalPagsCache === null) {
             els.resultadoProgresso.innerHTML = '<p class="hint warning">Calibre primeiro lá em cima.</p>';
             return;
@@ -863,11 +1127,14 @@
             '</div>';
 
         atualizarMotivacional(progresso);
-        salvar();
-        salvarNoHistorico();
+        if (!silent) {
+            salvar();
+            salvarNoHistorico();
+        }
     }
 
     function limpar() {
+        els.bookName.value = '';
         els.testPages.value = '';
         els.testMin.value = '';
         els.testSec.value = '';
@@ -878,7 +1145,8 @@
         velocidadeMinPorPag = null;
         totalPagsCache = null;
         atualizarMotivacional(null);
-        try { localStorage.removeItem(KEY); } catch (e) {}
+        saveCurrentBookToMemory();
+        salvarBooks();
     }
 
     // --- Histórico de leituras do dia ---
@@ -906,6 +1174,7 @@
         var testPages = parseFloat(els.testPages.value);
         var testMin = parseInt(els.testMin.value, 10) || 0;
         var testSec = parseInt(els.testSec.value, 10) || 0;
+        var bookName = els.bookName.value.trim();
 
         if (!totalPages || !testPages || (testMin === 0 && testSec === 0)) return;
 
@@ -915,10 +1184,10 @@
         var hoje = hojeStr();
         var history = getHistory();
 
-        // Procura se já existe uma entrada para esse material hoje
+        // Procura se já existe uma entrada para esse material hoje (por nome ou por totalPages)
         var idx = -1;
         for (var i = 0; i < history.length; i++) {
-            if (history[i].date === hoje && history[i].totalPages === totalPages) {
+            if (history[i].date === hoje && history[i].totalPages === totalPages && (history[i].bookName || '') === bookName) {
                 idx = i;
                 break;
             }
@@ -927,6 +1196,7 @@
         var entry = {
             date: hoje,
             timestamp: Date.now(),
+            bookName: bookName,
             totalPages: totalPages,
             currentPage: currentPage,
             progresso: Math.round(progresso * 10) / 10,
@@ -970,10 +1240,11 @@
             var item = hojeItems[i];
             var hora = new Date(item.timestamp);
             var horaStr = hora.getHours().toString().padStart(2, '0') + ':' + hora.getMinutes().toString().padStart(2, '0');
+            var title = item.bookName ? escapeHtml(item.bookName) : ('Material ' + item.totalPages + ' págs');
 
             html +=
                 '<div class="history-item">' +
-                    '<div class="history-item-title">Material ' + item.totalPages + ' págs</div>' +
+                    '<div class="history-item-title">' + title + '</div>' +
                     '<div class="history-item-details">' +
                         'Pág ' + item.currentPage + '/' + item.totalPages +
                         ' &middot; ' + item.speed.toFixed(1) + ' pág/min' +
@@ -988,7 +1259,7 @@
         html += '<button class="sidebar-clear" id="btnClearHistory" type="button">Limpar histórico de hoje</button>';
         els.historyList.innerHTML = html;
 
-        document.getElementById('btnClearHistory').addEventListener('click', function() {
+        $('btnClearHistory').addEventListener('click', function() {
             var history = getHistory();
             var hoje = hojeStr();
             history = history.filter(function(h) { return h.date !== hoje; });
@@ -997,15 +1268,26 @@
         });
     }
 
+    // --- Atualizar nome da aba ao digitar ---
+    function onBookNameChange() {
+        saveCurrentBookToMemory();
+        renderBookTabs();
+        salvarBooks();
+    }
+
     // --- Event listeners ---
-    els.btnCalcular.addEventListener('click', calcularTotal);
+    els.btnCalcular.addEventListener('click', function() { calcularTotal(false); });
     els.btnLimpar.addEventListener('click', limpar);
-    els.currentPage.addEventListener('input', calcularProgresso);
+    els.currentPage.addEventListener('input', function() { calcularProgresso(false); });
     els.themeToggle.addEventListener('click', toggleTheme);
+    els.bookName.addEventListener('input', onBookNameChange);
 
     // --- Init ---
     initTheme();
-    carregar();
+    carregarBooks();
+    loadBookToForm(activeBookIndex);
+    renderBookTabs();
+    recalcularAtual();
     renderHistory();
 })();
 </script>

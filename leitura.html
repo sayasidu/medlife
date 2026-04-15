@@ -519,6 +519,100 @@
             border-color: var(--border);
         }
 
+        /* --- Concluídas --- */
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 16px 0;
+        }
+
+        .completed-item {
+            background: var(--success-bg);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            transition: background var(--transition), border-color var(--transition);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .completed-item:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .completed-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .completed-item-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--success-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .completed-item-check {
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-left: 6px;
+            color: var(--success-text);
+        }
+
+        .completed-item-details {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .completed-item-restore {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 10px;
+            font-family: inherit;
+            color: var(--text-light);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+            transition: color var(--transition);
+        }
+
+        .completed-item-restore:hover {
+            color: var(--text-secondary);
+        }
+
+        .btn-complete {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            transition: transform 0.15s ease, opacity var(--transition);
+            animation: pop 0.4s ease;
+        }
+
+        .btn-complete:hover {
+            opacity: 0.9;
+        }
+
+        .btn-complete:active {
+            transform: scale(0.98);
+        }
+
         /* --- Book tabs --- */
         .book-tabs {
             display: flex;
@@ -708,6 +802,9 @@
     <aside class="sidebar" aria-label="Histórico de leituras do dia">
         <div class="sidebar-title">Leituras de hoje</div>
         <div id="historyList"></div>
+        <div class="sidebar-divider" id="completedDivider"></div>
+        <div class="sidebar-title" id="completedTitle">Concluídas</div>
+        <div id="completedList"></div>
     </aside>
     </div>
 
@@ -719,6 +816,7 @@
     const BOOKS_KEY = 'reading-calc-books-v1';
     const THEME_KEY = 'reading-calc-theme';
     const HISTORY_KEY = 'reading-history';
+    const COMPLETED_KEY = 'reading-calc-completed-v1';
 
     let activeBookIndex = 0;
     let books = [];
@@ -744,6 +842,9 @@
         themeToggle: $('themeToggle'),
         themeIcon: $('themeIcon'),
         historyList: $('historyList'),
+        completedList: $('completedList'),
+        completedDivider: $('completedDivider'),
+        completedTitle: $('completedTitle'),
     };
 
     // --- Frases motivacionais ---
@@ -1126,6 +1227,14 @@
                 '</div>' +
             '</div>';
 
+        if (progresso >= 100) {
+            els.resultadoProgresso.innerHTML +=
+                '<button class="btn-complete" id="btnComplete" type="button">Concluir e arquivar</button>';
+            $('btnComplete').addEventListener('click', function() {
+                completeBook(activeBookIndex);
+            });
+        }
+
         atualizarMotivacional(progresso);
         if (!silent) {
             salvar();
@@ -1268,6 +1377,124 @@
         });
     }
 
+    // --- Leituras concluídas ---
+    function getCompleted() {
+        try {
+            var raw = localStorage.getItem(COMPLETED_KEY);
+            if (!raw) return [];
+            return JSON.parse(raw);
+        } catch (e) { return []; }
+    }
+
+    function saveCompletedList(list) {
+        try {
+            localStorage.setItem(COMPLETED_KEY, JSON.stringify(list));
+        } catch (e) {}
+    }
+
+    function completeBook(index) {
+        var book = books[index];
+        if (!book) return;
+
+        var completed = getCompleted();
+        completed.push({
+            name: book.name || ('Livro ' + (index + 1)),
+            totalPages: parseInt(book.totalPages, 10) || 0,
+            completedAt: Date.now(),
+            completedDate: hojeStr()
+        });
+        saveCompletedList(completed);
+
+        books.splice(index, 1);
+        if (books.length === 0) {
+            books = [createEmptyBook('Livro 1')];
+        }
+        if (activeBookIndex >= books.length) {
+            activeBookIndex = books.length - 1;
+        }
+        loadBookToForm(activeBookIndex);
+        renderBookTabs();
+        recalcularAtual();
+        salvarBooks();
+        renderCompleted();
+    }
+
+    function restoreBook(completedIndex) {
+        var completed = getCompleted();
+        if (completedIndex < 0 || completedIndex >= completed.length) return;
+
+        var item = completed[completedIndex];
+        completed.splice(completedIndex, 1);
+        saveCompletedList(completed);
+
+        saveCurrentBookToMemory();
+        books.push({
+            name: item.name,
+            testPages: '',
+            testMin: '',
+            testSec: '',
+            totalPages: item.totalPages.toString(),
+            currentPage: item.totalPages.toString()
+        });
+        activeBookIndex = books.length - 1;
+        loadBookToForm(activeBookIndex);
+        renderBookTabs();
+        recalcularAtual();
+        salvarBooks();
+        renderCompleted();
+    }
+
+    function renderCompleted() {
+        var completed = getCompleted();
+
+        if (completed.length === 0) {
+            els.completedList.innerHTML = '';
+            els.completedDivider.style.display = 'none';
+            els.completedTitle.style.display = 'none';
+            return;
+        }
+
+        els.completedDivider.style.display = '';
+        els.completedTitle.style.display = '';
+
+        var html = '';
+        for (var i = 0; i < completed.length; i++) {
+            var item = completed[i];
+            var date = new Date(item.completedAt);
+            var dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+
+            html +=
+                '<div class="completed-item">' +
+                    '<div class="completed-item-header">' +
+                        '<span class="completed-item-title">' + escapeHtml(item.name) + '</span>' +
+                        '<span class="completed-item-check">\u2713</span>' +
+                    '</div>' +
+                    '<div class="completed-item-details">' +
+                        item.totalPages + ' p\u00e1gs &middot; ' + dateStr +
+                    '</div>' +
+                    '<button class="completed-item-restore" data-restore-index="' + i + '" type="button">Restaurar</button>' +
+                '</div>';
+        }
+
+        html += '<button class="sidebar-clear" id="btnClearCompleted" type="button">Limpar conclu\u00eddas</button>';
+        els.completedList.innerHTML = html;
+
+        var restoreBtns = els.completedList.querySelectorAll('.completed-item-restore');
+        for (var j = 0; j < restoreBtns.length; j++) {
+            (function(btn) {
+                btn.addEventListener('click', function() {
+                    var idx = parseInt(btn.getAttribute('data-restore-index'), 10);
+                    restoreBook(idx);
+                });
+            })(restoreBtns[j]);
+        }
+
+        $('btnClearCompleted').addEventListener('click', function() {
+            saveCompletedList([]);
+            renderCompleted();
+        });
+    }
+
     // --- Atualizar nome da aba ao digitar ---
     function onBookNameChange() {
         saveCurrentBookToMemory();
@@ -1289,6 +1516,7 @@
     renderBookTabs();
     recalcularAtual();
     renderHistory();
+    renderCompleted();
 })();
 </script>
 </body>

@@ -924,6 +924,79 @@
             }
         }
 
+        /* Seletor de Semestre */
+        .semester-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .semester-selector select {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .semester-selector select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        body.dark-mode .semester-selector select {
+            background: #1a1a2e;
+            color: #e8e8e8;
+            border-color: #4a5568;
+        }
+
+        .btn-new-semester {
+            padding: 10px 18px;
+            border: 2px dashed #6366f1;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.05);
+            color: #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-new-semester:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-style: solid;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .btn-new-semester {
+            border-color: #818cf8;
+            color: #818cf8;
+            background: rgba(129, 140, 248, 0.1);
+        }
+
+        .btn-delete-semester {
+            padding: 10px 14px;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.05);
+            color: #ef4444;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-delete-semester:hover {
+            background: rgba(239, 68, 68, 0.15);
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .materia-header {
                 flex-direction: column;
@@ -940,6 +1013,10 @@
             }
             .data-controls {
                 flex-direction: column;
+            }
+            .semester-selector {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -1007,10 +1084,16 @@
         <!-- TELA 2: Lista de Matérias -->
         <div id="tela-materias" class="card hidden">
             <h2>📚 Matérias Cadastradas</h2>
-            
+
             <div class="info-box">
                 <strong id="info-instituicao"></strong><br>
                 Média para aprovação: <strong id="info-media"></strong> | PF a partir de: <strong id="info-pf"></strong>
+            </div>
+
+            <div class="semester-selector">
+                <select id="semestre-select" onchange="trocarSemestre()"></select>
+                <button class="btn-new-semester" onclick="adicionarNovoSemestre()">+ Novo Semestre</button>
+                <button class="btn-delete-semester" id="btn-excluir-semestre" onclick="excluirSemestre()">Excluir Semestre</button>
             </div>
 
             <div id="media-geral-container"></div>
@@ -1178,7 +1261,9 @@
 
     <script>
         let config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
-        let materias = [];
+        let semestres = []; // Array de { nome: string, materias: [] }
+        let semestreAtual = 0;
+        let materias = []; // Referência para semestres[semestreAtual].materias
         let indexParaExcluir = null;
         let indexNotas = null;
         let contadorAvaliacoesInd = 0;
@@ -1295,7 +1380,30 @@
                 try {
                     const parsed = JSON.parse(dados);
                     config = parsed.config || { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
-                    materias = parsed.materias || [];
+
+                    // Migração: formato antigo (sem semestres) -> novo formato
+                    if (parsed.semestres && Array.isArray(parsed.semestres)) {
+                        semestres = parsed.semestres;
+                        semestreAtual = parsed.semestreAtual || 0;
+                    } else if (parsed.materias && parsed.materias.length > 0) {
+                        // Formato antigo: migrar materias para o primeiro semestre
+                        semestres = [{
+                            nome: config.semestre || 'Semestre 1',
+                            materias: parsed.materias
+                        }];
+                        semestreAtual = 0;
+                    } else {
+                        semestres = [];
+                        semestreAtual = 0;
+                    }
+
+                    // Garantir que semestreAtual é válido
+                    if (semestreAtual >= semestres.length) {
+                        semestreAtual = Math.max(0, semestres.length - 1);
+                    }
+
+                    // Atualizar referência de materias
+                    atualizarReferenciaMaterias();
 
                     if (config.instituicao) {
                         document.getElementById('instituicao').value = config.instituicao;
@@ -1309,17 +1417,31 @@
                         }
                     }
 
-                    console.log('✅ Dados carregados:', { config, materias });
+                    console.log('✅ Dados carregados:', { config, semestres, semestreAtual });
                 } catch (e) {
                     console.error('❌ Erro ao carregar dados:', e);
+                    semestres = [];
+                    semestreAtual = 0;
                     materias = [];
                     config = { instituicao: '', mediaAprovacao: 7.0, mediaPF: 4.0, semestre: '', modoPeso: 'relativo' };
                 }
             }
         }
 
+        function atualizarReferenciaMaterias() {
+            if (semestres.length > 0 && semestreAtual < semestres.length) {
+                materias = semestres[semestreAtual].materias;
+            } else {
+                materias = [];
+            }
+        }
+
         function salvarDados() {
-            const sucesso = StorageManager.set('boletimAcademico', JSON.stringify({ config, materias }));
+            // Sincronizar materias de volta ao semestre atual
+            if (semestres.length > 0 && semestreAtual < semestres.length) {
+                semestres[semestreAtual].materias = materias;
+            }
+            const sucesso = StorageManager.set('boletimAcademico', JSON.stringify({ config, semestres, semestreAtual }));
             if (sucesso) {
                 console.log('✅ Dados salvos com sucesso');
             } else {
@@ -1346,12 +1468,21 @@
             }
 
             config = { instituicao, mediaAprovacao: media, mediaPF, semestre, modoPeso };
+
+            // Se não existem semestres ainda, criar o primeiro com o nome informado
+            if (semestres.length === 0) {
+                semestres.push({ nome: semestre, materias: [] });
+                semestreAtual = 0;
+                atualizarReferenciaMaterias();
+            }
+
             salvarDados();
-            
+
             document.getElementById('info-instituicao').textContent = config.instituicao;
             document.getElementById('info-media').textContent = config.mediaAprovacao.toFixed(1);
             document.getElementById('info-pf').textContent = config.mediaPF.toFixed(1);
 
+            renderizarSeletorSemestre();
             mostrarTela('tela-materias');
             renderizarMaterias();
         }
@@ -1362,6 +1493,77 @@
 
         function voltarMaterias() {
             mostrarTela('tela-materias');
+        }
+
+        function renderizarSeletorSemestre() {
+            const select = document.getElementById('semestre-select');
+            select.innerHTML = '';
+
+            semestres.forEach((sem, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = sem.nome;
+                if (index === semestreAtual) option.selected = true;
+                select.appendChild(option);
+            });
+
+            // Mostrar/ocultar botão de excluir semestre
+            const btnExcluir = document.getElementById('btn-excluir-semestre');
+            btnExcluir.style.display = semestres.length > 1 ? 'inline-block' : 'none';
+        }
+
+        function trocarSemestre() {
+            const select = document.getElementById('semestre-select');
+            const novoIndex = parseInt(select.value);
+
+            // Salvar materias do semestre atual antes de trocar
+            if (semestres.length > 0 && semestreAtual < semestres.length) {
+                semestres[semestreAtual].materias = materias;
+            }
+
+            semestreAtual = novoIndex;
+            atualizarReferenciaMaterias();
+            salvarDados();
+            renderizarMaterias();
+        }
+
+        function adicionarNovoSemestre() {
+            const nome = prompt('Digite o nome do novo semestre:\n(Ex: 4º Semestre - 2025/1)');
+            if (!nome || !nome.trim()) return;
+
+            // Salvar materias do semestre atual antes de criar novo
+            if (semestres.length > 0 && semestreAtual < semestres.length) {
+                semestres[semestreAtual].materias = materias;
+            }
+
+            semestres.push({ nome: nome.trim(), materias: [] });
+            semestreAtual = semestres.length - 1;
+            atualizarReferenciaMaterias();
+            salvarDados();
+            renderizarSeletorSemestre();
+            renderizarMaterias();
+        }
+
+        function excluirSemestre() {
+            if (semestres.length <= 1) {
+                alert('Você precisa ter pelo menos um semestre!');
+                return;
+            }
+
+            const nomeSemestre = semestres[semestreAtual].nome;
+            const qtdMaterias = semestres[semestreAtual].materias.length;
+            const msg = qtdMaterias > 0
+                ? `Deseja excluir "${nomeSemestre}" com ${qtdMaterias} matéria(s)?\n\nEssa ação não pode ser desfeita!`
+                : `Deseja excluir "${nomeSemestre}"?`;
+
+            if (!confirm(msg)) return;
+
+            semestres.splice(semestreAtual, 1);
+            semestreAtual = Math.min(semestreAtual, semestres.length - 1);
+            atualizarReferenciaMaterias();
+            salvarDados();
+            renderizarSeletorSemestre();
+            renderizarMaterias();
         }
 
         function mudarTipoMateria() {
@@ -2012,7 +2214,7 @@
             let html = `
                 <div style="background: white; padding: 30px; border-radius: 15px;">
                     <h3>${config.instituicao}</h3>
-                    <p>Período: ${config.semestre}</p>
+                    <p>Período: ${semestres.length > 0 ? semestres[semestreAtual].nome : config.semestre}</p>
                     <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
                     
                     <table class="boletim-table">
@@ -2076,7 +2278,7 @@
         }
 
         function limparTudo() {
-            if (confirm('Tem certeza? Isso apagará TODOS os dados!')) {
+            if (confirm('Tem certeza? Isso apagará TODOS os dados de TODOS os semestres!')) {
                 StorageManager.remove('boletimAcademico');
                 location.reload();
             }
@@ -2276,11 +2478,16 @@
 
         // ====== EXPORTAR/IMPORTAR DADOS ======
         function exportarDados() {
+            // Sincronizar antes de exportar
+            if (semestres.length > 0 && semestreAtual < semestres.length) {
+                semestres[semestreAtual].materias = materias;
+            }
             const dados = {
                 config: config,
-                materias: materias,
+                semestres: semestres,
+                semestreAtual: semestreAtual,
                 dataExportacao: new Date().toISOString(),
-                versao: '1.0'
+                versao: '2.0'
             };
 
             const dataStr = JSON.stringify(dados, null, 2);
@@ -2289,7 +2496,8 @@
 
             const link = document.createElement('a');
             link.href = url;
-            link.download = `boletim_${config.semestre || 'backup'}_${new Date().toISOString().split('T')[0]}.json`;
+            const nomeArquivo = semestres.length > 0 ? semestres[semestreAtual].nome : (config.semestre || 'backup');
+            link.download = `boletim_${nomeArquivo}_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
 
             URL.revokeObjectURL(url);
@@ -2305,14 +2513,31 @@
                 try {
                     const dados = JSON.parse(e.target.result);
 
-                    // Validação básica
-                    if (!dados.config || !dados.materias) {
+                    // Validação básica - aceitar formato antigo e novo
+                    if (!dados.config || (!dados.materias && !dados.semestres)) {
                         throw new Error('Arquivo inválido');
                     }
 
                     if (confirm('⚠️ Importar dados irá SUBSTITUIR todos os dados atuais.\n\nTem certeza que deseja continuar?')) {
                         config = dados.config;
-                        materias = dados.materias;
+
+                        // Suporte para formato antigo (v1.0) e novo (v2.0)
+                        if (dados.semestres && Array.isArray(dados.semestres)) {
+                            semestres = dados.semestres;
+                            semestreAtual = dados.semestreAtual || 0;
+                        } else if (dados.materias) {
+                            semestres = [{
+                                nome: config.semestre || 'Semestre 1',
+                                materias: dados.materias
+                            }];
+                            semestreAtual = 0;
+                        }
+
+                        if (semestreAtual >= semestres.length) {
+                            semestreAtual = Math.max(0, semestres.length - 1);
+                        }
+
+                        atualizarReferenciaMaterias();
                         salvarDados();
 
                         // Atualiza a interface
@@ -2328,10 +2553,12 @@
                         document.getElementById('info-media').textContent = config.mediaAprovacao.toFixed(1);
                         document.getElementById('info-pf').textContent = config.mediaPF.toFixed(1);
 
+                        renderizarSeletorSemestre();
                         renderizarMaterias();
                         mostrarTela('tela-materias');
 
-                        alert('✅ Dados importados com sucesso!\n\n' + materias.length + ' matéria(s) carregada(s).');
+                        const totalMaterias = semestres.reduce((acc, s) => acc + s.materias.length, 0);
+                        alert(`✅ Dados importados com sucesso!\n\n${semestres.length} semestre(s) com ${totalMaterias} matéria(s) no total.`);
                     }
                 } catch (error) {
                     alert('❌ Erro ao importar arquivo!\n\nVerifique se o arquivo é um backup válido do boletim.');

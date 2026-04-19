@@ -2740,6 +2740,37 @@
                         <p><strong>Ano de Formatura:</strong> <span id="displayGraduationYear"></span></p>
                     </div>
                 </div>
+
+                <div id="semesterManagement" class="mt-4" style="display: none;">
+                    <h3 style="margin-bottom: 16px;">Gerenciar Semestre</h3>
+                    <div style="background: var(--bg); padding: 20px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                        <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">
+                            Ao terminar um semestre, inicie um novo para acompanhar o progresso separadamente.
+                            O histórico do semestre anterior será arquivado e poderá ser consultado abaixo.
+                        </p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-success" id="btnNewSemester">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Iniciar Novo Semestre
+                            </button>
+                            <button type="button" class="btn btn-danger" id="btnResetSemester">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Resetar Semestre Atual
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="semesterHistoryContainer" style="margin-top: 20px; display: none;">
+                        <h4 style="margin-bottom: 12px;">Histórico de Semestres</h4>
+                        <div id="semesterHistoryList"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -3643,6 +3674,12 @@
                 document.getElementById('contentForm').addEventListener('submit', (e) => this.handleAddContent(e));
                 document.getElementById('studySessionForm').addEventListener('submit', (e) => this.handleStudySession(e));
 
+                // Semester management buttons
+                const btnNewSemester = document.getElementById('btnNewSemester');
+                const btnResetSemester = document.getElementById('btnResetSemester');
+                if (btnNewSemester) btnNewSemester.addEventListener('click', () => this.startNewSemester());
+                if (btnResetSemester) btnResetSemester.addEventListener('click', () => this.resetCurrentSemester());
+
                 // Search input
                 document.getElementById('searchInput').addEventListener('input', (e) => {
                     this.searchQuery = e.target.value.toLowerCase();
@@ -3810,7 +3847,8 @@
                             studySchedule: loadedData.studySchedule || {
                                 classes: [],
                                 studySessions: []
-                            }
+                            },
+                            semesterHistory: loadedData.semesterHistory || []
                         };
 
                         // Migração de dados: converter subjects antigas (strings) para nova estrutura (objetos)
@@ -3886,7 +3924,8 @@
                             studySchedule: {
                                 classes: [],
                                 studySessions: []
-                            }
+                            },
+                            semesterHistory: []
                         };
                         this.saveData();
                     }
@@ -5188,10 +5227,160 @@
                     document.getElementById('headerUserInfo').style.display = 'block';
 
                     display.style.display = 'block';
+
+                    const semesterSection = document.getElementById('semesterManagement');
+                    if (semesterSection) semesterSection.style.display = 'block';
+                    this.renderSemesterHistory();
                 } else {
                     display.style.display = 'none';
                     document.getElementById('headerUserInfo').style.display = 'none';
+                    const semesterSection = document.getElementById('semesterManagement');
+                    if (semesterSection) semesterSection.style.display = 'none';
                 }
+            }
+
+            /**
+             * Render list of archived semesters
+             */
+            renderSemesterHistory() {
+                const container = document.getElementById('semesterHistoryContainer');
+                const list = document.getElementById('semesterHistoryList');
+                if (!container || !list) return;
+
+                const history = this.data.semesterHistory || [];
+                if (history.length === 0) {
+                    container.style.display = 'none';
+                    list.innerHTML = '';
+                    return;
+                }
+
+                container.style.display = 'block';
+                const ordered = [...history].reverse();
+                list.innerHTML = ordered.map((entry, i) => {
+                    const idx = history.length - 1 - i;
+                    const totalHours = Math.round((entry.totalMinutes || 0) / 60 * 10) / 10;
+                    const archivedDate = entry.archivedAt ? new Date(entry.archivedAt).toLocaleDateString('pt-BR') : '-';
+                    const periodLabel = this.escapeHtml(entry.period || '');
+                    const semLabel = entry.currentSemester ? `${entry.currentSemester}º sem.` : '';
+                    return `
+                        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 220px;">
+                                <div style="font-weight: 600; margin-bottom: 4px;">${periodLabel}${semLabel ? ` <span style="color: var(--text-secondary); font-weight: normal;">(${semLabel})</span>` : ''}</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">
+                                    Arquivado em ${archivedDate} &middot;
+                                    ${entry.sessionsCount || 0} sessões &middot;
+                                    ${entry.contentsCount || 0} conteúdos &middot;
+                                    ${totalHours}h estudadas
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-small" data-history-index="${idx}" aria-label="Remover do histórico">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path>
+                                </svg>
+                                Remover
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                list.querySelectorAll('button[data-history-index]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.getAttribute('data-history-index'));
+                        this.deleteSemesterHistory(idx);
+                    });
+                });
+            }
+
+            /**
+             * Archive the current semester data and start a fresh one
+             */
+            startNewSemester() {
+                const profile = this.data.profile || {};
+                const currentLabel = profile.period || `${profile.currentSemester || ''}º semestre`;
+                this.showModal(
+                    'Iniciar Novo Semestre',
+                    `Isso vai arquivar o semestre atual (${currentLabel}) e começar um novo. Sessões, conteúdos, revisões e grade de estudos serão limpos. Disciplinas, perfil e streak serão mantidos. Deseja continuar?`,
+                    () => {
+                        const totalMinutes = (this.data.studySessions || [])
+                            .reduce((sum, s) => sum + (s.duration || 0), 0);
+
+                        const archived = {
+                            period: profile.period || '',
+                            currentSemester: profile.currentSemester || null,
+                            archivedAt: new Date().toISOString(),
+                            sessionsCount: (this.data.studySessions || []).length,
+                            contentsCount: (this.data.contents || []).length,
+                            reviewsCount: (this.data.reviews || []).length,
+                            totalMinutes,
+                            subjects: JSON.parse(JSON.stringify(this.data.subjects || [])),
+                            studySessions: JSON.parse(JSON.stringify(this.data.studySessions || [])),
+                            contents: JSON.parse(JSON.stringify(this.data.contents || [])),
+                            reviews: JSON.parse(JSON.stringify(this.data.reviews || []))
+                        };
+
+                        if (!Array.isArray(this.data.semesterHistory)) {
+                            this.data.semesterHistory = [];
+                        }
+                        this.data.semesterHistory.push(archived);
+
+                        this.data.studySessions = [];
+                        this.data.contents = [];
+                        this.data.reviews = [];
+                        this.data.studySchedule = { classes: [], studySessions: [] };
+
+                        if (typeof profile.currentSemester === 'number' && !isNaN(profile.currentSemester)) {
+                            this.data.profile.currentSemester = profile.currentSemester + 1;
+                            this.data.profile.period = `${this.data.profile.currentSemester}º Semestre`;
+                        }
+
+                        this.saveData();
+                        this.render();
+                        this.renderProfile();
+                        this.showToast('Novo semestre iniciado! O anterior foi arquivado.', 'success');
+                    }
+                );
+            }
+
+            /**
+             * Reset the current semester without archiving
+             */
+            resetCurrentSemester() {
+                this.showModal(
+                    'Resetar Semestre Atual',
+                    'Isso vai apagar permanentemente todas as sessões de estudo, conteúdos, revisões e a grade de estudos do semestre atual. Perfil, disciplinas e streak serão mantidos. Esta ação não pode ser desfeita. Deseja continuar?',
+                    () => {
+                        this.data.studySessions = [];
+                        this.data.contents = [];
+                        this.data.reviews = [];
+                        this.data.studySchedule = { classes: [], studySessions: [] };
+
+                        this.saveData();
+                        this.render();
+                        this.renderProfile();
+                        this.showToast('Semestre atual resetado com sucesso.', 'success');
+                    }
+                );
+            }
+
+            /**
+             * Remove an entry from semester history
+             */
+            deleteSemesterHistory(index) {
+                const history = this.data.semesterHistory || [];
+                const entry = history[index];
+                if (!entry) return;
+                const label = entry.period || `Semestre ${entry.currentSemester || ''}`;
+                this.showModal(
+                    'Remover do Histórico',
+                    `Remover "${label}" permanentemente do histórico? Esta ação não pode ser desfeita.`,
+                    () => {
+                        this.data.semesterHistory.splice(index, 1);
+                        this.saveData();
+                        this.renderSemesterHistory();
+                        this.showToast('Semestre removido do histórico.', 'success');
+                    }
+                );
             }
 
             /**

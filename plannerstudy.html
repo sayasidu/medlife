@@ -994,6 +994,110 @@
             margin-bottom: 32px;
         }
 
+        /* ===== REMINDERS CARD ===== */
+        .reminders-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .reminders-card h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reminder-section {
+            margin-top: 16px;
+        }
+
+        .reminder-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reminder-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .reminder-chip .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .reminder-chip .chip-hours {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.78rem;
+        }
+
+        .reminder-chip.urgent {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .reminder-day-row {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .reminder-day-row:last-child {
+            border-bottom: none;
+        }
+
+        .reminder-day-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .reminder-day-label.is-today {
+            color: var(--primary);
+        }
+
+        .reminder-day-label small {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .reminder-chips-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .reminder-empty {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
         .chart-container h3 {
             margin-bottom: 24px;
             color: var(--text);
@@ -2802,6 +2906,9 @@
 
                 <!-- Main Content -->
                 <main>
+                    <!-- Reminders / Scheduled Subjects -->
+                    <div id="dashboardReminders" class="reminders-card" style="display: none;"></div>
+
                     <!-- Search Bar -->
                     
                 <!-- Insights Automáticos -->
@@ -2923,6 +3030,9 @@
                         Esta Semana
                     </button>
                 </div>
+
+                <!-- Reminders / Scheduled Subjects -->
+                <div id="weeklyAgendaReminders" class="reminders-card" style="display: none; margin-bottom: 24px;"></div>
 
                 <div class="week-grid" id="weekGrid">
                     <!-- Week days will be rendered here -->
@@ -5369,6 +5479,7 @@
                 this.renderStudySessions();
                 this.renderWeeklyAgenda();
                 this.renderGoalsProgress();
+                this.renderReminders();
                 this.updateStreakDisplay();
                 this.updateGamificationDisplay();
                 this.updateSelects();
@@ -6446,6 +6557,242 @@
                 if (emptyState) {
                     emptyState.style.display = totalReviews === 0 ? 'block' : 'none';
                 }
+
+                this.renderReminders();
+            }
+
+            /**
+             * Aggregate scheduled subjects for a given date.
+             * Sources (in order of preference):
+             *   1. Smart Routine plan (date-specific)
+             *   2. studySchedule.studySessions (weekly recurring)
+             * Fixed classes are always included.
+             * Returns: { hours: {subject: hours}, classes: [names], hasRoutine: bool }
+             */
+            getScheduledForDate(date) {
+                const weekday = date.getDay();
+                const dateKey = this.formatDateLocal(date);
+
+                const hours = {};
+                const classes = new Set();
+                let hasRoutine = false;
+
+                // Fixed classes (always)
+                const fixedClasses = this.data.studySchedule?.classes || [];
+                fixedClasses.forEach(c => {
+                    if (c.day === weekday) {
+                        classes.add(c.subject);
+                    }
+                });
+
+                // Smart Routine plan (date-specific has priority)
+                const plan = this.data.smartRoutine?.generatedPlan;
+                const planDay = plan?.days?.find(d => d.date === dateKey);
+                if (planDay && planDay.allocations && planDay.allocations.length > 0) {
+                    hasRoutine = true;
+                    planDay.allocations.forEach(a => {
+                        hours[a.subject] = (hours[a.subject] || 0) + a.hours;
+                    });
+                    return { hours, classes: Array.from(classes), hasRoutine };
+                }
+
+                // Fallback: weekly studySessions
+                const sessions = this.data.studySchedule?.studySessions || [];
+                sessions.forEach(s => {
+                    if (s.day === weekday) {
+                        const h = (s.duration || 30) / 60;
+                        hours[s.subject] = (hours[s.subject] || 0) + h;
+                    }
+                });
+
+                return { hours, classes: Array.from(classes), hasRoutine };
+            }
+
+            /**
+             * Get upcoming exams for a date (within next 7 days).
+             */
+            getExamsForDateRange(startDate, endDate) {
+                const exams = this.data.smartRoutine?.exams || [];
+                return exams.filter(ex => {
+                    const d = this.getLocalDate(ex.date);
+                    return d >= startDate && d <= endDate;
+                }).sort((a, b) => a.date.localeCompare(b.date));
+            }
+
+            /**
+             * Render "scheduled subjects" reminders for today and the week.
+             * Populates both Dashboard and Weekly Agenda containers.
+             */
+            renderReminders() {
+                const dashContainer = document.getElementById('dashboardReminders');
+                const agendaContainer = document.getElementById('weeklyAgendaReminders');
+                if (!dashContainer && !agendaContainer) return;
+
+                // Hide if there are no subjects at all
+                if (!this.data.subjects || this.data.subjects.length === 0) {
+                    if (dashContainer) dashContainer.style.display = 'none';
+                    if (agendaContainer) agendaContainer.style.display = 'none';
+                    return;
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const subjectColors = this.getSubjectColors();
+                const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+                // Today's data
+                const todayData = this.getScheduledForDate(today);
+                const todayChips = this.buildReminderChips(todayData, subjectColors, today);
+
+                // Upcoming exams within 7 days
+                const weekEnd = new Date(today);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                const upcomingExams = this.getExamsForDateRange(today, weekEnd);
+
+                // Next 7 days
+                const weekRows = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() + i);
+                    const data = this.getScheduledForDate(d);
+                    const chips = this.buildReminderChips(data, subjectColors, d);
+                    weekRows.push({ date: d, data, chips });
+                }
+
+                const hasAnyWeek = weekRows.some(r => r.chips.hasContent);
+
+                if (!todayChips.hasContent && !hasAnyWeek) {
+                    if (dashContainer) dashContainer.style.display = 'none';
+                    if (agendaContainer) agendaContainer.style.display = 'none';
+                    return;
+                }
+
+                const todayLabel = today.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+
+                const examsHtml = upcomingExams.length > 0
+                    ? `
+                        <div class="reminder-section">
+                            <div class="reminder-section-title">🔥 Provas nos próximos 7 dias</div>
+                            <div class="reminder-chips-wrapper">
+                                ${upcomingExams.map(ex => {
+                                    const d = this.getLocalDate(ex.date);
+                                    const diff = Math.ceil((d - today) / (1000*60*60*24));
+                                    const when = diff === 0 ? 'Hoje!' : diff === 1 ? 'Amanhã' : `em ${diff} dias`;
+                                    const color = subjectColors[ex.subject] || '#ef4444';
+                                    return `
+                                        <span class="reminder-chip urgent">
+                                            <span class="dot" style="background: ${color};"></span>
+                                            <span>${this.escapeHtml(ex.subject)}</span>
+                                            <span class="chip-hours">${when}</span>
+                                        </span>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `
+                    : '';
+
+                const todayHtml = `
+                    <div class="reminder-section">
+                        <div class="reminder-section-title">📍 Hoje — ${todayLabel}</div>
+                        ${todayChips.hasContent
+                            ? `<div class="reminder-chips-wrapper">${todayChips.html}</div>`
+                            : `<div class="reminder-empty">Nenhuma matéria programada para hoje</div>`
+                        }
+                    </div>
+                `;
+
+                const weekHtml = `
+                    <div class="reminder-section">
+                        <div class="reminder-section-title">🗓️ Próximos 7 dias</div>
+                        ${hasAnyWeek ? weekRows.map(r => {
+                            const isToday = r.date.getTime() === today.getTime();
+                            const dayName = weekdayNames[r.date.getDay()];
+                            const dateLabel = `${String(r.date.getDate()).padStart(2,'0')}/${String(r.date.getMonth()+1).padStart(2,'0')}`;
+                            const content = r.chips.hasContent
+                                ? `<div class="reminder-chips-wrapper">${r.chips.html}</div>`
+                                : `<div class="reminder-empty">Sem matéria programada</div>`;
+                            return `
+                                <div class="reminder-day-row">
+                                    <div class="reminder-day-label ${isToday ? 'is-today' : ''}">
+                                        ${isToday ? 'Hoje' : dayName}
+                                        <small>${dateLabel}</small>
+                                    </div>
+                                    ${content}
+                                </div>
+                            `;
+                        }).join('') : `<div class="reminder-empty">Cadastre disciplinas e gere uma rotina para ver seus lembretes</div>`}
+                    </div>
+                `;
+
+                const hasRoutine = !!this.data.smartRoutine?.generatedPlan;
+                const sourceNote = hasRoutine
+                    ? `<span style="font-size: 0.75rem; color: var(--text-light);">Baseado na Rotina Inteligente + Horário</span>`
+                    : `<span style="font-size: 0.75rem; color: var(--text-light);">Baseado no Horário e aulas fixas</span>`;
+
+                const fullHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
+                        <h3>⏰ Lembretes de Estudo</h3>
+                        ${sourceNote}
+                    </div>
+                    ${examsHtml}
+                    ${todayHtml}
+                    ${weekHtml}
+                `;
+
+                if (dashContainer) {
+                    dashContainer.innerHTML = fullHtml;
+                    dashContainer.style.display = 'block';
+                }
+                if (agendaContainer) {
+                    agendaContainer.innerHTML = fullHtml;
+                    agendaContainer.style.display = 'block';
+                }
+            }
+
+            /**
+             * Helper: turn scheduled data into chip HTML
+             */
+            buildReminderChips(data, subjectColors, date) {
+                const chips = [];
+
+                // Fixed classes (no hours)
+                data.classes.forEach(subject => {
+                    const color = subjectColors[subject] || '#0891b2';
+                    chips.push(`
+                        <span class="reminder-chip">
+                            <span class="dot" style="background: ${color};"></span>
+                            <span>${this.escapeHtml(subject)}</span>
+                            <span class="chip-hours">aula</span>
+                        </span>
+                    `);
+                });
+
+                // Study hours
+                Object.entries(data.hours)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([subject, hours]) => {
+                        const color = subjectColors[subject] || '#0891b2';
+                        const urgent = this.data.smartRoutine?.exams?.some(ex => {
+                            if (ex.subject !== subject) return false;
+                            const exDate = this.getLocalDate(ex.date);
+                            const diff = (exDate - date) / (1000 * 60 * 60 * 24);
+                            return diff >= 0 && diff <= 7;
+                        });
+                        chips.push(`
+                            <span class="reminder-chip ${urgent ? 'urgent' : ''}">
+                                <span class="dot" style="background: ${color};"></span>
+                                <span>${this.escapeHtml(subject)}</span>
+                                <span class="chip-hours">${hours.toFixed(1).replace('.0','')}h${urgent ? ' ⚡' : ''}</span>
+                            </span>
+                        `);
+                    });
+
+                return {
+                    html: chips.join(''),
+                    hasContent: chips.length > 0
+                };
             }
 
             /**
@@ -7935,6 +8282,7 @@
                 r.generatedPlan = plan;
                 this.saveData();
                 this.renderRoutinePlan(plan);
+                this.renderReminders();
                 this.showToast('Rotina gerada com sucesso!', 'success');
 
                 // Scroll to output

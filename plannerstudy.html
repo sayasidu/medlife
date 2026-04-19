@@ -2645,6 +2645,14 @@
                 </svg>
                 Horário
             </button>
+            <button class="tab-btn" data-tab="smartRoutine" role="tab" aria-selected="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-2 7.5A4 4 0 0 0 8 22h8a4 4 0 0 0 2-7.5A4 4 0 0 0 16 7V6a4 4 0 0 0-4-4z"></path>
+                    <path d="M9 12h6"></path>
+                    <path d="M12 9v6"></path>
+                </svg>
+                Rotina Inteligente
+            </button>
         </nav>
 
         <!-- Profile Screen -->
@@ -3386,6 +3394,129 @@
                 </div>
             </div>
         </div>
+
+        <!-- Smart Routine Screen -->
+        <div id="smartRoutine" class="screen">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h2>🧠 Rotina Inteligente de Estudos</h2>
+                        <p style="color: var(--text-secondary); margin-top: 8px;">
+                            Monte uma rotina personalizada com base nas horas disponíveis, prioridades das matérias e datas das provas.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="smartRoutineNoSubjects" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📚</div>
+                    <p>Nenhuma disciplina cadastrada</p>
+                    <p>Adicione disciplinas no Dashboard para começar a montar sua rotina</p>
+                    <button class="btn btn-primary mt-4" onclick="app.switchTab('dashboard')">
+                        Ir para Dashboard
+                    </button>
+                </div>
+
+                <div id="smartRoutineContent">
+                    <!-- Step 1: Period -->
+                    <div class="card" style="background: var(--bg-secondary); margin-bottom: 24px; padding: 20px;">
+                        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📅 1. Período do Plano</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label for="routineStartDate">Data de Início</label>
+                                <input type="date" id="routineStartDate" />
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label for="routineEndDate">Data Final</label>
+                                <input type="date" id="routineEndDate" />
+                            </div>
+                        </div>
+                        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);">
+                            💡 Sugestão: planeje entre 1 e 4 semanas por vez para maior aderência à rotina.
+                        </p>
+                    </div>
+
+                    <!-- Step 2: Daily Hours -->
+                    <div class="card" style="background: var(--bg-secondary); margin-bottom: 24px; padding: 20px;">
+                        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">⏰ 2. Horas Disponíveis por Dia</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
+                            Informe quantas horas você consegue estudar em cada dia da semana. Deixe 0 nos dias de folga.
+                        </p>
+                        <div id="routineDailyHoursGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px;">
+                            <!-- Dias da semana -->
+                        </div>
+                        <div style="margin-top: 16px; padding: 12px; background: var(--surface); border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <strong>Total semanal:</strong>
+                            <span id="routineWeeklyTotal" style="font-weight: 700; color: var(--primary);">0h</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Subject Priorities -->
+                    <div class="card" style="background: var(--bg-secondary); margin-bottom: 24px; padding: 20px;">
+                        <h3 style="margin-bottom: 8px; font-size: 1.1rem;">⭐ 3. Importância das Matérias</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
+                            Ajuste a prioridade de cada matéria. Matérias com prioridade maior receberão mais tempo.
+                        </p>
+                        <div id="routineSubjectsPriorities"></div>
+                    </div>
+
+                    <!-- Step 4: Exams -->
+                    <div class="card" style="background: var(--bg-secondary); margin-bottom: 24px; padding: 20px;">
+                        <h3 style="margin-bottom: 8px; font-size: 1.1rem;">📝 4. Provas e Avaliações</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
+                            Cadastre as próximas provas. A rotina intensifica automaticamente o estudo conforme a prova se aproxima.
+                        </p>
+                        <form id="routineExamForm" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; margin-bottom: 16px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label for="routineExamSubject">Disciplina *</label>
+                                <select id="routineExamSubject" required>
+                                    <option value="">Selecione</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label for="routineExamDate">Data da Prova *</label>
+                                <input type="date" id="routineExamDate" required />
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label for="routineExamWeight">Peso</label>
+                                <select id="routineExamWeight">
+                                    <option value="1">Normal</option>
+                                    <option value="2" selected>Importante</option>
+                                    <option value="3">Crítica</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Adicionar
+                            </button>
+                        </form>
+                        <div id="routineExamsList"></div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+                        <button class="btn btn-primary" id="btnGenerateRoutine" style="flex: 1; min-width: 200px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                            Gerar Rotina Inteligente
+                        </button>
+                        <button class="btn btn-secondary" id="btnClearRoutine">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            Limpar Plano
+                        </button>
+                    </div>
+
+                    <!-- Generated Plan -->
+                    <div id="routinePlanOutput"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Pomodoro Confirmation Modal -->
@@ -3816,6 +3947,37 @@
                         }
                     });
                 }
+
+                // Smart Routine event listeners
+                const routineStartDate = document.getElementById('routineStartDate');
+                const routineEndDate = document.getElementById('routineEndDate');
+                if (routineStartDate) {
+                    routineStartDate.addEventListener('change', (e) => {
+                        this.data.smartRoutine.startDate = e.target.value;
+                        this.saveData();
+                    });
+                }
+                if (routineEndDate) {
+                    routineEndDate.addEventListener('change', (e) => {
+                        this.data.smartRoutine.endDate = e.target.value;
+                        this.saveData();
+                    });
+                }
+
+                const routineExamForm = document.getElementById('routineExamForm');
+                if (routineExamForm) {
+                    routineExamForm.addEventListener('submit', (e) => this.handleAddRoutineExam(e));
+                }
+
+                const btnGenerateRoutine = document.getElementById('btnGenerateRoutine');
+                if (btnGenerateRoutine) {
+                    btnGenerateRoutine.addEventListener('click', () => this.generateSmartRoutine());
+                }
+
+                const btnClearRoutine = document.getElementById('btnClearRoutine');
+                if (btnClearRoutine) {
+                    btnClearRoutine.addEventListener('click', () => this.clearSmartRoutinePlan());
+                }
             }
 
             /**
@@ -3848,7 +4010,15 @@
                                 classes: [],
                                 studySessions: []
                             },
-                            semesterHistory: loadedData.semesterHistory || []
+                            semesterHistory: loadedData.semesterHistory || [],
+                            smartRoutine: loadedData.smartRoutine || {
+                                startDate: '',
+                                endDate: '',
+                                dailyHours: { 0: 0, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 0 },
+                                priorities: {},
+                                exams: [],
+                                generatedPlan: null
+                            }
                         };
 
                         // Migração de dados: converter subjects antigas (strings) para nova estrutura (objetos)
@@ -3925,7 +4095,15 @@
                                 classes: [],
                                 studySessions: []
                             },
-                            semesterHistory: []
+                            semesterHistory: [],
+                            smartRoutine: {
+                                startDate: '',
+                                endDate: '',
+                                dailyHours: { 0: 0, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 0 },
+                                priorities: {},
+                                exams: [],
+                                generatedPlan: null
+                            }
                         };
                         this.saveData();
                     }
@@ -4476,6 +4654,8 @@
                     this.renderAchievements();
                 } else if (tabName === 'schedule') {
                     this.renderSchedule();
+                } else if (tabName === 'smartRoutine') {
+                    this.renderSmartRoutine();
                 } else if (tabName === 'dashboard') {
                     this.renderGoalsProgress();
                 }
@@ -7352,6 +7532,537 @@
                 `);
 
                 printWindow.document.close();
+            }
+
+            // ===== SMART ROUTINE =====
+
+            /**
+             * Entry point for the Smart Routine tab
+             */
+            renderSmartRoutine() {
+                const noSubjectsEl = document.getElementById('smartRoutineNoSubjects');
+                const contentEl = document.getElementById('smartRoutineContent');
+
+                if (!this.data.subjects || this.data.subjects.length === 0) {
+                    noSubjectsEl.style.display = 'block';
+                    contentEl.style.display = 'none';
+                    return;
+                }
+
+                noSubjectsEl.style.display = 'none';
+                contentEl.style.display = 'block';
+
+                this.ensureSmartRoutineDefaults();
+                this.renderRoutineDatesInputs();
+                this.renderRoutineDailyHoursInputs();
+                this.renderRoutineSubjectsPriorities();
+                this.renderRoutineExamSubjectSelect();
+                this.renderRoutineExamsList();
+                this.updateRoutineWeeklyTotal();
+
+                // Re-render last generated plan, if any
+                if (this.data.smartRoutine.generatedPlan) {
+                    this.renderRoutinePlan(this.data.smartRoutine.generatedPlan);
+                } else {
+                    document.getElementById('routinePlanOutput').innerHTML = '';
+                }
+            }
+
+            /**
+             * Ensure smartRoutine structure and default values exist
+             */
+            ensureSmartRoutineDefaults() {
+                if (!this.data.smartRoutine) {
+                    this.data.smartRoutine = {
+                        startDate: '',
+                        endDate: '',
+                        dailyHours: { 0: 0, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 0 },
+                        priorities: {},
+                        exams: [],
+                        generatedPlan: null
+                    };
+                }
+                const r = this.data.smartRoutine;
+                if (!r.dailyHours) r.dailyHours = { 0: 0, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 0 };
+                if (!r.priorities) r.priorities = {};
+                if (!r.exams) r.exams = [];
+
+                // Seed priority 2 (média) for new subjects
+                this.data.subjects.forEach(s => {
+                    if (r.priorities[s.name] === undefined) {
+                        r.priorities[s.name] = 2;
+                    }
+                });
+
+                // Default dates: today -> today+14d
+                if (!r.startDate) {
+                    r.startDate = this.formatDateLocal(new Date());
+                }
+                if (!r.endDate) {
+                    const end = new Date();
+                    end.setDate(end.getDate() + 13);
+                    r.endDate = this.formatDateLocal(end);
+                }
+            }
+
+            renderRoutineDatesInputs() {
+                const r = this.data.smartRoutine;
+                document.getElementById('routineStartDate').value = r.startDate || '';
+                document.getElementById('routineEndDate').value = r.endDate || '';
+            }
+
+            renderRoutineDailyHoursInputs() {
+                const days = [
+                    { key: 1, label: 'Segunda' },
+                    { key: 2, label: 'Terça' },
+                    { key: 3, label: 'Quarta' },
+                    { key: 4, label: 'Quinta' },
+                    { key: 5, label: 'Sexta' },
+                    { key: 6, label: 'Sábado' },
+                    { key: 0, label: 'Domingo' }
+                ];
+
+                const container = document.getElementById('routineDailyHoursGrid');
+                const r = this.data.smartRoutine;
+
+                container.innerHTML = days.map(d => `
+                    <div style="background: var(--surface); padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); text-align: center;">
+                        <label for="routineHours_${d.key}" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">${d.label}</label>
+                        <input type="number" id="routineHours_${d.key}" min="0" max="16" step="0.5" value="${r.dailyHours[d.key] ?? 0}" style="width: 100%; text-align: center; padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; font-weight: 600; color: var(--primary);" />
+                        <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 4px;">horas</div>
+                    </div>
+                `).join('');
+
+                days.forEach(d => {
+                    const input = document.getElementById(`routineHours_${d.key}`);
+                    input.addEventListener('input', (e) => {
+                        const val = Math.max(0, Math.min(16, parseFloat(e.target.value) || 0));
+                        this.data.smartRoutine.dailyHours[d.key] = val;
+                        this.saveData();
+                        this.updateRoutineWeeklyTotal();
+                    });
+                });
+            }
+
+            updateRoutineWeeklyTotal() {
+                const hours = this.data.smartRoutine.dailyHours;
+                const total = Object.values(hours).reduce((sum, h) => sum + (parseFloat(h) || 0), 0);
+                const el = document.getElementById('routineWeeklyTotal');
+                if (el) el.textContent = `${total.toFixed(1).replace('.0', '')}h`;
+            }
+
+            renderRoutineSubjectsPriorities() {
+                const container = document.getElementById('routineSubjectsPriorities');
+                const r = this.data.smartRoutine;
+                const subjectColors = this.getSubjectColors();
+
+                const priorityLabels = {
+                    0: { label: 'Ignorar', color: '#94a3b8' },
+                    1: { label: 'Baixa', color: '#10b981' },
+                    2: { label: 'Média', color: '#0891b2' },
+                    3: { label: 'Alta', color: '#f59e0b' },
+                    4: { label: 'Crítica', color: '#ef4444' }
+                };
+
+                container.innerHTML = this.data.subjects.map(s => {
+                    const color = subjectColors[s.name] || '#0891b2';
+                    const current = r.priorities[s.name] ?? 2;
+                    const label = priorityLabels[current] || priorityLabels[2];
+                    return `
+                        <div style="display: grid; grid-template-columns: 16px 1fr auto; gap: 12px; align-items: center; padding: 12px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 8px;">
+                            <div style="width: 16px; height: 16px; border-radius: 50%; background: ${color};"></div>
+                            <div>
+                                <div style="font-weight: 600;">${this.escapeHtml(s.name)}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Prioridade atual: <span style="color: ${label.color}; font-weight: 600;">${label.label}</span></div>
+                            </div>
+                            <select data-subject="${this.escapeHtml(s.name)}" class="routine-priority-select" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-weight: 600; cursor: pointer;">
+                                <option value="0" ${current === 0 ? 'selected' : ''}>Ignorar</option>
+                                <option value="1" ${current === 1 ? 'selected' : ''}>Baixa</option>
+                                <option value="2" ${current === 2 ? 'selected' : ''}>Média</option>
+                                <option value="3" ${current === 3 ? 'selected' : ''}>Alta</option>
+                                <option value="4" ${current === 4 ? 'selected' : ''}>Crítica</option>
+                            </select>
+                        </div>
+                    `;
+                }).join('');
+
+                container.querySelectorAll('.routine-priority-select').forEach(sel => {
+                    sel.addEventListener('change', (e) => {
+                        const subject = e.target.dataset.subject;
+                        this.data.smartRoutine.priorities[subject] = parseInt(e.target.value);
+                        this.saveData();
+                        this.renderRoutineSubjectsPriorities();
+                    });
+                });
+            }
+
+            renderRoutineExamSubjectSelect() {
+                const select = document.getElementById('routineExamSubject');
+                const current = select.value;
+                select.innerHTML = '<option value="">Selecione</option>' +
+                    this.data.subjects.map(s => `<option value="${this.escapeHtml(s.name)}">${this.escapeHtml(s.name)}</option>`).join('');
+                if (current) select.value = current;
+            }
+
+            renderRoutineExamsList() {
+                const container = document.getElementById('routineExamsList');
+                const exams = [...(this.data.smartRoutine.exams || [])]
+                    .sort((a, b) => a.date.localeCompare(b.date));
+
+                if (exams.length === 0) {
+                    container.innerHTML = `<div style="padding: 16px; text-align: center; color: var(--text-secondary); background: var(--surface); border-radius: var(--radius); border: 1px dashed var(--border);">Nenhuma prova cadastrada</div>`;
+                    return;
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const weightLabels = { 1: 'Normal', 2: 'Importante', 3: 'Crítica' };
+                const weightColors = { 1: '#10b981', 2: '#f59e0b', 3: '#ef4444' };
+
+                container.innerHTML = exams.map(ex => {
+                    const examDate = this.getLocalDate(ex.date);
+                    const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                    const isPast = diffDays < 0;
+                    const daysText = isPast
+                        ? `<span style="color: var(--text-light);">Já realizada</span>`
+                        : diffDays === 0
+                            ? `<span style="color: var(--danger); font-weight: 700;">Hoje!</span>`
+                            : `<span style="color: ${diffDays <= 7 ? 'var(--danger)' : diffDays <= 14 ? 'var(--warning)' : 'var(--text-secondary)'}; font-weight: 600;">em ${diffDays} dia${diffDays > 1 ? 's' : ''}</span>`;
+                    const wLabel = weightLabels[ex.weight] || 'Importante';
+                    const wColor = weightColors[ex.weight] || '#f59e0b';
+
+                    return `
+                        <div style="display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 12px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 8px;">
+                            <div>
+                                <div style="font-weight: 600;">${this.escapeHtml(ex.subject)}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${this.formatDatePtBr(ex.date)} • ${daysText}</div>
+                            </div>
+                            <span style="padding: 4px 10px; border-radius: 999px; background: ${wColor}22; color: ${wColor}; font-size: 0.75rem; font-weight: 700;">${wLabel}</span>
+                            <button class="btn btn-danger btn-small" data-remove-exam="${ex.id}" style="padding: 6px 10px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                container.querySelectorAll('[data-remove-exam]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = parseInt(e.currentTarget.dataset.removeExam);
+                        this.removeRoutineExam(id);
+                    });
+                });
+            }
+
+            formatDatePtBr(isoDate) {
+                const d = this.getLocalDate(isoDate);
+                return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+
+            handleAddRoutineExam(e) {
+                e.preventDefault();
+                const subject = document.getElementById('routineExamSubject').value;
+                const date = document.getElementById('routineExamDate').value;
+                const weight = parseInt(document.getElementById('routineExamWeight').value) || 2;
+
+                if (!subject) {
+                    this.showToast('Selecione uma disciplina', 'warning');
+                    return;
+                }
+                if (!date) {
+                    this.showToast('Informe a data da prova', 'warning');
+                    return;
+                }
+
+                this.data.smartRoutine.exams.push({
+                    id: Date.now(),
+                    subject,
+                    date,
+                    weight
+                });
+                this.saveData();
+                this.renderRoutineExamsList();
+                document.getElementById('routineExamForm').reset();
+                document.getElementById('routineExamWeight').value = '2';
+                this.showToast(`Prova de ${subject} cadastrada`, 'success');
+            }
+
+            removeRoutineExam(id) {
+                this.data.smartRoutine.exams = this.data.smartRoutine.exams.filter(ex => ex.id !== id);
+                this.saveData();
+                this.renderRoutineExamsList();
+                this.showToast('Prova removida', 'success');
+            }
+
+            /**
+             * Core algorithm: distribute daily hours across subjects weighted by
+             * priority and proximity to exam dates.
+             */
+            generateSmartRoutine() {
+                const r = this.data.smartRoutine;
+
+                if (!r.startDate || !r.endDate) {
+                    this.showToast('Informe o período do plano', 'warning');
+                    return;
+                }
+                const start = this.getLocalDate(r.startDate);
+                const end = this.getLocalDate(r.endDate);
+                if (end < start) {
+                    this.showToast('A data final precisa ser depois da inicial', 'warning');
+                    return;
+                }
+
+                const activeSubjects = this.data.subjects.filter(s => (r.priorities[s.name] ?? 2) > 0);
+                if (activeSubjects.length === 0) {
+                    this.showToast('Defina pelo menos uma matéria com prioridade maior que "Ignorar"', 'warning');
+                    return;
+                }
+
+                const totalWeeklyHours = Object.values(r.dailyHours).reduce((s, h) => s + (parseFloat(h) || 0), 0);
+                if (totalWeeklyHours <= 0) {
+                    this.showToast('Informe pelo menos algumas horas disponíveis por semana', 'warning');
+                    return;
+                }
+
+                const msPerDay = 1000 * 60 * 60 * 24;
+                const days = [];
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    days.push(new Date(d));
+                }
+
+                const plan = {
+                    startDate: r.startDate,
+                    endDate: r.endDate,
+                    days: [],
+                    totals: {},
+                    grandTotal: 0,
+                    generatedAt: new Date().toISOString()
+                };
+
+                const PROXIMITY_WINDOW = 21; // days of ramp-up before an exam
+
+                days.forEach(day => {
+                    const weekday = day.getDay();
+                    const availableH = parseFloat(r.dailyHours[weekday]) || 0;
+                    const dayKey = this.formatDateLocal(day);
+
+                    if (availableH <= 0) {
+                        plan.days.push({
+                            date: dayKey,
+                            weekday,
+                            availableHours: 0,
+                            allocations: []
+                        });
+                        return;
+                    }
+
+                    // compute weights per subject
+                    const weights = activeSubjects.map(s => {
+                        const priority = r.priorities[s.name] ?? 2;
+                        let weight = priority;
+
+                        // Proximity boost: for each upcoming exam of this subject on/after this day
+                        const upcomingExams = r.exams
+                            .filter(ex => ex.subject === s.name)
+                            .map(ex => ({ ...ex, date: this.getLocalDate(ex.date) }))
+                            .filter(ex => ex.date >= day);
+
+                        let proximityBoost = 0;
+                        upcomingExams.forEach(ex => {
+                            const daysUntil = Math.max(0, Math.round((ex.date - day) / msPerDay));
+                            if (daysUntil <= PROXIMITY_WINDOW) {
+                                const factor = (PROXIMITY_WINDOW - daysUntil) / PROXIMITY_WINDOW; // 0..1
+                                // Closer => bigger boost; exam weight amplifies it
+                                const examWeight = ex.weight || 2;
+                                proximityBoost += factor * examWeight * 1.5;
+                            }
+                        });
+
+                        weight = weight * (1 + proximityBoost);
+
+                        return { subject: s.name, weight };
+                    });
+
+                    const totalWeight = weights.reduce((acc, w) => acc + w.weight, 0);
+                    if (totalWeight <= 0) {
+                        plan.days.push({ date: dayKey, weekday, availableHours: availableH, allocations: [] });
+                        return;
+                    }
+
+                    // Distribute in 0.5h blocks
+                    const totalBlocks = Math.round(availableH * 2);
+                    const rawAllocations = weights.map(w => ({
+                        subject: w.subject,
+                        blocks: (w.weight / totalWeight) * totalBlocks,
+                        weight: w.weight
+                    }));
+
+                    // largest remainder rounding to keep block sum = totalBlocks
+                    const assigned = rawAllocations.map(a => ({ ...a, blocks: Math.floor(a.blocks), remainder: a.blocks - Math.floor(a.blocks) }));
+                    let assignedSum = assigned.reduce((s, a) => s + a.blocks, 0);
+                    assigned.sort((a, b) => b.remainder - a.remainder);
+                    let idx = 0;
+                    while (assignedSum < totalBlocks && assigned.length > 0) {
+                        assigned[idx % assigned.length].blocks += 1;
+                        assignedSum++;
+                        idx++;
+                    }
+
+                    const allocations = assigned
+                        .filter(a => a.blocks > 0)
+                        .map(a => ({
+                            subject: a.subject,
+                            hours: a.blocks * 0.5,
+                            urgent: this.isSubjectUrgent(a.subject, day, r.exams)
+                        }))
+                        .sort((a, b) => (b.urgent - a.urgent) || (b.hours - a.hours));
+
+                    plan.days.push({
+                        date: dayKey,
+                        weekday,
+                        availableHours: availableH,
+                        allocations
+                    });
+
+                    allocations.forEach(a => {
+                        plan.totals[a.subject] = (plan.totals[a.subject] || 0) + a.hours;
+                        plan.grandTotal += a.hours;
+                    });
+                });
+
+                r.generatedPlan = plan;
+                this.saveData();
+                this.renderRoutinePlan(plan);
+                this.showToast('Rotina gerada com sucesso!', 'success');
+
+                // Scroll to output
+                setTimeout(() => {
+                    document.getElementById('routinePlanOutput')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+
+            isSubjectUrgent(subjectName, day, exams) {
+                const msPerDay = 1000 * 60 * 60 * 24;
+                return exams.some(ex => {
+                    if (ex.subject !== subjectName) return false;
+                    const examDate = this.getLocalDate(ex.date);
+                    const diff = (examDate - day) / msPerDay;
+                    return diff >= 0 && diff <= 7;
+                });
+            }
+
+            renderRoutinePlan(plan) {
+                const container = document.getElementById('routinePlanOutput');
+                const subjectColors = this.getSubjectColors();
+                const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+                const totalsArr = Object.entries(plan.totals)
+                    .sort((a, b) => b[1] - a[1]);
+
+                const totalsSection = `
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                            <h3 style="margin: 0;">📊 Resumo do Plano</h3>
+                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                <span style="color: var(--text-secondary);">Período: <strong>${this.formatDatePtBr(plan.startDate)} → ${this.formatDatePtBr(plan.endDate)}</strong></span>
+                                <span style="color: var(--text-secondary);">Total: <strong style="color: var(--primary);">${plan.grandTotal.toFixed(1).replace('.0', '')}h</strong></span>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                            ${totalsArr.map(([subj, hours]) => {
+                                const color = subjectColors[subj] || '#0891b2';
+                                const pct = plan.grandTotal > 0 ? (hours / plan.grandTotal * 100) : 0;
+                                return `
+                                    <div style="padding: 14px; background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid ${color};">
+                                        <div style="font-weight: 600; margin-bottom: 4px;">${this.escapeHtml(subj)}</div>
+                                        <div style="font-size: 1.5rem; font-weight: 800; color: ${color};">${hours.toFixed(1).replace('.0', '')}h</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${pct.toFixed(0)}% do plano</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+
+                const daysSection = plan.days.map(day => {
+                    const date = this.getLocalDate(day.date);
+                    const dayName = weekdayNames[day.weekday];
+                    const dayNum = date.getDate();
+                    const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
+
+                    if (day.availableHours <= 0) {
+                        return `
+                            <div style="padding: 14px 16px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px dashed var(--border); opacity: 0.6; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <strong>${dayName}, ${dayNum} ${monthName}</strong>
+                                </div>
+                                <span style="color: var(--text-light); font-size: 0.85rem;">Dia de descanso 😴</span>
+                            </div>
+                        `;
+                    }
+
+                    if (day.allocations.length === 0) {
+                        return '';
+                    }
+
+                    const hasUrgent = day.allocations.some(a => a.urgent);
+
+                    return `
+                        <div style="padding: 16px; background: var(--surface); border-radius: var(--radius); border: 1px solid ${hasUrgent ? 'var(--danger)' : 'var(--border)'}; margin-bottom: 12px; ${hasUrgent ? 'box-shadow: 0 0 0 2px ' + 'rgba(239, 68, 68, 0.1)' + ';' : ''}">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">
+                                        <span>${dayName}</span>
+                                        <span style="font-size: 1rem;">${dayNum}</span>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">${dayName}, ${dayNum} de ${monthName}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${day.availableHours.toFixed(1).replace('.0', '')}h planejadas</div>
+                                    </div>
+                                </div>
+                                ${hasUrgent ? `<span style="padding: 4px 10px; border-radius: 999px; background: rgba(239, 68, 68, 0.15); color: var(--danger); font-size: 0.75rem; font-weight: 700;">🔥 Prova próxima</span>` : ''}
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+                                ${day.allocations.map(a => {
+                                    const color = subjectColors[a.subject] || '#0891b2';
+                                    return `
+                                        <div style="padding: 10px 12px; background: ${color}15; border-left: 3px solid ${color}; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 0.9rem;">${this.escapeHtml(a.subject)}</div>
+                                                ${a.urgent ? `<div style="font-size: 0.7rem; color: var(--danger); font-weight: 700;">⚡ Foco na prova</div>` : ''}
+                                            </div>
+                                            <div style="font-weight: 800; color: ${color};">${a.hours.toFixed(1).replace('.0', '')}h</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    ${totalsSection}
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="margin: 0;">🗓️ Rotina por Dia</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-light);">Gerado em ${new Date(plan.generatedAt).toLocaleString('pt-BR')}</span>
+                        </div>
+                        ${daysSection || '<div class="empty-state"><p>Nenhuma alocação gerada. Ajuste suas horas e prioridades.</p></div>'}
+                    </div>
+                `;
+            }
+
+            clearSmartRoutinePlan() {
+                if (!this.data.smartRoutine.generatedPlan) {
+                    this.showToast('Não há plano para limpar', 'info');
+                    return;
+                }
+                this.data.smartRoutine.generatedPlan = null;
+                this.saveData();
+                document.getElementById('routinePlanOutput').innerHTML = '';
+                this.showToast('Plano removido', 'success');
             }
         }
 

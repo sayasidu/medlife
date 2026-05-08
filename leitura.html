@@ -519,6 +519,90 @@
             border-color: var(--border);
         }
 
+        /* --- Cronômetro --- */
+        .timer-box {
+            background: var(--surface-section);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .timer-display {
+            font-size: 28px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            text-align: center;
+            color: var(--text);
+            letter-spacing: 1px;
+            padding: 6px 0 10px;
+            line-height: 1.1;
+            transition: color var(--transition);
+        }
+
+        .timer-display.running {
+            color: var(--primary);
+        }
+
+        .timer-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .timer-btn {
+            padding: 7px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background var(--transition), color var(--transition), border-color var(--transition), transform 0.15s ease;
+        }
+
+        .timer-btn:hover {
+            background: var(--input-bg-focus);
+            color: var(--text);
+        }
+
+        .timer-btn:active {
+            transform: scale(0.97);
+        }
+
+        .timer-btn-primary {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+        }
+
+        .timer-btn-primary:hover {
+            opacity: 0.92;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+        }
+
+        .timer-btn-primary.paused {
+            background: linear-gradient(135deg, #ec4899, #f97316);
+        }
+
+        .timer-btn-primary.paused:hover {
+            background: linear-gradient(135deg, #ec4899, #f97316);
+        }
+
+        .timer-hint {
+            font-size: 11px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
         /* --- Concluídas --- */
         .sidebar-divider {
             height: 1px;
@@ -800,6 +884,19 @@
     </main>
 
     <aside class="sidebar" aria-label="Histórico de leituras do dia">
+        <div class="sidebar-title">Cronômetro</div>
+        <div class="timer-box">
+            <div id="timerDisplay" class="timer-display" aria-live="polite">00:00</div>
+            <div class="timer-buttons">
+                <button class="timer-btn timer-btn-primary" id="btnTimerToggle" type="button">Iniciar</button>
+                <button class="timer-btn" id="btnTimerReset" type="button">Zerar</button>
+                <button class="timer-btn" id="btnTimerApply" type="button" title="Preenche Min/Seg do teste com o tempo do cronômetro">Usar no teste</button>
+            </div>
+            <p class="timer-hint">Conta enquanto você lê. Continua rodando se você recarregar.</p>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
         <div class="sidebar-title">Leituras de hoje</div>
         <div id="historyList"></div>
         <div class="sidebar-divider" id="completedDivider"></div>
@@ -817,6 +914,7 @@
     const THEME_KEY = 'reading-calc-theme';
     const HISTORY_KEY = 'reading-history';
     const COMPLETED_KEY = 'reading-calc-completed-v1';
+    const TIMER_KEY = 'reading-calc-timer-v1';
 
     let activeBookIndex = 0;
     let books = [];
@@ -845,6 +943,10 @@
         completedList: $('completedList'),
         completedDivider: $('completedDivider'),
         completedTitle: $('completedTitle'),
+        timerDisplay: $('timerDisplay'),
+        btnTimerToggle: $('btnTimerToggle'),
+        btnTimerReset: $('btnTimerReset'),
+        btnTimerApply: $('btnTimerApply'),
     };
 
     // --- Frases motivacionais ---
@@ -1502,6 +1604,119 @@
         salvarBooks();
     }
 
+    // --- Cronômetro ---
+    var timerState = { running: false, accumulatedMs: 0, startedAt: 0 };
+    var timerInterval = null;
+
+    function loadTimer() {
+        try {
+            var raw = localStorage.getItem(TIMER_KEY);
+            if (raw) {
+                var data = JSON.parse(raw);
+                timerState.running = !!data.running;
+                timerState.accumulatedMs = data.accumulatedMs || 0;
+                timerState.startedAt = data.startedAt || 0;
+            }
+        } catch (e) {}
+    }
+
+    function saveTimer() {
+        try {
+            localStorage.setItem(TIMER_KEY, JSON.stringify(timerState));
+        } catch (e) {}
+    }
+
+    function timerElapsedMs() {
+        if (timerState.running) {
+            return timerState.accumulatedMs + (Date.now() - timerState.startedAt);
+        }
+        return timerState.accumulatedMs;
+    }
+
+    function formatTimerDisplay(ms) {
+        var totalSec = Math.floor(ms / 1000);
+        var h = Math.floor(totalSec / 3600);
+        var m = Math.floor((totalSec % 3600) / 60);
+        var s = totalSec % 60;
+        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+        if (h > 0) return h + ':' + pad(m) + ':' + pad(s);
+        return pad(m) + ':' + pad(s);
+    }
+
+    function renderTimer() {
+        els.timerDisplay.textContent = formatTimerDisplay(timerElapsedMs());
+        if (timerState.running) {
+            els.timerDisplay.classList.add('running');
+            els.btnTimerToggle.textContent = 'Pausar';
+            els.btnTimerToggle.classList.add('paused');
+        } else {
+            els.timerDisplay.classList.remove('running');
+            els.btnTimerToggle.textContent = timerState.accumulatedMs > 0 ? 'Continuar' : 'Iniciar';
+            els.btnTimerToggle.classList.remove('paused');
+        }
+    }
+
+    function startTimerLoop() {
+        if (timerInterval) return;
+        timerInterval = setInterval(function() {
+            els.timerDisplay.textContent = formatTimerDisplay(timerElapsedMs());
+        }, 500);
+    }
+
+    function stopTimerLoop() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function toggleTimer() {
+        if (timerState.running) {
+            timerState.accumulatedMs += Date.now() - timerState.startedAt;
+            timerState.running = false;
+            timerState.startedAt = 0;
+            stopTimerLoop();
+        } else {
+            timerState.running = true;
+            timerState.startedAt = Date.now();
+            startTimerLoop();
+        }
+        saveTimer();
+        renderTimer();
+    }
+
+    function resetTimer() {
+        timerState.running = false;
+        timerState.accumulatedMs = 0;
+        timerState.startedAt = 0;
+        stopTimerLoop();
+        saveTimer();
+        renderTimer();
+    }
+
+    function applyTimerToTest() {
+        var ms = timerElapsedMs();
+        if (ms < 1000) return;
+        var totalSec = Math.round(ms / 1000);
+        var min = Math.floor(totalSec / 60);
+        var sec = totalSec % 60;
+        els.testMin.value = min;
+        els.testSec.value = sec;
+        saveCurrentBookToMemory();
+        salvarBooks();
+        recalcularAtual();
+        els.testMin.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function initTimer() {
+        loadTimer();
+        renderTimer();
+        if (timerState.running) startTimerLoop();
+        els.btnTimerToggle.addEventListener('click', toggleTimer);
+        els.btnTimerReset.addEventListener('click', resetTimer);
+        els.btnTimerApply.addEventListener('click', applyTimerToTest);
+    }
+
     // --- Event listeners ---
     els.btnCalcular.addEventListener('click', function() { calcularTotal(false); });
     els.btnLimpar.addEventListener('click', limpar);
@@ -1517,6 +1732,7 @@
     recalcularAtual();
     renderHistory();
     renderCompleted();
+    initTimer();
 })();
 </script>
 </body>

@@ -136,6 +136,86 @@
       }
       .fade-up { animation: fadeUp .5s ease-out both; }
 
+      /* ===== Modo Estudo: flashcards por setor da mesa ===== */
+      .study-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+      .study-tab {
+        flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 14px; border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .06);
+        color: #cbd5e1; font-weight: 600; font-size: 13px; cursor: pointer; transition: all .15s;
+      }
+      .study-tab:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+      .study-tab.active { color: #0b1220; border-color: transparent; }
+      .study-tab .cnt { font-size: 11px; opacity: .8; }
+      .study-toggle {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .06);
+        color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s;
+      }
+      .study-toggle:hover { background: rgba(255, 255, 255, .14); }
+      .study-toggle.on { background: rgba(103, 232, 249, .18); border-color: rgba(103, 232, 249, .5); color: #a5f3fc; }
+      .study-section { margin-top: 16px; }
+      .study-sub { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #94a3b8; margin: 14px 0 8px; font-weight: 700; }
+      .study-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+      @media (min-width: 640px) { .study-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; } }
+      .study-card {
+        position: relative; background: #fff; border-radius: 14px; padding: 10px;
+        border: 2px solid transparent; cursor: pointer; text-align: center;
+        transition: transform .15s, box-shadow .15s, border-color .15s;
+      }
+      .study-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0, 0, 0, .35); border-color: rgba(103, 232, 249, .9); }
+      .study-card img { width: 100%; height: 84px; object-fit: contain; pointer-events: none; }
+      @media (min-width: 640px) { .study-card img { height: 104px; } }
+      .study-card .label {
+        font-size: 11px; font-weight: 700; color: #1e293b; line-height: 1.15; min-height: 26px;
+        display: flex; align-items: center; justify-content: center; margin-top: 4px;
+      }
+      .study-card .label.hidden-name { color: #94a3b8; font-weight: 500; }
+      .study-card.know { border-color: #34d399; }
+      .study-card.review { border-color: #fbbf24; }
+      .study-badge {
+        position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 999px;
+        font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; color: #0b1220;
+      }
+      .study-badge.know { background: #34d399; }
+      .study-badge.review { background: #fbbf24; }
+      .study-bar { flex: 1 1 100%; }
+      @media (min-width: 640px) { .study-bar { flex: 1 1 150px; } }
+      .study-progress { height: 8px; background: rgba(255, 255, 255, .1); border-radius: 999px; overflow: hidden; display: flex; }
+      .study-progress > div { height: 100%; transition: width .4s; }
+      .study-empty { text-align: center; padding: 40px 16px; color: #94a3b8; }
+      .study-kbd {
+        display: inline-block; padding: 0 6px; border-radius: 5px; margin: 0 1px;
+        border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .08);
+        font-size: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      /* modal do flashcard */
+      .study-modal { max-width: 880px; width: 100%; max-height: 92vh; overflow-y: auto; }
+      .study-front img { width: 100%; max-height: 300px; object-fit: contain; pointer-events: none; }
+      .study-info { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      @media (min-width: 640px) { .study-info { grid-template-columns: 1fr 1fr; } .study-info .full { grid-column: 1 / -1; } }
+      .study-field { background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px; padding: 10px 12px; }
+      .study-field h4 { margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; font-weight: 700; }
+      .study-field p { margin: 0; font-size: 13px; line-height: 1.5; color: #e2e8f0; }
+      .study-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid; }
+      .table-map { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; border-radius: 10px; width: 150px; flex-shrink: 0; }
+      .table-map > div {
+        border-radius: 6px; padding: 6px 2px; text-align: center; font-size: 9px; font-weight: 800; line-height: 1.15;
+        color: rgba(255, 255, 255, .45); background: rgba(0, 0, 0, .18); border: 1px solid rgba(255, 255, 255, .08);
+      }
+      .table-map > div.on { color: #0b1220; }
+      .study-nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+      .study-btn {
+        padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; color: #fff;
+        border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .08); transition: background .15s, transform .1s;
+      }
+      .study-btn:hover { background: rgba(255, 255, 255, .16); }
+      .study-btn:active { transform: scale(.97); }
+      .study-btn:disabled { opacity: .35; cursor: default; }
+      .study-btn.know { background: linear-gradient(90deg, #10b981, #06b6d4); border-color: transparent; }
+      .study-btn.review { background: linear-gradient(90deg, #f59e0b, #f43f5e); border-color: transparent; }
+      .study-btn.reveal { background: linear-gradient(90deg, #6366f1, #06b6d4); border-color: transparent; font-size: 15px; padding: 12px 22px; }
+
       .tray-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
       .tray-scroll::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .35); border-radius: 8px; }
       .tray-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -326,13 +406,14 @@ const shuffle = (arr) => {
 const fmt = (s) => (s === null || s === undefined) ? '--:--' : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 /* ================= MODOS DE JOGO =================
+   study          → modo de flashcards (StudyMode): não monta mesa nem tem cronômetro
    tooltips       → mostra o NOME do instrumento ao passar o mouse (ajuda de identificação, nunca de posição)
    reveal         → após o erro, revela o setor correto (fase 1) e o instrumento pedido após 3 erros (fase 2)
    penaltySeconds → segundos descontados do cronômetro a cada erro (fase 1 e fase 2); o jogo segue normalmente */
 const MODES = {
   estudo: {
-    label: 'Modo Estudo', icon: '📖', time: null, phase2Time: null, tooltips: true, reveal: true, penaltySeconds: 0,
-    desc: 'Sem cronômetro, com dicas de nome e de setor. Explore os instrumentos e aprenda a distribuição da mesa.'
+    label: 'Modo Estudo', icon: '📖', study: true,
+    desc: 'Flashcards dos 40 instrumentais, agrupados por setor da mesa. Olhe a imagem, tente lembrar e toque para revelar nome, função, como identificar e onde fica na mesa. Sem montar mesa, sem cronômetro.'
   },
   prova: {
     label: 'Modo Prova', icon: '🩺', time: 180, phase2Time: 90, tooltips: true, reveal: false, penaltySeconds: 5,
@@ -446,6 +527,810 @@ const missedInstrumentsOf = (log) => {
   return out;
 };
 
+/* ================= MODO ESTUDO — flashcards por setor da mesa =================
+   Sem mesa para montar: o aluno vê a imagem, tenta lembrar e toca para revelar a ficha do instrumental.
+   O progresso (dominado / para revisar) fica no localStorage. */
+const STUDY_KEY = 'instr_study_v1';
+const loadStudy = () => { try { return JSON.parse(localStorage.getItem(STUDY_KEY)) || {}; } catch (e) { return {}; } };
+const saveStudy = (s) => { try { localStorage.setItem(STUDY_KEY, JSON.stringify(s)); } catch (e) {} };
+const studyStats = (progress) => {
+  let know = 0, review = 0;
+  ALL_FLAT.forEach(i => { if (progress[i.id] === 'know') know++; else if (progress[i.id] === 'review') review++; });
+  return { know, review, seen: know + review, unseen: TOTAL - know - review };
+};
+
+/* Ordem didática (tempos cirúrgicos 1→4). A posição física de cada setor na mesa vem de QUADRANTS. */
+const STUDY_SECTORS = [
+  { id: 'q1_dierese',    number: '1', title: 'DIERÉSICO',   name: 'Diérese',    icon: '🔪', desc: 'Abrir: bisturis e tesouras',            accent: '#7dd3fc' },
+  { id: 'q2_hemostasia', number: '2', title: 'HEMOSTÁTICO', name: 'Hemostasia', icon: '🩸', desc: 'Parar o sangue: pinças hemostáticas',  accent: '#fda4af' },
+  { id: 'q3_pega',       number: '3', title: 'PEGA',        name: 'Pega',       icon: '🤏', desc: 'Segurar, afastar e auxiliar',          accent: '#fbbf24' },
+  { id: 'q4_sintese',    number: '4', title: 'SÍNTESE',     name: 'Síntese',    icon: '🧵', desc: 'Fechar: porta-agulhas, pinças e fios', accent: '#c4b5fd' }
+];
+const SECTOR_BY_ID = Object.fromEntries(STUDY_SECTORS.map(s => [s.id, s]));
+const QUADRANT_POSITION = {};
+['superior esquerdo', 'superior direito', 'inferior esquerdo', 'inferior direito'].forEach((p, i) => { QUADRANT_POSITION[QUADRANTS[i].id] = p; });
+
+/* Subgrupos exibidos dentro de cada setor (ordem de exibição) */
+const STUDY_SUBGROUPS = {
+  q1_dierese: ['Bisturis', 'Tesouras'],
+  q2_hemostasia: ['Pinças hemostáticas'],
+  q3_pega: ['Pinças de preensão', 'Afastadores', 'Auxiliares e materiais'],
+  q4_sintese: ['Porta-agulhas', 'Pinças de dissecção', 'Fios']
+};
+
+/* Ficha de estudo de cada instrumental (o setor da mesa vem de ALL_INSTRUMENTS) */
+const STUDY_INFO = {
+  /* ---------- 1. DIÉRESE ---------- */
+  d1: {
+    sub: 'Bisturis', group: 'Diérese • Bisturi (cabo para lâminas descartáveis)',
+    features: 'Cabo curto e achatado, com encaixe pequeno na ponta. Recebe lâminas nº 10, 11, 12 e 15. É o cabo “padrão” da maioria das cirurgias de pequeno e médio porte.',
+    identify: 'Cabo plano, mais curto e estreito que o nº 4, com ranhuras transversais no terço proximal para firmar a pega. O número 3 costuma vir gravado na base. O encaixe da lâmina é estreito (lâminas pequenas).',
+    use: 'Incisão da pele e de tecidos superficiais em procedimentos de pequeno e médio porte; corte preciso.',
+    when: 'Tempo de diérese (abertura): primeira incisão em cirurgias menores, procedimentos ambulatoriais, exérese de lesões de pele, abertura de planos delicados. Com lâmina 11, também em pequenas incisões de drenagem.',
+    role: 'Sustentar a lâmina e transmitir a força da mão de forma controlada, permitindo incisão limpa e de profundidade previsível.',
+    similar: 'Nº 4: maior e mais largo, encaixe grande (lâminas 20–25), para incisões amplas. Nº 7: comprido e fino como uma caneta, mesmo encaixe pequeno do nº 3, para cavidades profundas e cortes delicados.',
+    tip: 'Regra rápida: cabo 3 → lâminas 10 a 15; cabo 4 → lâminas 20 a 25. A banca adora trocar esses números.'
+  },
+  d2: {
+    sub: 'Bisturis', group: 'Diérese • Bisturi (cabo para lâminas descartáveis)',
+    features: 'Cabo robusto, mais largo e comprido, com encaixe grande. Recebe lâminas nº 20 a 25 — lâminas maiores, para cortes amplos.',
+    identify: 'É o “irmão grande” do nº 3: mesma forma achatada, porém visivelmente mais largo e com o encaixe da lâmina maior. Ranhuras no cabo e número 4 gravado na base.',
+    use: 'Incisões de grande porte, em pele espessa e tecidos densos, onde é preciso um corte longo e firme.',
+    when: 'Diérese em laparotomias, toracotomias, cirurgias ortopédicas e outras de grande porte; abertura de aponeurose e tecidos resistentes.',
+    role: 'Dar suporte a lâminas grandes e transmitir mais força ao corte, mantendo a estabilidade em incisões extensas.',
+    similar: 'Nº 3: menor, encaixe pequeno (lâminas 10–15). Nº 7: fino e alongado, encaixe pequeno. Na dúvida, olhe o tamanho do encaixe: o do nº 4 é o único grande.',
+    tip: 'Lâmina 20 a 25 só entra no cabo 4. Se a questão fala em “lâmina 23”, a resposta é cabo nº 4.'
+  },
+  d3: {
+    sub: 'Bisturis', group: 'Diérese • Bisturi (cabo para lâminas descartáveis)',
+    features: 'Cabo longo e delgado, com formato de caneta: fino nas pontas e discretamente alargado no meio. Encaixe pequeno, igual ao do nº 3 (lâminas 10, 11, 12 e 15).',
+    identify: 'O único cabo “afilado”, parecido com um lápis. Comprido e fino, com o encaixe pequeno na extremidade. O número 7 vem gravado no corpo.',
+    use: 'Incisões delicadas e em locais profundos ou de acesso estreito, onde o cabo curto não alcança com precisão.',
+    when: 'Cirurgia plástica, vascular, pediátrica, procedimentos em cavidades profundas e microcirurgia; cortes que exigem precisão de “caneta”.',
+    role: 'Permitir empunhadura tipo caneta com controle fino, levando a lâmina pequena a planos profundos.',
+    similar: 'Nº 3: mesmo encaixe pequeno, mas cabo curto e achatado. Nº 4: cabo largo e encaixe grande. Se parece uma caneta, é o 7.'
+  },
+  d4: {
+    sub: 'Tesouras', group: 'Diérese • Tesoura (tecidos densos e fios)',
+    features: 'Tesoura robusta, de lâminas curtas e espessas em relação ao cabo, pontas rombas (arredondadas). Existe reta e curva. Aguenta tecido duro sem “abrir” as lâminas.',
+    identify: 'Anéis grandes, hastes fortes e lâminas grossas e relativamente curtas, terminando em pontas rombas. Peça pesada e “parruda”.',
+    use: 'Cortar tecidos densos (aponeurose, fáscia, tendões) e cortar fios de sutura (a versão reta).',
+    when: 'Diérese de planos resistentes (abertura da aponeurose em laparotomia, por exemplo) e, na síntese, para cortar os fios após os nós. A Mayo reta costuma ficar como “tesoura de fio”.',
+    role: 'Corte por força: lâminas curtas e grossas concentram a pressão e vencem tecido duro sem se deformar.',
+    similar: 'Metzenbaum: hastes longas e lâminas finas e delicadas, para dissecar tecido frágil — nunca para cortar fio (perde o corte). Íris: pequena e pontiaguda. Regra: Mayo = força; Metzenbaum = delicadeza.',
+    tip: 'Descritor clássico: “tesoura para aponeurose e fios” → Mayo. “Tesoura para dissecção delicada” → Metzenbaum.'
+  },
+  d5: {
+    sub: 'Tesouras', group: 'Diérese • Tesoura (dissecção delicada)',
+    features: 'Tesoura delicada, com hastes longas e lâminas finas e proporcionalmente curtas. Geralmente curva. Pontas rombas ou semirrombas. Feita para tecido frágil, não para força.',
+    identify: 'A proporção é a chave: hastes compridas e lâminas pequenas e finas, com a articulação mais distante dos anéis. Peça leve e esguia, ao contrário da Mayo.',
+    use: 'Dissecção romba e corte delicado de tecidos frágeis: gordura, peritônio, fáscias finas, planos vasculares e cavidades.',
+    when: 'Durante a diérese e a dissecção intraoperatória em cirurgias abdominais, vasculares, ginecológicas e torácicas — sempre que é preciso separar planos sem traumatizar.',
+    role: 'Divulsionar (separar planos abrindo as lâminas fechadas) e cortar tecidos finos com mínima lesão.',
+    similar: 'Mayo: lâminas curtas e grossas, para tecido denso e fio. Íris: bem menor, pontas agudas, microcirurgia. Hastes longas com lâminas pequenas = Metzenbaum.',
+    tip: 'Cortar fio com a Metzenbaum é erro clássico de instrumentação: ela perde o corte. Fio é com a Mayo.'
+  },
+  d6: {
+    sub: 'Tesouras', group: 'Diérese • Tesoura angulada (gazes e ataduras)',
+    features: 'Tesoura com lâminas anguladas em relação às hastes e pontas finas. Na nossa mesa é a tesoura reservada para material (gaze, atadura, fixação de drenos), não para tecido vivo.',
+    identify: 'A única tesoura da mesa com a ponta “dobrada”: as lâminas formam um ângulo com o cabo. Hastes longas e finas; nesta imagem, os anéis são dourados.',
+    use: 'Cortar gazes, ataduras, compressas e outros materiais de curativo, poupando as tesouras de tecido.',
+    when: 'Preparo de campo e curativos: recortar gaze e atadura ao final da cirurgia e ao fixar drenos e sondas.',
+    role: 'Cortar material com um ângulo que afasta a mão do campo e melhora a visão do corte.',
+    similar: 'Mayo e Metzenbaum são retas ou suavemente curvas, nunca anguladas. Atenção: em cirurgia vascular, o nome Potts-Smith também designa uma tesoura angulada usada para abrir vasos — a angulação é a mesma, a finalidade muda conforme o serviço. Na nossa mesa, ela vai para gazes e ataduras.',
+    tip: 'Tesoura de gaze não corta tecido vivo: “cada tesoura tem sua função” é ponto que o avaliador cobra.'
+  },
+  d7: {
+    sub: 'Tesouras', group: 'Diérese • Tesoura (microcirurgia)',
+    features: 'Tesoura pequena (cerca de 11 cm), lâminas curtas, finas e pontiagudas, reta ou curva. Extremamente precisa e delicada.',
+    identify: 'A menor tesoura da mesa. Anéis proporcionalmente grandes, lâminas curtas terminando em ponta aguda. Nesta imagem, os anéis são pretos.',
+    use: 'Cortes finos e precisos: microcirurgia, oftalmologia, plástica, vasos pequenos, nervos e fios muito finos.',
+    when: 'Procedimentos delicados (oftalmológicos, de mão, plásticos), pequenas cirurgias de pele e retirada de pontos finos.',
+    role: 'Cortar com precisão milimétrica onde uma tesoura maior seria traumática.',
+    similar: 'Metzenbaum: maior, hastes longas, pontas rombas. Mayo: robusta e romba. Íris = pequena e pontuda.'
+  },
+
+  /* ---------- 2. HEMOSTASIA ---------- */
+  h1: {
+    sub: 'Pinças hemostáticas', group: 'Hemostasia • Pinça hemostática (a menor da série)',
+    features: 'Pinça hemostática pequena (~12 cm), mandíbulas finas e curtas com serrilha transversal em toda a extensão, cremalheira nos anéis. Reta ou curva. Também chamada de “mosquito”.',
+    identify: 'Mesmo desenho das outras hemostáticas (anéis + cremalheira + mandíbulas serrilhadas), porém nitidamente menor e mais delicada, com ponta fina. É a “mini” da família.',
+    use: 'Pinçar vasos pequenos e superficiais para hemostasia; também serve para reparo de fios e pequenas dissecções.',
+    when: 'Hemostasia do subcutâneo logo após a incisão, cirurgias de pequeno porte, plástica, cirurgia pediátrica e vascular fina.',
+    role: 'Ocluir o vaso sangrante por compressão até a ligadura ou cauterização, com trauma mínimo ao tecido vizinho.',
+    similar: 'Kelly e Crile: maiores (~14 cm) e mais robustas. Rochester: bem maior. Regra de tamanho: Halsted < Kelly/Crile < Rochester.',
+    tip: 'Descritor: “pinça hemostática pequena, para vasos superficiais” ou “mosquito” → Halsted.'
+  },
+  h3: {
+    sub: 'Pinças hemostáticas', group: 'Hemostasia • Pinça hemostática (média)',
+    features: 'Pinça hemostática de ~14 cm, reta ou curva, com cremalheira. Serrilha transversal apenas na metade distal das mandíbulas — a metade proximal é lisa.',
+    identify: 'Tamanho médio, mandíbulas moderadamente longas. O detalhe que fecha o diagnóstico: as serrilhas ocupam só a metade da ponta; perto da articulação a mandíbula é lisa.',
+    use: 'Pinçamento de vasos de médio calibre e de pedículos; hemostasia firme.',
+    when: 'Hemostasia em cirurgias de médio e grande porte (abdominal, ginecológica, geral), pinçamento de vasos antes da ligadura e apreensão de tecidos a serem seccionados.',
+    role: 'Comprimir o vaso de forma firme e segura até a ligadura, sem romper a parede.',
+    similar: 'Crile: mesmo tamanho, mas serrilha em toda a extensão da mandíbula. Halsted: menor. Rochester: maior. Kocher: tem dente na ponta (a Kelly não tem).',
+    tip: 'Kelly vs Crile é pegadinha de prova: Kelly = serrilha só na metade distal; Crile = serrilha completa.'
+  },
+  h5: {
+    sub: 'Pinças hemostáticas', group: 'Hemostasia • Pinça hemostática (média, mais delicada)',
+    features: 'Pinça hemostática de ~14 cm, reta ou curva, cremalheira nos anéis. Serrilha transversal em toda a extensão das mandíbulas. Considerada mais delicada que a Kelly.',
+    identify: 'Muito parecida com a Kelly no tamanho e no formato. Olhe a mandíbula: serrilha do início ao fim, sem trecho liso. Ponta fina.',
+    use: 'Hemostasia de vasos médios com menos trauma; apreensão de tecido delicado.',
+    when: 'Cirurgias de médio porte e tempos hemostáticos em que se quer pinçamento seguro, porém mais delicado que o da Kelly.',
+    role: 'Distribuir a compressão por toda a mandíbula, garantindo pega uniforme do vaso.',
+    similar: 'Kelly: serrilha só na metade distal. Halsted: menor. Rochester: maior. Kocher: dente de rato na ponta.'
+  },
+  h7: {
+    sub: 'Pinças hemostáticas', group: 'Hemostasia • Pinça hemostática angulada (dissecção)',
+    features: 'Pinça com mandíbulas anguladas em cerca de 90°, pontas finas, cremalheira nos anéis. Feita para passar por trás de estruturas.',
+    identify: 'Inconfundível: a ponta faz um ângulo reto (“em L”) em relação às hastes. É a única hemostática com essa angulação.',
+    use: 'Dissecção e reparo posterior de vasos, ductos e pedículos; passar fio de ligadura ao redor de uma estrutura.',
+    when: 'Ligadura do ducto cístico e da artéria cística na colecistectomia, dissecção de pedículos vasculares, isolamento de vasos em cirurgia vascular e torácica.',
+    role: 'Contornar a estrutura por trás e trazer o fio de ligadura, sem lesar o que está ao lado.',
+    similar: 'Kelly/Crile curvas: curvatura suave, não ângulo reto. Rochester: grande e curva. Se a ponta “vira 90°”, é Mixter.',
+    tip: 'Descritor: “pinça em ângulo reto para dissecar e passar fio atrás do vaso” → Mixter.'
+  },
+  h8: {
+    sub: 'Pinças hemostáticas', group: 'Hemostasia • Pinça hemostática (grande)',
+    features: 'Pinça hemostática grande e robusta (16–24 cm), mandíbulas longas e largas com serrilha transversal em toda a extensão, cremalheira forte. Reta ou curva. Também chamada de Rochester-Péan.',
+    identify: 'A maior e mais “pesada” das hemostáticas da mesa. Mandíbulas longas, hastes fortes. Sem dente na ponta.',
+    use: 'Pinçar vasos calibrosos e pedículos volumosos; hemostasia em massa.',
+    when: 'Cirurgias de grande porte: histerectomia, gastrectomia, ressecções intestinais, amputações — sempre que o pedículo é grosso.',
+    role: 'Compressão forte e ampla de grandes vasos ou pedículos até a ligadura.',
+    similar: 'Kelly/Crile: menores. Kocher: tamanho parecido, mas com dente de rato na ponta e função de preensão, não de hemostasia. Rochester = grande e lisa na ponta.'
+  },
+
+  /* ---------- 3. PEGA ---------- */
+  p1: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de campo (fixação)',
+    features: 'Pinça com anéis e cremalheira cujas extremidades são duas pontas curvas e agudas que se cruzam, como garras. Não tem mandíbula serrilhada.',
+    identify: 'Anéis + cremalheira + pontas em forma de gancho pontiagudo que se fecham uma sobre a outra. Parece uma “pinça de caranguejo”.',
+    use: 'Fixar os campos cirúrgicos ao paciente e uns aos outros; prender cabos, aspiradores e tubos sobre o campo.',
+    when: 'Montagem do campo operatório, após a antissepsia e antes da incisão; reposicionamento de campos durante a cirurgia.',
+    role: 'Perfurar e prender o tecido dos campos, mantendo a exposição do sítio cirúrgico.',
+    similar: 'Nenhuma outra pinça da mesa tem pontas em garra. Não confunda com hemostáticas curvas: estas têm mandíbulas serrilhadas, não ganchos.',
+    tip: 'Backhaus é traumática: nunca deve pinçar pele ou tecido vivo do paciente.'
+  },
+  p2: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão traumática',
+    features: 'Pinça robusta com anéis e cremalheira, mandíbulas longas com serrilha transversal completa e dente de rato na extremidade (1×2 dentes). Reta ou curva.',
+    identify: 'Parece uma hemostática grande, mas a ponta tem dentes que se encaixam. Esse dente na ponta é a assinatura da Kocher.',
+    use: 'Preensão firme de tecidos densos e resistentes: aponeurose, fáscia, tendões, peças a serem ressecadas.',
+    when: 'Abertura e fechamento da aponeurose em laparotomias (segura a borda para a sutura), exérese de peças, reparos de estruturas resistentes.',
+    role: 'Agarrar com força sem escapar — os dentes ancoram o tecido.',
+    similar: 'Kelly/Crile/Rochester: sem dente na ponta (hemostasia). Allis: dentes múltiplos pequenos e mandíbula curta. Kocher = serrilha completa + dente na ponta.',
+    tip: 'Traumática: não usar em alça intestinal, vaso ou pele que vai ficar. Só em tecido denso ou que será removido.'
+  },
+  p4: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão (dentes múltiplos)',
+    features: 'Pinça com anéis e cremalheira, hastes longas e mandíbulas curtas, levemente alargadas, com fileira de dentes finos que se entrelaçam.',
+    identify: 'A ponta é curta e larga, com “pentes” de dentes pequenos que se encaixam. Hastes finas e longas em relação à mandíbula.',
+    use: 'Preensão de tecidos que serão ressecados ou de estruturas que toleram pega moderada: fáscia, tecido subcutâneo, bordas de peças cirúrgicas, mama, tireoide.',
+    when: 'Exposição e tração de tecidos durante a dissecção, pega da peça em ressecções, tração de fáscia no fechamento.',
+    role: 'Segurar e tracionar tecido com firmeza intermediária: menos agressiva que a Kocher, mais firme que a Babcock.',
+    similar: 'Babcock: mandíbula fenestrada e lisa, atraumática, para vísceras. Kocher: dente único robusto na ponta. Foerster: argolas ovais grandes.',
+    tip: 'A Allis ainda é traumática: em alça intestinal e vaso, a escolha é a Babcock.'
+  },
+  e1: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão longa',
+    features: 'Pinça longa, com anéis e cremalheira, hastes compridas e mandíbulas estreitas e alongadas, com serrilha fina. Alcança estruturas profundas.',
+    identify: 'Bem mais comprida que as pinças comuns, com hastes finas e mandíbula afilada e longa. Perfil “esguio”, ponta discretamente curva.',
+    use: 'Preensão de órgãos ocos e estruturas em profundidade — na nossa mesa, a referência é a preensão da vesícula biliar. Em ginecologia, também monta gaze para antissepsia e curativos vaginais.',
+    when: 'Colecistectomia (tração do fundo da vesícula), cirurgias pélvicas e ginecológicas, antissepsia de cavidades profundas.',
+    role: 'Alcançar e segurar uma estrutura profunda com pega delicada, sem que a mão do cirurgião entre no campo.',
+    similar: 'Foerster: mandíbulas ovais e fenestradas. Randall: hastes curvas e ponta fenestrada, para cálculos. Cheron = longa, mandíbula estreita e serrilhada.'
+  },
+  e3: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão (língua)',
+    features: 'Pinça com anéis e cremalheira, mandíbulas curtas, ovais e fenestradas (vazadas), de bordas lisas. Pega ampla sem esmagar.',
+    identify: 'Pinça curta cujas mandíbulas são duas “argolas” ovais fenestradas. Menor que a Foerster, com hastes curtas.',
+    use: 'Pinçar e tracionar a língua; segurar tecidos moles em cirurgias da boca e da faringe.',
+    when: 'Cirurgias orofaríngeas, odontológicas e de via aérea; tração da língua em obstrução de via aérea.',
+    role: 'Tracionar a língua para expor a orofaringe sem esmagá-la.',
+    similar: 'Foerster: parecida, mas maior e com mandíbulas ovais serrilhadas para gaze. Babcock: fenestra triangular e hastes longas. Collin = a pequena de argolas ovais.'
+  },
+  e4: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão (montagem de gaze)',
+    features: 'Pinça longa com anéis e cremalheira, mandíbulas ovais, fenestradas e serrilhadas. Reta ou curva. Também chamada de pinça “coração”.',
+    identify: 'Ponta com dois anéis ovais serrilhados, hastes longas. É a pinça de “argolas grandes” da mesa.',
+    use: 'Montar gaze ou compressa na ponta (para antissepsia e hemostasia por compressão) e apreender tecidos delicados.',
+    when: 'Antissepsia da pele antes da incisão, secagem e compressão de sangramento em cavidades, apreensão de vísceras e do coto uterino.',
+    role: 'Segurar material de forma firme, permitindo limpar e comprimir sem levar a mão ao campo.',
+    similar: 'Collin: menor, para língua. Babcock: fenestra triangular, lisa. Cheron: mandíbula estreita, sem argola. Foerster = argolas ovais serrilhadas.',
+    tip: 'Descritor: “pinça para montar gaze / antissepsia” → Foerster.'
+  },
+  e5: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão atraumática',
+    features: 'Pinça com anéis e cremalheira, hastes longas e mandíbulas em alça triangular/arredondada, fenestradas, com extremidade lisa e alargada. Não tem dentes.',
+    identify: 'Ponta em forma de “laço” arredondado, vazado, com borda lisa. Lembra a Allis, porém sem dentes e com a fenestra maior.',
+    use: 'Preensão atraumática de vísceras ocas e estruturas delicadas: alças intestinais, apêndice, trompas, ureter.',
+    when: 'Apendicectomia, cirurgias intestinais, ginecológicas e urológicas — sempre que é preciso segurar uma alça sem esmagar a parede.',
+    role: 'Envolver e tracionar a estrutura distribuindo a pressão, sem lesar a mucosa.',
+    similar: 'Allis: dentes finos na ponta, traumática. Kocher: dente de rato. Foerster: argolas ovais serrilhadas. Babcock = laço liso e fenestrado.',
+    tip: 'Pegadinha: “pinça para alça intestinal” → Babcock, nunca Allis ou Kocher.'
+  },
+  e10: {
+    sub: 'Pinças de preensão', group: 'Pega • Pinça de preensão especial (cálculos)',
+    features: 'Pinça com anéis e cremalheira, hastes longas com curvaturas de graus variados e mandíbulas fenestradas, ovais e lisas. Vem em jogo com diferentes ângulos.',
+    identify: 'Pinça longa com ponta curva e “colher” fenestrada estreita. A curvatura da haste e a ponta vazada são as marcas.',
+    use: 'Apreender e extrair cálculos das vias urinárias e biliares.',
+    when: 'Pielolitotomia, nefrolitotomia e exploração do colédoco (coledocolitotomia).',
+    role: 'Alcançar o cálculo em cavidades curvas (pelve renal, ducto) e retirá-lo sem fragmentar.',
+    similar: 'Foerster: argolas maiores e serrilhadas, hastes retas. Cheron: mandíbula estreita, não fenestrada. Randall = haste curva + ponta fenestrada lisa.'
+  },
+  a1: {
+    sub: 'Afastadores', group: 'Pega • Afastador dinâmico (manual)',
+    features: 'Afastador manual de lâmina larga e curva, com cabo. Feito para deslocar a bexiga para baixo em cirurgias pélvicas.',
+    identify: 'Lâmina larga com borda curvada (como uma pá) e cabo em ângulo. Peça grande, sem cremalheira.',
+    use: 'Afastar a bexiga e a parede abdominal inferior, expondo o segmento uterino e a pelve.',
+    when: 'Cesariana (afasta a bexiga na abertura da prega vesicouterina), histerectomia e outras cirurgias pélvicas.',
+    role: 'Proteger a bexiga e manter a exposição da pelve enquanto o cirurgião trabalha.',
+    similar: 'Doyen: lâmina em ângulo reto com o cabo, mais estreita e alongada. Farabeuf: pequeno, de dupla ponta. Suprapúbico = lâmina larga e curva com cabo.'
+  },
+  a2: {
+    sub: 'Afastadores', group: 'Pega • Afastador dinâmico (manual)',
+    features: 'Afastador manual com cabo e lâmina larga em ângulo reto, de bordas lisas. Também chamado de válvula de Doyen.',
+    identify: 'Formato de “L”: cabo reto e lâmina larga dobrada em 90°. Sem cremalheira, peça única.',
+    use: 'Afastar alças intestinais e a parede abdominal em cirurgias abdominais e pélvicas, protegendo as vísceras.',
+    when: 'Laparotomias, cirurgias ginecológicas e do trato digestivo — afasta as alças para expor a área a ser operada.',
+    role: 'Manter as vísceras fora do campo com uma superfície lisa e larga, sem lesá-las.',
+    similar: 'Suprapúbico: lâmina curva em forma de pá. Maleável: fita metálica flexível, sem cabo rígido. Doyen = L rígido de lâmina larga.'
+  },
+  a3: {
+    sub: 'Afastadores', group: 'Pega • Afastador dinâmico (manual, pequeno)',
+    features: 'Afastador manual de lâmina metálica plana, com as duas extremidades dobradas em ângulo reto (dupla ponta). Usado em par, em tamanhos variados.',
+    identify: 'Uma “tira” de metal com ganchos em L nas duas pontas, uma maior que a outra. Sem cabo e sem cremalheira.',
+    use: 'Afastar tecidos superficiais (pele, subcutâneo, músculo) em incisões pequenas e médias.',
+    when: 'Início da diérese e planos superficiais de praticamente qualquer cirurgia; tireoidectomia, herniorrafia, safenectomia, dissecção de vasos.',
+    role: 'Exposição dinâmica: o auxiliar controla a força e a direção do afastamento.',
+    similar: 'Volkmann: dentes/garras na ponta. Doyen: lâmina larga com cabo. Maleável: fita flexível. Farabeuf = lâmina lisa em L nas duas pontas.',
+    tip: 'Descritor: “afastador manual para planos superficiais, usado em par” → Farabeuf.'
+  },
+  a4: {
+    sub: 'Afastadores', group: 'Pega • Afastador autoestático (cremalheira)',
+    features: 'Afastador de costelas autoestático: duas valvas (lâminas) montadas em uma haste com cremalheira dentada e manivela; abre e permanece fixo.',
+    identify: 'Estrutura “mecânica”: barra dentada com uma manivela e duas valvas largas e paralelas. Grande e pesado.',
+    use: 'Afastar as costelas e manter o tórax aberto após a toracotomia.',
+    when: 'Toracotomias (cirurgia pulmonar, cardíaca, esofágica) e, em alguns casos, cirurgias abdominais amplas.',
+    role: 'Exposição estática: mantém a abertura sem que ninguém precise segurar.',
+    similar: 'Os outros afastadores da mesa são manuais (dinâmicos). O Finochietto é o único com cremalheira — e é grande.',
+    tip: 'Autoestático = fica parado sozinho. Dinâmico = precisa de mão. A prova adora essa classificação.'
+  },
+  a5: {
+    sub: 'Afastadores', group: 'Pega • Afastador dinâmico (moldável)',
+    features: 'Lâmina de metal maleável, larga e lisa, que pode ser dobrada na forma desejada. Sem cabo definido.',
+    identify: 'Uma fita metálica lisa, geralmente dobrada em ângulo; sem articulações, sem cremalheira, sem ganchos.',
+    use: 'Afastar e proteger estruturas profundas, adaptando a forma ao local (alças, fígado, bexiga).',
+    when: 'Cirurgias abdominais e pélvicas em que é preciso “moldar” o afastador para proteger vísceras durante o fechamento da aponeurose ou a dissecção.',
+    role: 'Proteção e afastamento sob medida: a forma acompanha a anatomia.',
+    similar: 'Doyen: rígido, em L. Farabeuf: lâmina com L nas pontas. Maleável = dobra na mão.'
+  },
+  a6: {
+    sub: 'Afastadores', group: 'Pega • Afastador de garras (rastelo)',
+    features: 'Afastador de haste fina com extremidade em garras (dentes rombos ou agudos). Nesta imagem, a outra extremidade tem uma pequena lâmina, tornando-o de dupla ponta.',
+    identify: 'Haste delgada terminando num “garfo” de dentes curvos. É o único afastador da mesa com dentes.',
+    use: 'Afastar pele, subcutâneo e músculo em incisões pequenas, ancorando com os dentes.',
+    when: 'Cirurgias de pequeno porte, ortopedia, cirurgia de mão e procedimentos superficiais em que a exposição exige tração firme das bordas.',
+    role: 'Fixar a borda da ferida com as garras e tracioná-la para expor o plano seguinte.',
+    similar: 'Farabeuf: lâmina lisa em L, sem dentes. Doyen e suprapúbico: lâminas largas. Volkmann = garras.',
+    tip: 'Dentes agudos são mais traumáticos: cuidado em pele que será fechada. Nos livros de técnica operatória ele é classificado como afastador manual (dinâmico), mesmo que algumas apostilas o descrevam como estático.'
+  },
+  e2: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Auxiliar (dilatador)',
+    features: 'Haste metálica longa e fina com extremidade em formato de oliva (ogiva) e cabo estriado. Vem em jogos de diâmetros crescentes.',
+    identify: 'Uma “vareta” com ponta oval e arredondada, sem articulação e sem anéis. Cabo cilíndrico e serrilhado para a pega.',
+    use: 'Dilatação progressiva de orifícios e canais: colo uterino, uretra, estenoses.',
+    when: 'Curetagem uterina (dilatação do colo antes da cureta), procedimentos urológicos, tratamento de estenoses.',
+    role: 'Alargar gradualmente um canal, com calibres crescentes, sem rasgar a mucosa.',
+    similar: 'Tentacânula: ponta chata com entalhe, serve para guiar e explorar, não para dilatar. Cureta: extremidade em colher com borda.'
+  },
+  e6: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Auxiliar (raspagem)',
+    features: 'Instrumento de haste única com cabo e extremidade em formato de colher, com bordas cortantes ou rombas. Vários tamanhos.',
+    identify: 'Cabo longo terminando numa pequena “colher” oval. Sem articulação, sem anéis.',
+    use: 'Raspagem (curetagem) de cavidades e superfícies: útero, osso, feridas e lesões de pele.',
+    when: 'Curetagem uterina (restos ovulares), curetagem óssea em osteomielite e tumores, desbridamento de feridas.',
+    role: 'Remover tecido patológico ou conteúdo de uma cavidade por raspagem controlada.',
+    similar: 'Rugina: extremidade em espátula para descolar periósteo, não em colher. Ogiva: ponta arredondada sem borda.'
+  },
+  e7: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Auxiliar (cânula de aspiração)',
+    features: 'Cânula metálica angulada, com extremidade distal fina e conector proximal para a extensão do vácuo. Há modelos com orifício de controle no cabo.',
+    identify: 'Tubo metálico com “cotovelo” e ponta fina; na base, um encaixe estriado para a mangueira de sucção.',
+    use: 'Aspirar sangue, secreções e líquido de irrigação do campo operatório.',
+    when: 'Durante toda a cirurgia, especialmente em cavidades (peritônio, tórax) e em áreas de sangramento ativo — mantém o campo visível.',
+    role: 'Remover fluidos para expor estruturas e permitir a hemostasia.',
+    similar: 'Tentacânula: haste sólida, sem lúmen. Ogiva: haste com ponta oval maciça. O aspirador tem tubo oco e conector.'
+  },
+  e8: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Auxiliar (descolador de periósteo)',
+    features: 'Instrumento de haste única com cabo e extremidade em lâmina levemente côncava/espatulada, de borda romba ou cortante. Também chamada de descolador de periósteo.',
+    identify: 'Cabo longo e lâmina curta na ponta, em forma de espátula ou “colher rasa” com bico. Sem articulação.',
+    use: 'Descolar o periósteo da superfície óssea e afastar partes moles aderidas ao osso.',
+    when: 'Cirurgias ortopédicas e traumatológicas (exposição de fraturas, osteotomias), cirurgias torácicas (costelas) e bucomaxilofaciais.',
+    role: 'Separar o periósteo sem lacerá-lo, preparando o osso para fixação ou corte.',
+    similar: 'Cureta: colher mais profunda e fechada, para raspar. Rugina = espátula para descolar.'
+  },
+  e9: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Auxiliar (sonda de exploração)',
+    features: 'Haste metálica fina, longa, de ponta romba, com a outra extremidade achatada em forma de espátula com entalhe (fenda). Pode ter sulco ao longo da haste (sonda canelada).',
+    identify: 'Uma “sonda” reta com cabeça chata e um pequeno entalhe em V; sem anéis, sem articulação, sem lúmen.',
+    use: 'Explorar trajetos (fístulas, cavidades, ferimentos), guiar a lâmina do bisturi ou a tesoura em aberturas e auxiliar a introdução de drenos e cateteres.',
+    when: 'Exploração de trajetos fistulosos, abertura de aponeurose guiada pela sonda, colocação de drenos ao final da cirurgia.',
+    role: 'Guiar e proteger: a ponta romba abre caminho e o entalhe apoia a lâmina ou o fio, protegendo as estruturas abaixo.',
+    similar: 'Ogiva: ponta oval em bulbo, para dilatar. Aspirador: tubo oco com conector. Tentacânula = haste fina com cabeça chata entalhada.'
+  },
+  g1: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Material (compressa de gaze)',
+    features: 'Compressas de gaze hidrófila estéril, de algodão, em pacotes. Podem ter fio radiopaco. Contadas antes e depois da cirurgia.',
+    identify: 'Pacote de compressas brancas dobradas, em embalagem estéril.',
+    use: 'Hemostasia temporária por compressão, secagem do campo, proteção de tecidos, curativo e montagem em pinças (Foerster).',
+    when: 'Durante toda a cirurgia (compressão e limpeza) e no curativo final.',
+    role: 'Absorver e comprimir, mantendo o campo visível.',
+    tip: 'Contagem de gazes e compressas antes e ao final da cirurgia é item de segurança do checklist cirúrgico da OMS.'
+  },
+  g2: {
+    sub: 'Auxiliares e materiais', group: 'Pega • Material (recipiente estéril)',
+    features: 'Recipiente metálico (aço inoxidável) estéril, redondo ou em formato de rim (cuba-rim).',
+    identify: 'Bacia metálica lisa, sem detalhes.',
+    use: 'Acondicionar soluções (soro, antisséptico), gazes, compressas e peças cirúrgicas; receber material usado.',
+    when: 'Preparo da mesa e durante toda a cirurgia (antissepsia, irrigação, coleta de peças).',
+    role: 'Organizar e conter líquidos e materiais dentro do campo estéril.'
+  },
+
+  /* ---------- 4. SÍNTESE ---------- */
+  s1: {
+    sub: 'Porta-agulhas', group: 'Síntese • Porta-agulha (anéis e cremalheira)',
+    features: 'Porta-agulha com anéis e cremalheira, mandíbulas curtas, largas e robustas, com estrias cruzadas (quadriculadas) que travam a agulha. Vários tamanhos.',
+    identify: 'Parece uma Kelly, mas com a mandíbula curta e grossa, de face quadriculada. A relação “mandíbula curta + haste longa” denuncia o porta-agulha.',
+    use: 'Segurar e conduzir a agulha de sutura através dos tecidos.',
+    when: 'Tempo de síntese: fechamento de aponeurose, músculo, subcutâneo e pele; anastomoses; suturas de grande e médio porte.',
+    role: 'Fixar a agulha com firmeza (sem girar) e transmitir o movimento de rotação do punho.',
+    similar: 'Kelly/Crile: mandíbula longa e fina, serrilha transversal — pegadinha clássica. Mathieu: sem anéis, cremalheira na base do cabo. Mayo-Hegar = anéis + mandíbula curta quadriculada.',
+    tip: 'Na prova, olhe a ponta: estria cruzada = porta-agulha; serrilha transversal = hemostática.'
+  },
+  s2: {
+    sub: 'Porta-agulhas', group: 'Síntese • Porta-agulha (cabo em mola)',
+    features: 'Porta-agulha sem anéis: cabos arqueados unidos por mola, com cremalheira na base; abre e trava ao ser pressionado até o fim. Mandíbulas curtas e estriadas.',
+    identify: 'Sem argolas para os dedos. Cabos curvos, “de apertar”, com cremalheira dentada perto da base. Mandíbula curta e larga.',
+    use: 'Suturas de pequeno e médio porte, especialmente de pele, onde a agilidade compensa.',
+    when: 'Fechamento de pele, procedimentos ambulatoriais, cirurgia plástica, suturas rápidas de subcutâneo.',
+    role: 'Segurar a agulha com empunhadura palmar, liberando por pressão adicional — mais rápido que abrir anéis.',
+    similar: 'Mayo-Hegar: tem anéis. Nenhuma pinça hemostática tem cabo em mola. Mathieu = “porta-agulha sem argolas”.'
+  },
+  sp1: {
+    sub: 'Pinças de dissecção', group: 'Síntese • Pinça de dissecção (atraumática)',
+    features: 'Pinça de mola (dois ramos unidos na base, sem articulação nem cremalheira), extremidades com serrilha transversal fina, sem dentes. Vários comprimentos.',
+    identify: 'Formato de “pinça de sobrancelha” grande: dois ramos retos que se fecham ao apertar, ponta serrilhada e lisa, sem gancho.',
+    use: 'Manipular tecidos delicados (vasos, nervos, mucosa, peritônio) e auxiliar a sutura sem perfurar o tecido.',
+    when: 'Dissecção delicada e síntese de tecidos frágeis (alças, vasos), apreensão de fios e agulhas.',
+    role: 'Segurar por atrito, distribuindo a pressão sem lesar.',
+    similar: 'Dente de rato: dois dentes que se encaixam na ponta (traumática). Adson: ramos alargados na base e ponta muito fina. Anatômica = ponta serrilhada sem dentes.',
+    tip: 'Regra: tecido delicado (víscera, vaso) → anatômica; pele e aponeurose → dente de rato.'
+  },
+  sp2: {
+    sub: 'Pinças de dissecção', group: 'Síntese • Pinça de dissecção (traumática)',
+    features: 'Pinça de mola com dentes na ponta que se entrelaçam (1×2), o que garante pega firme. Vários comprimentos.',
+    identify: 'Mesma silhueta da anatômica, mas a ponta mostra pequenos dentes interdigitados (um de um lado, dois do outro).',
+    use: 'Segurar pele, aponeurose e tecidos resistentes durante a sutura e a dissecção.',
+    when: 'Síntese da pele e da aponeurose, dissecção de planos densos, tração de tecido a ser ressecado.',
+    role: 'Ancorar o tecido com os dentes para que a agulha passe sem que ele escape.',
+    similar: 'Anatômica: sem dentes. Adson com dente: menor, base alargada. Dente de rato = ramos uniformes + dentes na ponta.',
+    tip: 'Nunca em alça intestinal ou vaso — os dentes perfuram.'
+  },
+  sp3: {
+    sub: 'Pinças de dissecção', group: 'Síntese • Pinça de dissecção (delicada, curta)',
+    features: 'Pinça de mola curta (~12 cm), com ramos alargados na base que se afinam abruptamente em pontas finas serrilhadas, sem dentes.',
+    identify: 'Perfil “de raquete”: base larga e ponta fina. É menor que a anatômica comum. Ponta serrilhada, sem dente.',
+    use: 'Manipulação precisa de tecidos delicados em suturas finas: pele da face, mãos, plástica.',
+    when: 'Cirurgia plástica, dermatológica, de mão e pediátrica; retirada de pontos; suturas com fios finos.',
+    role: 'Controle fino com pouca força — a base larga estabiliza os dedos e a ponta fina permite precisão.',
+    similar: 'Anatômica: mais longa, ramos uniformes. Adson com dente: mesmo formato, com dentes na ponta. Adson = curta, base larga, ponta fina.'
+  },
+  sp4: {
+    sub: 'Pinças de dissecção', group: 'Síntese • Pinça de dissecção (delicada, com dentes)',
+    features: 'Adson com dentes 1×2 na ponta: une a precisão da Adson à firmeza da pega dentada. Curta (~12 cm).',
+    identify: 'Base alargada e ponta fina, com pequenos dentes interdigitados visíveis na extremidade.',
+    use: 'Segurar pele e tecidos resistentes em suturas delicadas, com mínimo esmagamento.',
+    when: 'Fechamento de pele em plástica, face e mão; sutura de retalhos; procedimentos ambulatoriais.',
+    role: 'Pegar a borda da pele com firmeza (dentes) sem esmagar (pega fina).',
+    similar: 'Adson sem dente: ponta serrilhada lisa. Dente de rato comum: maior, ramos uniformes. Adson dente de rato = curta + base larga + dentes.'
+  },
+  f1: {
+    sub: 'Fios', group: 'Síntese • Material (fios de sutura)',
+    features: 'Fios agulhados estéreis, classificados por absorção (absorvíveis × inabsorvíveis), estrutura (monofilamento × multifilamento) e origem (natural × sintético). Calibre em “zeros”: quanto mais zeros, mais fino.',
+    identify: 'Envelope estéril com a agulha e o fio enrolado; a etiqueta traz nome, calibre, tipo de agulha e validade.',
+    use: 'Aproximar tecidos (sutura) e ligar vasos (ligadura).',
+    when: 'Tempo de síntese (fechamento) e hemostasia por ligadura.',
+    role: 'Manter as bordas unidas até a cicatrização assumir (absorvível) ou de forma permanente (inabsorvível).',
+    similar: 'Absorvíveis (poliglactina/Vicryl, catgut): planos internos. Inabsorvíveis (nylon, polipropileno, seda): pele e estruturas que exigem sustentação prolongada. Monofilamento (nylon) → menor risco de infecção; multifilamento (seda) → melhor manuseio e nó.',
+    tip: 'Descritor: “fio para pele” → nylon monofilamento inabsorvível. “Fio para aponeurose” → absorvível de longa duração ou inabsorvível, conforme o serviço.'
+  }
+};
+
+/* Baralho na ordem da tela: setor → subgrupo → instrumentos (embaralhados dentro do subgrupo, se pedido) */
+const buildDeck = (sectorId, reviewFilter, shuffleKey) => {
+  const sectors = sectorId === 'all' ? STUDY_SECTORS : [SECTOR_BY_ID[sectorId]];
+  const deck = [];
+  sectors.forEach(sec => {
+    const items = ALL_INSTRUMENTS[sec.id].filter(i => !reviewFilter || reviewFilter[i.id] === 'review');
+    const subOf = (i) => (STUDY_INFO[i.id] || {}).sub || 'Outros';
+    const subs = [...STUDY_SUBGROUPS[sec.id]];
+    items.forEach(i => { if (!subs.includes(subOf(i))) subs.push(subOf(i)); });
+    subs.forEach(sub => {
+      let group = items.filter(i => subOf(i) === sub);
+      if (shuffleKey) group = shuffle(group);
+      group.forEach(inst => deck.push({ inst, sector: sec, sub }));
+    });
+  });
+  return deck;
+};
+
+const TableMap = ({ sectorId }) => (
+  <div className="table-map table-surface">
+    {QUADRANTS.map(q => (
+      <div key={q.id} className={q.id === sectorId ? 'on' : ''}
+        style={q.id === sectorId ? { background: q.accent, borderColor: q.accent } : undefined}>
+        {q.number}<br />{q.title}
+      </div>
+    ))}
+  </div>
+);
+
+const StudyField = ({ icon, title, text }) => (
+  text ? (
+    <div className="study-field">
+      <h4>{icon} {title}</h4>
+      <p>{text}</p>
+    </div>
+  ) : null
+);
+
+const StudyMode = ({ onBack, muted, toggleMute }) => {
+  const [sector, setSector] = useState('all');
+  const [showNames, setShowNames] = useState(false);
+  const [onlyReview, setOnlyReview] = useState(false);
+  const [shuffleKey, setShuffleKey] = useState(0);
+  const [progress, setProgress] = useState(loadStudy);
+  const [gridProgress, setGridProgress] = useState(progress); // filtro “para revisar” só é reaplicado com o card fechado
+  const [card, setCard] = useState(null);                     // { index, revealed, from, to } — from/to delimitam a sequência no baralho
+  const [notice, setNotice] = useState(null);                 // { msg, key }
+
+  useEffect(() => { if (!card) setGridProgress(progress); }, [card, progress]);
+  const deck = React.useMemo(
+    () => buildDeck(sector, onlyReview ? gridProgress : null, shuffleKey),
+    [sector, onlyReview, gridProgress, shuffleKey]
+  );
+  const stats = studyStats(progress);
+  const current = card ? deck[card.index] : null;
+  const info = current ? (STUDY_INFO[current.inst.id] || {}) : null;
+
+  useEffect(() => {
+    if (!notice) return;
+    const id = setTimeout(() => setNotice(n => (n && n.key === notice.key ? null : n)), 3400);
+    return () => clearTimeout(id);
+  }, [notice]);
+
+  const changeFilter = (fn) => { setCard(null); fn(); };
+  const openCard = (index, revealed, bounds) => {
+    AudioFX.unlock();
+    AudioFX.select();
+    setCard({ index, revealed, from: bounds ? bounds[0] : 0, to: bounds ? bounds[1] : deck.length });
+  };
+  const reveal = () => { AudioFX.select(); setCard(c => (c ? { ...c, revealed: true } : c)); };
+  const go = (delta) => setCard(c => {
+    if (!c) return c;
+    const n = c.index + delta;
+    if (n < c.from || n >= c.to) return c;
+    AudioFX.pickup();
+    return { ...c, index: n, revealed: false };
+  });
+  const mark = (status) => {
+    if (!current) return;
+    const next = { ...progress, [current.inst.id]: status };
+    setProgress(next);
+    saveStudy(next);
+    if (status === 'know') AudioFX.success(1); else AudioFX.pickup();
+    if (card.index + 1 < card.to) {
+      setCard({ ...card, index: card.index + 1, revealed: false });
+    } else {
+      const s = studyStats(next);
+      setCard(null);
+      setNotice({ msg: `🏁 Fim da sequência! ${s.know} dominados • ${s.review} para revisar`, key: Date.now() });
+      if (s.know === TOTAL) { launchConfetti(); AudioFX.fanfare(); }
+    }
+  };
+  const resetProgress = () => {
+    if (!window.confirm('Zerar todo o progresso dos flashcards?')) return;
+    setProgress({});
+    saveStudy({});
+    setCard(null);
+  };
+
+  /* teclado: ← → navegam, espaço/Enter revela, 1 = ainda não sei, 2 = já sei, ESC fecha, M muta */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'm' || e.key === 'M') { toggleMute(); return; }
+      if (!card) return;
+      if (e.key === 'Escape') setCard(null);
+      else if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'ArrowLeft') go(-1);
+      else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!card.revealed) reveal(); }
+      else if (card.revealed && e.key === '1') mark('review');
+      else if (card.revealed && e.key === '2') mark('know');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  /* agrupa o baralho para a grade: setor → subgrupo */
+  const sections = [];
+  deck.forEach((entry, index) => {
+    let sec = sections[sections.length - 1];
+    if (!sec || sec.sector.id !== entry.sector.id) { sec = { sector: entry.sector, start: index, count: 0, subs: [] }; sections.push(sec); }
+    let sub = sec.subs[sec.subs.length - 1];
+    if (!sub || sub.name !== entry.sub) { sub = { name: entry.sub, items: [] }; sec.subs.push(sub); }
+    sub.items.push({ entry, index });
+    sec.count++;
+  });
+
+  const navButtons = card && (
+    <div className="study-nav mt-4">
+      <button className="study-btn" onClick={() => go(-1)} disabled={card.index <= card.from}>◀ Anterior</button>
+      {card.revealed ? (
+        <div className="flex gap-2 flex-wrap justify-center">
+          <button className="study-btn review" onClick={() => mark('review')}>😬 Ainda não sei <span className="study-kbd">1</span></button>
+          <button className="study-btn know" onClick={() => mark('know')}>✅ Já sei <span className="study-kbd">2</span></button>
+        </div>
+      ) : (
+        <div className="text-[11px] text-slate-400">{card.index - card.from + 1} de {card.to - card.from}</div>
+      )}
+      <button className="study-btn" onClick={() => go(1)} disabled={card.index >= card.to - 1}>{card.revealed ? 'Próximo' : 'Pular'} ▶</button>
+    </div>
+  );
+
+  return (
+    <div className="w-full min-h-screen p-3 sm:p-4">
+      {notice && (
+        <div key={'nt' + notice.key}
+          className="fixed z-[60] toast-pop pointer-events-none max-w-sm px-4 py-3 rounded-xl shadow-2xl border text-white bg-gradient-to-r from-indigo-600 to-cyan-600 border-cyan-300/40"
+          style={{ left: '50%', top: '14px', transform: 'translateX(-50%)' }}>
+          <div className="font-bold text-sm sm:text-base">{notice.msg}</div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto">
+        {/* ===== HUD ===== */}
+        <div className="glass rounded-2xl px-4 py-3 mb-3 sm:mb-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="min-w-0">
+              <div className="heading-font text-lg sm:text-2xl font-bold text-white tracking-wide truncate">📖 Modo Estudo — Flashcards</div>
+              <div className="text-[11px] sm:text-xs text-slate-400">
+                Olhe a imagem, tente lembrar o instrumental e toque para conferir. Organizado pelos setores da mesa.
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button onClick={toggleMute} title="Som (M)"
+                className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-base">
+                {muted ? '🔇' : '🔊'}
+              </button>
+              <button onClick={resetProgress} title="Zerar progresso"
+                className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-base">
+                🗑️
+              </button>
+              <button onClick={onBack}
+                className="px-3 h-9 bg-white/10 hover:bg-white/20 rounded-lg text-xs sm:text-sm font-medium text-slate-100 transition-colors">
+                🎮 Modos
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center gap-4 sm:gap-6 flex-wrap">
+            <div className="study-bar">
+              <div className="study-progress">
+                <div style={{ width: `${(stats.know / TOTAL) * 100}%`, background: 'linear-gradient(90deg, #34d399, #22d3ee)' }}></div>
+                <div style={{ width: `${(stats.review / TOTAL) * 100}%`, background: '#fbbf24' }}></div>
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1">{stats.seen}/{TOTAL} instrumentais revisados</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[11px] text-slate-400">Dominados</div>
+              <div className="heading-font text-lg font-bold text-emerald-300 leading-tight">{stats.know}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[11px] text-slate-400">Para revisar</div>
+              <div className="heading-font text-lg font-bold text-amber-300 leading-tight">{stats.review}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[11px] text-slate-400">Não vistos</div>
+              <div className="heading-font text-lg font-bold text-slate-200 leading-tight">{stats.unseen}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== setores da mesa ===== */}
+        <div className="study-tabs tray-scroll">
+          <button
+            className={`study-tab ${sector === 'all' ? 'active' : ''}`}
+            style={sector === 'all' ? { background: '#e2e8f0' } : undefined}
+            onClick={() => changeFilter(() => setSector('all'))}
+          >
+            🗂️ Todos <span className="cnt">{TOTAL}</span>
+          </button>
+          {STUDY_SECTORS.map(s => {
+            const items = ALL_INSTRUMENTS[s.id];
+            const known = items.filter(i => progress[i.id] === 'know').length;
+            const active = sector === s.id;
+            return (
+              <button key={s.id}
+                className={`study-tab ${active ? 'active' : ''}`}
+                style={active ? { background: s.accent } : { borderColor: s.accent + '66' }}
+                onClick={() => changeFilter(() => setSector(s.id))}
+              >
+                <span>{s.icon}</span>
+                <span>{s.number} · {s.name}</span>
+                <span className="cnt">{known}/{items.length} ✓</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ===== opções ===== */}
+        <div className="flex items-center gap-2 flex-wrap mt-3">
+          <button className={`study-toggle ${showNames ? 'on' : ''}`} onClick={() => setShowNames(v => !v)}>
+            {showNames ? '🙈 Ocultar nomes' : '👁️ Mostrar nomes'}
+          </button>
+          <button className={`study-toggle ${onlyReview ? 'on' : ''}`} onClick={() => changeFilter(() => setOnlyReview(v => !v))}>
+            ↻ Só os “para revisar”
+          </button>
+          <button className={`study-toggle ${shuffleKey ? 'on' : ''}`} onClick={() => changeFilter(() => setShuffleKey(k => (k ? 0 : Date.now())))}>
+            🔀 Embaralhar
+          </button>
+          {deck.length > 0 && (
+            <button className="study-toggle" onClick={() => openCard(0, false)}>
+              ▶ Sequência de flashcards ({deck.length})
+            </button>
+          )}
+        </div>
+
+        {deck.length === 0 && (
+          <div className="glass rounded-2xl study-empty mt-4 fade-up">
+            <div className="text-3xl mb-2">🎉</div>
+            <div className="text-white font-bold">Nada para revisar aqui.</div>
+            <div className="text-sm mt-1">Desmarque o filtro “para revisar” ou escolha outro setor.</div>
+          </div>
+        )}
+
+        {/* ===== grade por setor → subgrupo ===== */}
+        {sections.map((sec, idx) => (
+          <div key={sec.sector.id} className="study-section glass rounded-2xl p-3 sm:p-4 fade-up" style={{ animationDelay: `${idx * 0.07}s` }}>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 sm:w-2 h-5 sm:h-6 rounded-full flex-shrink-0" style={{ background: sec.sector.accent }}></span>
+                <div>
+                  <div className="heading-font text-white text-lg sm:text-2xl font-bold tracking-wide">
+                    {sec.sector.number} · {sec.sector.title}
+                  </div>
+                  <div className="text-[11px] sm:text-sm text-slate-400">
+                    {sec.sector.desc} • {sec.count} {sec.count === 1 ? 'instrumental' : 'instrumentais'} • quadrante {QUADRANT_POSITION[sec.sector.id]} da mesa
+                  </div>
+                </div>
+              </div>
+              <button className="study-toggle" onClick={() => openCard(sec.start, false, [sec.start, sec.start + sec.count])}>▶ Estudar este setor</button>
+            </div>
+            {sec.subs.map(sub => (
+              <div key={sub.name}>
+                <div className="study-sub">{sub.name}</div>
+                <div className="study-grid">
+                  {sub.items.map(({ entry, index }) => {
+                    const st = progress[entry.inst.id];
+                    return (
+                      <button key={entry.inst.id}
+                        className={`study-card ${st || ''}`}
+                        onClick={() => openCard(index, true)}
+                        title={showNames ? entry.inst.name : 'Toque para revelar'}
+                      >
+                        {st && <span className={`study-badge ${st}`}>{st === 'know' ? '✓' : '↻'}</span>}
+                        <img src={entry.inst.image} alt={showNames ? entry.inst.name : 'Instrumental cirúrgico'} draggable={false} className="instrument-img" />
+                        <div className={`label ${showNames ? '' : 'hidden-name'}`}>{showNames ? entry.inst.name : 'Qual é?'}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+
+        <div className="glass rounded-2xl p-4 mt-4 text-xs sm:text-sm text-slate-300 flex flex-wrap gap-x-6 gap-y-2 items-center justify-center">
+          <span>👆 Toque na imagem para revelar a ficha</span>
+          <span>
+            ⌨️ <span className="study-kbd">←</span><span className="study-kbd">→</span> navega •
+            <span className="study-kbd">espaço</span> revela •
+            <span className="study-kbd">1</span> ainda não sei •
+            <span className="study-kbd">2</span> já sei
+          </span>
+        </div>
+      </div>
+
+      {/* ===== flashcard ===== */}
+      {current && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setCard(null)}>
+          <div className="glass rounded-2xl p-4 sm:p-6 shadow-2xl animate-pop study-modal tray-scroll" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div className="text-[11px] uppercase tracking-wider text-slate-400">
+                Flashcard {card.index - card.from + 1}/{card.to - card.from}
+                {card.revealed ? '' : ` • Setor ${current.sector.number} • ${current.sub}`}
+              </div>
+              <button onClick={() => setCard(null)} title="Fechar (ESC)"
+                className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
+                ✕
+              </button>
+            </div>
+
+            {!card.revealed ? (
+              <div key={'front' + card.index} className="study-front text-center animate-pop">
+                <div className="bg-white rounded-2xl p-4 mb-4">
+                  <img src={current.inst.image} alt="Instrumental cirúrgico" draggable={false} className="instrument-img" />
+                </div>
+                <div className="heading-font text-2xl sm:text-3xl font-bold text-white">Qual é esse instrumental?</div>
+                <div className="text-slate-400 text-sm mt-1 mb-4">Pense no nome, na função e em onde ele fica na mesa. Depois confira.</div>
+                <button className="study-btn reveal" onClick={reveal}>👁️ Revelar <span className="study-kbd">espaço</span></button>
+              </div>
+            ) : (
+              <div key={'back' + card.index} className="fade-up">
+                <div className="flex items-start gap-4 mb-4 flex-wrap">
+                  <div className="bg-white rounded-xl p-2 flex-shrink-0">
+                    <img src={current.inst.image} alt={current.inst.name} className="w-24 h-24 object-contain" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="heading-font text-2xl sm:text-3xl font-bold text-white mb-1">{current.inst.name}</h3>
+                    <div className="text-sm text-cyan-300 font-medium mb-2">{current.inst.shortDesc}</div>
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="study-chip" style={{ color: current.sector.accent, borderColor: current.sector.accent + '66', background: current.sector.accent + '22' }}>
+                        {current.sector.icon} Setor {current.sector.number} · {current.sector.title}
+                      </span>
+                      <span className="study-chip" style={{ color: '#e2e8f0', borderColor: 'rgba(255,255,255,.2)', background: 'rgba(255,255,255,.08)' }}>
+                        🏷️ {info.group || current.sub}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="study-info">
+                  <StudyField icon="🔎" title="Como identificar" text={info.identify} />
+                  <StudyField icon="⚙️" title="Principais características" text={info.features} />
+                  <StudyField icon="🎯" title="Para que serve" text={info.use || current.inst.explanation} />
+                  <StudyField icon="🕐" title="Quando é usado" text={info.when} />
+                  <StudyField icon="🧩" title="Função específica" text={info.role} />
+                  <div className="study-field">
+                    <h4>🗺️ Onde fica na mesa</h4>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <TableMap sectorId={current.sector.id} />
+                      <p style={{ flex: 1, minWidth: '140px' }}>
+                        Setor <b>{current.sector.number} — {current.sector.title}</b> ({current.sector.desc.toLowerCase()}),
+                        no quadrante <b>{QUADRANT_POSITION[current.sector.id]}</b> da mesa.
+                      </p>
+                    </div>
+                  </div>
+                  {info.similar && (
+                    <div className="full"><StudyField icon="↔️" title="Não confunda com" text={info.similar} /></div>
+                  )}
+                  {info.tip && (
+                    <div className="full"><StudyField icon="💡" title="Dica de prova" text={info.tip} /></div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {navButtons}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const TimerRing = ({ timeLeft, total }) => {
   const R = 22;
   const C = 2 * Math.PI * R;
@@ -468,7 +1353,7 @@ const TimerRing = ({ timeLeft, total }) => {
 
 const SurgicalTrainingGame = () => {
   /* ---------- estado geral ---------- */
-  const [screen, setScreen] = useState('start');           // 'start' | 'game'
+  const [screen, setScreen] = useState('start');           // 'start' | 'study' | 'game'
   const [mode, setMode] = useState('prova');
   const [phase, setPhase] = useState(1);                   // 1 = montar a mesa | 2 = avaliador pede
   const [phaseIntro, setPhaseIntro] = useState(false);
@@ -541,7 +1426,16 @@ const SurgicalTrainingGame = () => {
   const selectedInstrument = selectedId ? availableInstruments.find(i => i.id === selectedId) : null;
 
   /* ---------- ciclo de vida do jogo ---------- */
+  const startStudy = () => {
+    AudioFX.unlock();
+    AudioFX.select();
+    setMode('estudo');
+    setScreen('study');
+    setDetailsModal(null); setFeedback(null);
+  };
+
   const startGame = (m) => {
+    if (MODES[m].study) { startStudy(); return; } // modo estudo não monta mesa
     AudioFX.unlock();
     AudioFX.select();
     setMode(m);
@@ -1005,8 +1899,14 @@ const SurgicalTrainingGame = () => {
     return () => window.removeEventListener('keydown', onKey);
   });
 
+  /* ================= MODO ESTUDO (flashcards) ================= */
+  if (screen === 'study') {
+    return <StudyMode onBack={backToStart} muted={muted} toggleMute={toggleMute} />;
+  }
+
   /* ================= TELA INICIAL ================= */
   if (screen === 'start') {
+    const studyHome = studyStats(loadStudy());
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="max-w-3xl w-full py-8">
@@ -1014,7 +1914,8 @@ const SurgicalTrainingGame = () => {
             <div className="text-5xl mb-3">🩺</div>
             <h1 className="heading-font text-4xl sm:text-5xl font-bold text-white tracking-wide">Instrumentação Cirúrgica</h1>
             <p className="text-slate-400 mt-2 max-w-xl mx-auto text-sm sm:text-base">
-              Simulador da prova prática: monte a mesa nos 4 tempos cirúrgicos. Mesa perfeita encerra na hora; errou algum setor, o avaliador vem cobrar exatamente os instrumentos que você errou.
+              <b className="text-slate-200">Modo Estudo:</b> flashcards dos instrumentais, organizados por setor da mesa, para reconhecer e memorizar.
+              <b className="text-slate-200"> Modo Prova e Expert:</b> monte a mesa nos 4 tempos cirúrgicos contra o relógio; errou algum setor, o avaliador vem cobrar exatamente os instrumentos que você errou.
             </p>
           </div>
 
@@ -1022,14 +1923,20 @@ const SurgicalTrainingGame = () => {
             {Object.entries(MODES).map(([key, m], idx) => (
               <button
                 key={key}
-                onClick={() => startGame(key)}
+                onClick={() => (m.study ? startStudy() : startGame(key))}
                 className="glass rounded-2xl p-5 text-left hover:scale-[1.03] hover:border-cyan-300/40 transition-all duration-200 group fade-up"
                 style={{ animationDelay: `${0.08 + idx * 0.08}s` }}
               >
                 <div className="text-3xl mb-2">{m.icon}</div>
                 <div className="heading-font text-xl font-bold text-white">{m.label}</div>
                 <div className="text-xs text-slate-400 mt-1 leading-relaxed">{m.desc}</div>
-                {records[key] && (
+                {m.study ? (studyHome.seen > 0 && (
+                  <div className="mt-3 pt-3 border-t border-white/10 text-[11px] text-slate-300 space-y-0.5">
+                    <div>✅ Dominados: <b>{studyHome.know}/{TOTAL}</b></div>
+                    <div>↻ Para revisar: <b>{studyHome.review}</b></div>
+                    <div>🗂️ Não vistos: <b>{studyHome.unseen}</b></div>
+                  </div>
+                )) : records[key] && (
                   <div className="mt-3 pt-3 border-t border-white/10 text-[11px] text-slate-300 space-y-0.5">
                     <div>🏆 Recorde: <b>{records[key].bestScore || 0} pts</b></div>
                     {records[key].bestTime !== undefined && <div>⚡ Melhor mesa: <b>{fmt(records[key].bestTime)}</b></div>}
@@ -1037,15 +1944,15 @@ const SurgicalTrainingGame = () => {
                   </div>
                 )}
                 <div className="mt-4 text-center bg-gradient-to-r from-emerald-500 to-cyan-500 group-hover:from-emerald-400 group-hover:to-cyan-400 text-white font-bold rounded-xl py-2 text-sm transition-all">
-                  Jogar
+                  {m.study ? 'Estudar' : 'Jogar'}
                 </div>
               </button>
             ))}
           </div>
 
           <div className="glass rounded-2xl p-4 mt-6 text-xs sm:text-sm text-slate-300 fade-up flex flex-wrap gap-x-6 gap-y-2 items-center justify-center" style={{ animationDelay: '0.35s' }}>
-            <span>🖱️ Arraste o instrumento até o setor</span>
-            <span>👆 Ou toque nele e depois no setor (teclas 1–4)</span>
+            <span>📖 Estudo: toque na imagem para revelar a ficha</span>
+            <span>🖱️ Prova: arraste o instrumento até o setor (ou toque e tecle 1–4)</span>
             <button onClick={toggleMute} className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
               {muted ? '🔇 Som desligado' : '🔊 Som ligado'}
             </button>

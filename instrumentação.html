@@ -77,6 +77,19 @@
       }
       .placed-card:active { cursor: grabbing; }
       .instrument-img { filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .35)); }
+      /* Ajuda de identificação: nome do instrumento ao passar o mouse (nunca o setor) */
+      .name-tag {
+        position: absolute; left: 4px; right: 4px; bottom: 4px;
+        padding: 3px 6px;
+        background: rgba(15, 23, 42, .92);
+        color: #fff;
+        font-size: 11px; font-weight: 600; line-height: 1.15; text-align: center;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        opacity: 0; transition: opacity .15s;
+        pointer-events: none;
+      }
+      .instrument-card:hover .name-tag { opacity: 1; }
       .drag-ghost-inner { transform: translate(-50%, -60%) rotate(-5deg) scale(1.06); }
 
       @keyframes shake {
@@ -312,18 +325,21 @@ const shuffle = (arr) => {
 };
 const fmt = (s) => (s === null || s === undefined) ? '--:--' : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-/* ================= MODOS DE JOGO ================= */
+/* ================= MODOS DE JOGO =================
+   tooltips       → mostra o NOME do instrumento ao passar o mouse (ajuda de identificação, nunca de posição)
+   reveal         → após o erro, revela o setor correto (fase 1) e o instrumento pedido após 3 erros (fase 2)
+   penaltySeconds → segundos descontados do cronômetro a cada erro (fase 1 e fase 2); o jogo segue normalmente */
 const MODES = {
   estudo: {
-    label: 'Modo Estudo', icon: '📖', time: null, phase2Time: null, tooltips: true, penaltySeconds: 0,
-    desc: 'Sem cronômetro e com dicas de nome. Explore os instrumentos e aprenda a distribuição da mesa.'
+    label: 'Modo Estudo', icon: '📖', time: null, phase2Time: null, tooltips: true, reveal: true, penaltySeconds: 0,
+    desc: 'Sem cronômetro, com dicas de nome e de setor. Explore os instrumentos e aprenda a distribuição da mesa.'
   },
   prova: {
-    label: 'Modo Prova', icon: '🩺', time: 180, phase2Time: 90, tooltips: true, penaltySeconds: 0,
-    desc: '3 minutos para montar a mesa, como na prova prática. Depois, o avaliador pede os instrumentos.'
+    label: 'Modo Prova', icon: '🩺', time: 180, phase2Time: 90, tooltips: true, reveal: false, penaltySeconds: 5,
+    desc: '3 minutos para montar a mesa, como na prova prática. Errou o setor? −5s e continue tentando, sem revelar a resposta. Só o nome aparece ao passar o mouse.'
   },
   expert: {
-    label: 'Modo Expert', icon: '🔥', time: 150, phase2Time: 60, tooltips: false, penaltySeconds: 5,
+    label: 'Modo Expert', icon: '🔥', time: 150, phase2Time: 60, tooltips: false, reveal: false, penaltySeconds: 5,
     desc: '2min30, sem dica de nome (reconhecimento visual puro, como na prova) e −5s a cada erro.'
   }
 };
@@ -416,7 +432,19 @@ const getCorrectQuadrant = (instrumentId) => {
 const funcText = (inst) => inst.explanation.split('.')[0] + '.';
 
 const EMPTY_TABLE = () => ({ q1_dierese: [], q2_hemostasia: [], q3_pega: [], q4_sintese: [] });
-const ASKS_PER_GAME = 8;
+
+/* Instrumentos colocados no setor errado na fase 1 (sem repetição).
+   São exatamente eles que o avaliador cobra na fase 2: uma pergunta por instrumento errado. */
+const missedInstrumentsOf = (log) => {
+  const seen = new Set();
+  const out = [];
+  log.forEach(err => {
+    if (err.kind !== 'place' || seen.has(err.instrument.id)) return;
+    seen.add(err.instrument.id);
+    out.push(err.instrument);
+  });
+  return out;
+};
 
 const TimerRing = ({ timeLeft, total }) => {
   const R = 22;
@@ -508,6 +536,9 @@ const SurgicalTrainingGame = () => {
   const placedCount = TOTAL - availableInstruments.length;
   const currentAsk = phase === 2 ? asks[askIndex] : null;
   const tableComplete = screen === 'game' && phase === 1 && availableInstruments.length === 0 && attempts > 0;
+  const missedInstruments = missedInstrumentsOf(errorLog);
+  const missedCount = missedInstruments.length;
+  const selectedInstrument = selectedId ? availableInstruments.find(i => i.id === selectedId) : null;
 
   /* ---------- ciclo de vida do jogo ---------- */
   const startGame = (m) => {
@@ -541,7 +572,8 @@ const SurgicalTrainingGame = () => {
 
   const finishGame = (status) => {
     if (gameStatus) return;
-    const bonus = (status === 'success' && timeLeft !== null) ? timeLeft * 2 : 0;
+    // mesa perfeita encerra na fase 1 → mesmo bônus que o avaliador daria ao chegar (×5); fim da fase 2 → ×2
+    const bonus = (status === 'success' && timeLeft !== null) ? timeLeft * (phase === 1 ? 5 : 2) : 0;
     const fscore = score + bonus;
     setScore(fscore);
     setGameStatus(status);
@@ -572,9 +604,17 @@ const SurgicalTrainingGame = () => {
 
   useEffect(() => {
     if (screen !== 'game' || timeLeft !== 0 || gameStatus) return;
-    if (tableComplete) callEvaluator(); // o tempo acabou enquanto organizava → o avaliador chega
+    if (tableComplete) finishTable(); // o tempo acabou enquanto organizava → encerra (mesa perfeita) ou o avaliador chega
     else finishGame('timeout');
   }, [timeLeft, screen, gameStatus]);
+
+  /* ---------- penalidade de tempo: −Ns a cada erro (fase 1 e fase 2); o jogo continua ---------- */
+  const applyTimePenalty = () => {
+    const penalty = MODES[mode].penaltySeconds;
+    if (penalty <= 0 || timeLeft === null) return;
+    setTimeLeft(t => (t === null ? t : Math.max(0, t - penalty)));
+    setTimePenalty(Date.now());
+  };
 
   /* ---------- fase 1: posicionar instrumento ---------- */
   const placeAttempt = (instrument, quadrantId, pos) => {
@@ -609,11 +649,20 @@ const SurgicalTrainingGame = () => {
       AudioFX.error();
       if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
       setErrorLog(log => [...log, { kind: 'place', instrument, dropped: quadrantId, correct }]);
-      if (MODES[mode].penaltySeconds > 0 && timeLeft !== null) {
-        setTimeLeft(t => (t === null ? t : Math.max(0, t - MODES[mode].penaltySeconds)));
-        setTimePenalty(Date.now());
+      applyTimePenalty();
+      if (MODES[mode].reveal) {
+        setFeedback({ type: 'error', message: '❌ Setor errado!', hint: QUADRANT_LABEL[correct], pos, key: Date.now() });
+      } else {
+        // modo prova/expert: não revela o setor — o aluno continua tentando até acertar sozinho
+        const penalty = MODES[mode].penaltySeconds;
+        setFeedback({
+          type: 'error',
+          message: '❌ Setor errado!',
+          explanation: (penalty > 0 && timeLeft !== null) ? `−${penalty}s no cronômetro. Tente outro setor.` : 'Tente outro setor.',
+          pos,
+          key: Date.now()
+        });
       }
-      setFeedback({ type: 'error', message: '❌ Setor errado!', hint: QUADRANT_LABEL[correct], pos, key: Date.now() });
       setTimeout(() => setShakeQuadrant(q => (q === quadrantId ? null : q)), 500);
     }
   };
@@ -625,16 +674,19 @@ const SurgicalTrainingGame = () => {
     AudioFX.fanfare();
     setFeedback({
       type: 'phase',
-      message: '✅ Mesa completa!',
-      explanation: 'Se quiser, arraste os instrumentos dentro de cada setor para organizar a mesa. Quando estiver pronto, chame o avaliador.',
+      message: missedCount === 0 ? '🏆 Mesa perfeita!' : '✅ Mesa completa!',
+      explanation: missedCount === 0
+        ? 'Nenhum erro de setor — não há Fase 2. Organize a mesa se quiser e finalize.'
+        : `Você errou o setor de ${missedCount} ${missedCount === 1 ? 'instrumento' : 'instrumentos'}. Organize a mesa se quiser e, quando estiver pronto, chame o avaliador: ele vai cobrar exatamente ${missedCount === 1 ? 'esse' : 'esses'}.`,
       key: Date.now()
     });
   }, [tableComplete]);
 
+  /* fase 2 só existe se houve erro na montagem: uma pergunta por instrumento colocado no setor errado */
   const callEvaluator = () => {
-    if (!tableComplete || gameStatus) return;
+    if (!tableComplete || gameStatus || missedCount === 0) return;
     if (timeLeft !== null) setScore(s => s + timeLeft * 5);
-    const sample = shuffle(ALL_FLAT).slice(0, ASKS_PER_GAME).map(inst => ({
+    const sample = shuffle(missedInstruments).map(inst => ({
       inst,
       byFunction: Math.random() < 0.55
     }));
@@ -649,6 +701,13 @@ const SurgicalTrainingGame = () => {
     setHoverQuadrant(null);
     AudioFX.fanfare();
     setTimeout(() => setPhaseIntro(false), 2400);
+  };
+
+  /* mesa pronta: sem erro → encerra direto (sem fase 2); com erro → o avaliador cobra os instrumentos errados */
+  const finishTable = () => {
+    if (!tableComplete || gameStatus) return;
+    if (missedCount === 0) finishGame('success');
+    else callEvaluator();
   };
 
   /* ---------- fase 2: entregar o instrumento pedido ---------- */
@@ -686,7 +745,9 @@ const SurgicalTrainingGame = () => {
       AudioFX.error();
       if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
       setErrorLog(log => [...log, { kind: 'deliver', asked: ask.inst, clicked: instrument }]);
-      if (wrong >= 3) {
+      applyTimePenalty();
+      // só o modo estudo revela o instrumento após 3 erros; nos demais o aluno continua tentando
+      if (MODES[mode].reveal && wrong >= 3) {
         setAskReveal(true);
         setAskFx({ id: ask.inst.id, type: 'reveal', key: Date.now() });
         setTimeout(() => {
@@ -953,7 +1014,7 @@ const SurgicalTrainingGame = () => {
             <div className="text-5xl mb-3">🩺</div>
             <h1 className="heading-font text-4xl sm:text-5xl font-bold text-white tracking-wide">Instrumentação Cirúrgica</h1>
             <p className="text-slate-400 mt-2 max-w-xl mx-auto text-sm sm:text-base">
-              Simulador da prova prática: monte a mesa nos 4 tempos cirúrgicos e depois responda aos pedidos do avaliador.
+              Simulador da prova prática: monte a mesa nos 4 tempos cirúrgicos. Mesa perfeita encerra na hora; errou algum setor, o avaliador vem cobrar exatamente os instrumentos que você errou.
             </p>
           </div>
 
@@ -1047,7 +1108,7 @@ const SurgicalTrainingGame = () => {
             <div className="text-5xl mb-2">🧑‍⚕️</div>
             <div className="heading-font text-3xl font-bold text-white">O avaliador chegou!</div>
             <div className="text-slate-300 mt-1 text-sm sm:text-base">
-              Ele vai pedir os instrumentos.<br />Toque no instrumento certo na mesa.
+              Ele vai cobrar {asks.length === 1 ? 'o instrumento que você errou' : `os ${asks.length} instrumentos que você errou`} na montagem.<br />Toque no instrumento certo na mesa.
             </div>
           </div>
         </div>
@@ -1056,7 +1117,7 @@ const SurgicalTrainingGame = () => {
       {/* dica do modo seleção */}
       {selectedId && phase === 1 && !draggingId && !showResultModal && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] glass text-slate-100 text-xs sm:text-sm px-4 py-2 rounded-full toast-pop whitespace-nowrap">
-          👉 Toque no setor da mesa (ou tecle 1–4) • ESC cancela
+          {MODES[mode].tooltips && selectedInstrument && <><b className="text-cyan-200">{selectedInstrument.name}</b> • </>}👉 Toque no setor da mesa (ou tecle 1–4) • ESC cancela
         </div>
       )}
 
@@ -1169,10 +1230,15 @@ const SurgicalTrainingGame = () => {
                     <div className="text-[11px] text-slate-400">Combo máximo</div>
                     <div className="text-lg font-bold text-amber-300">🔥 x{maxCombo}</div>
                   </div>
-                  {asks.length > 0 && (
+                  {asks.length > 0 ? (
                     <div className="col-span-2">
                       <div className="text-[11px] text-slate-400">Pedidos do avaliador</div>
                       <div className="text-lg font-bold text-violet-300">{asksCorrect}/{asks.length}</div>
+                    </div>
+                  ) : final.status === 'success' && (
+                    <div className="col-span-2">
+                      <div className="text-[11px] text-slate-400">Fase 2</div>
+                      <div className="text-sm font-bold text-emerald-300">Dispensada — mesa 100% correta ✨</div>
                     </div>
                   )}
                 </div>
@@ -1311,9 +1377,7 @@ const SurgicalTrainingGame = () => {
                         className="w-full h-14 lg:h-20 object-contain instrument-img pointer-events-none"
                       />
                       {MODES[mode].tooltips && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 border border-white/10">
-                          {instrument.name}
-                        </div>
+                        <div className="name-tag z-20">{instrument.name}</div>
                       )}
                     </div>
                   ))}
@@ -1322,7 +1386,7 @@ const SurgicalTrainingGame = () => {
             ) : phase === 1 ? (
               <div className="glass rounded-2xl p-4 sticky top-2 lg:top-4 z-30">
                 <h3 className="heading-font text-white font-bold mb-2 flex items-center justify-between text-sm lg:text-lg">
-                  <span>✅ MESA COMPLETA</span>
+                  <span>{missedCount === 0 ? '🏆 MESA PERFEITA' : '✅ MESA COMPLETA'}</span>
                   <span className="text-xs bg-emerald-400/15 text-emerald-200 border border-emerald-300/20 px-2.5 py-0.5 rounded-full">
                     {TOTAL}/{TOTAL}
                   </span>
@@ -1331,15 +1395,29 @@ const SurgicalTrainingGame = () => {
                   Enquanto houver tempo, <b className="text-white">arraste os instrumentos dentro de cada setor</b> para
                   deixar a mesa como na prova: cabo ao lado de cabo, semelhantes juntos, peças alinhadas.
                 </div>
+                {missedCount === 0 ? (
+                  <div className="bg-emerald-400/15 border border-emerald-300/20 rounded-xl p-3 text-xs text-emerald-200 leading-relaxed mb-3">
+                    Nenhum erro de setor. <b className="text-white">Não há Fase 2</b> — o avaliador nem precisa vir.
+                  </div>
+                ) : (
+                  <div className="bg-violet-400/15 border border-violet-300/20 rounded-xl p-3 text-xs text-violet-200 leading-relaxed mb-3">
+                    Você errou o setor de <b className="text-white">{missedCount} {missedCount === 1 ? 'instrumento' : 'instrumentos'}</b>.
+                    Na Fase 2 o avaliador cobra exatamente {missedCount === 1 ? 'esse' : 'esses'}: {missedCount} {missedCount === 1 ? 'pergunta' : 'perguntas'}.
+                  </div>
+                )}
                 <button
-                  onClick={callEvaluator}
-                  className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white py-3 rounded-xl font-bold text-base transition-all shadow-lg"
+                  onClick={finishTable}
+                  className={`w-full bg-gradient-to-r text-white py-3 rounded-xl font-bold text-base transition-all shadow-lg ${
+                    missedCount === 0
+                      ? 'from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400'
+                      : 'from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400'
+                  }`}
                 >
-                  🧑‍⚕️ Chamar o avaliador
+                  {missedCount === 0 ? '🏁 Finalizar mesa' : `🧑‍⚕️ Chamar o avaliador (${missedCount})`}
                 </button>
                 {timeLeft !== null && (
                   <div className="text-[11px] text-slate-400 mt-2 text-center">
-                    ⏱️ O relógio continua correndo — o bônus de tempo é garantido quando o avaliador chega.
+                    ⏱️ O relógio continua correndo — o bônus de tempo é garantido {missedCount === 0 ? 'ao finalizar' : 'quando o avaliador chega'}.
                   </div>
                 )}
               </div>
@@ -1374,7 +1452,9 @@ const SurgicalTrainingGame = () => {
                     {askWrong > 0 && !askReveal && (
                       <div className="mt-2 text-xs text-amber-300">
                         {currentAsk.byFunction && <div>💡 Dica: {currentAsk.inst.name}</div>}
-                        <div>{3 - askWrong} {3 - askWrong === 1 ? 'tentativa restante' : 'tentativas restantes'}</div>
+                        {MODES[mode].reveal
+                          ? <div>{3 - askWrong} {3 - askWrong === 1 ? 'tentativa restante' : 'tentativas restantes'}</div>
+                          : <div>{askWrong} {askWrong === 1 ? 'erro' : 'erros'} neste pedido{MODES[mode].penaltySeconds > 0 && timeLeft !== null ? ` (−${MODES[mode].penaltySeconds}s cada)` : ''} — continue tentando.</div>}
                       </div>
                     )}
                     {askReveal && (
